@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
+import InitColorSchemeScript from '@mui/joy/InitColorSchemeScript';
+
+import { CssVarsProvider } from "@mui/joy/styles";
+
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from "../theme";
+
+import framesxTheme from '../theme';
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,12 +20,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning={true}>
+      <body>
+        <InitColorSchemeScript defaultMode="system"/>
+        <CssVarsProvider defaultMode="system" disableTransitionOnChange theme={framesxTheme}>
+          <AppRouterCacheProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <main>{children}</main>
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </CssVarsProvider>
+      </body>
     </html>
-  );
+  )
 }
