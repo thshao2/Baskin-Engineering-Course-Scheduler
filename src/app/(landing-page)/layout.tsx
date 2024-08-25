@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+// import "./globals.css";
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import InitColorSchemeScript from '@mui/joy/InitColorSchemeScript';
@@ -8,9 +8,9 @@ import { CssVarsProvider } from "@mui/joy/styles";
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import theme from "../theme";
+import theme from "../../theme";
 
-import framesxTheme from '../theme';
+import framesxTheme from '../../theme';
 
 
 export const metadata: Metadata = {

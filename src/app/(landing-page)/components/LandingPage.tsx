@@ -3,7 +3,7 @@ import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import Typography from '@mui/joy/Typography';
 import ArrowForward from '@mui/icons-material/ArrowForward';
-import TwoSidedLayout from '../components/TwoSidedLayout';
+import TwoSidedLayout from './TwoSidedLayout';
 
 import Link from 'next/link';
 
