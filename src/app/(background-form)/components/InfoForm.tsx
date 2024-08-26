@@ -1,8 +1,14 @@
+'use client'
+
 import Select from './Select'
 import Box from '@mui/material/Box';
 
+import Button from '@mui/material/Button'
 
-export default function InfoForm() {
+import { useFormContext } from '../context/FormContext';
+
+
+const getGradOptions = () => {
   const date = new Date();
   const currentYear = date.getFullYear();
   const currentMonth = date.getMonth();
@@ -36,8 +42,13 @@ export default function InfoForm() {
   for (let i = 0; i < possibleGradDates.length; i++) {
     gradOptions.push({option: possibleGradDates[i], value: valueGradDates[i]});
   }
+  return gradOptions;
+}
 
-
+export default function InfoForm() {
+  const gradOptions = getGradOptions();
+  const formContext = useFormContext();
+  
   return (
     <>
       <Box
@@ -64,6 +75,8 @@ export default function InfoForm() {
               { option: '2022-2023', value: '22' }
             ]
           }
+          state = {formContext.catalogYear}
+          mutator = {formContext.setCatalogYear}
         />
         <Select
           auto="CS"
@@ -71,6 +84,8 @@ export default function InfoForm() {
           subtitle=''
           inputLabel="Major"
           options={[{ option: 'Computer Science (B.S.)', value: 'CS' }]}
+          state = {formContext.major}
+          mutator = {formContext.setMajor}        
         />
         <Select
           auto=""
@@ -78,6 +93,8 @@ export default function InfoForm() {
           subtitle="Your planned last quarter here as an undergraduate at UCSC."
           inputLabel="Date"
           options={gradOptions}
+          state = {formContext.gradDate}
+          mutator = {formContext.setGradDate}
         />
         <Select
           auto="1"
@@ -90,7 +107,14 @@ export default function InfoForm() {
               { option: 'Full Academic Planners', value: '2'}
             ]
           }
+          state = {formContext.planner}
+          mutator = {formContext.setPlanner}  
         />
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+          <Button variant='contained' color = 'warning'>
+            Next
+          </Button>
+        </Box>
       </Box>
     </>
   );

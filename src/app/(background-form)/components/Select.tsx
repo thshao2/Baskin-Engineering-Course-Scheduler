@@ -7,26 +7,37 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Typography } from '@mui/material';
+import { useFormContext } from '../context/FormContext';
 
 interface Option {
-    option: string;
-    value: string;
+  option: string;
+  value: string;
 }
 
 interface BasicSelectProps {
-    auto: string;  // `any` is acceptable here, but consider a more specific type if possible
+    auto: string;
     title: string;
     subtitle: string;
     inputLabel: string;
-    options: Option[]; 
+    options: Option[];
+    state: string;
+    mutator: (state: string) => void;
   }
 
-export default function BasicSelect({auto, title, subtitle, inputLabel, options}: BasicSelectProps) {
+const BasicSelect = React.memo(({auto, title, subtitle, inputLabel, options, state, mutator}: BasicSelectProps) => {
   const [option, setOption] = React.useState(auto);
 
+  React.useEffect(() => {
+    mutator(option);
+  }, [mutator, option])
+
   const handleChange = (event: SelectChangeEvent) => {
+    // console.log(event.target.value)
+    // mutator(event.target.value as string);
     setOption(event.target.value as string);
   };
+
+  console.log(state);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -52,4 +63,6 @@ export default function BasicSelect({auto, title, subtitle, inputLabel, options}
       </FormControl>
     </Box>
   );
-}
+});
+
+export default BasicSelect;
