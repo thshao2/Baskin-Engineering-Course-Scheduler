@@ -59,8 +59,11 @@ export default function InfoForm() {
     event.preventDefault();
     const result = await validateInfoForm(formContext.infoData);
     if (!result.success) {
+      console.log(result.errors ? result.errors[0] : 'nothing');
+      formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
       return;
     }
+    formContext.setStepError('');
     formContext.setStepLastCompleted(1);
     router.push('/background-courses');
   }

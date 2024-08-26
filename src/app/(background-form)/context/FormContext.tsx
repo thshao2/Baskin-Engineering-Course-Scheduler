@@ -16,8 +16,15 @@ export const FormContext = createContext({
     planner: '',
   },
   setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => {},
+  studentStatus: '',
+  setStudentStatus: (student: string) => {},
+  // backgroundData: {
+
+  // }
   stepLastCompleted: 0,
-  setStepLastCompleted: (step: number) => {}
+  setStepLastCompleted: (step: number) => {},
+  stepError: '',
+  setStepError: (error: string) => {},
 })
 
 
@@ -29,19 +36,19 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     planner: ''
   });
   const [stepLastCompleted, setStepLastCompleted] = useState(0);
-
-
-  // const [catalogYear, setCatalogYear] = useState('');
-  // const [major, setMajor] = useState('');
-  // const [gradDate, setGradDate] = useState('');
-  // const [planner, setPlanner] = useState('');
+  const [stepError, setStepError] = useState('');
+  const [studentStatus, setStudentStatus] = useState('');
 
   return (
     <FormContext.Provider value = {{
       infoData,
       setInfoData,
       stepLastCompleted,
-      setStepLastCompleted
+      setStepLastCompleted,
+      stepError,
+      setStepError,
+      studentStatus,
+      setStudentStatus,
     }}>
       {children}
     </FormContext.Provider>  

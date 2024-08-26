@@ -47,13 +47,13 @@ export default function BackGroundCoursesForm() {
             inputLabel="Status"
             options={
               [
-                { option: '2024-2025 (Default)', value: '24' },
-                { option: '2023-2024', value: '23' },
-                { option: '2022-2023', value: '22' }
+                { option: 'Incoming First-Year Student', value: 'U' },
+                { option: 'Incoming Transfer', value: 'T' },
+                { option: 'Continuing Student', value: 'C' }
               ]
             }
-            state={formContext.infoData.catalogYear}
-            mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, catalogYear: value }))}
+            state={formContext.studentStatus}
+            mutator={formContext.setStudentStatus}
           />
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
             <Button variant='contained' color='warning'>

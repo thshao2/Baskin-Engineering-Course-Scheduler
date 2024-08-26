@@ -13,7 +13,7 @@ const steps = ['Select Year and Catalog', 'Background Course Information', 'Stud
 
 export default function HorizontalLinearStepper() {
 
-  const {stepLastCompleted} = useFormContext();
+  const {stepLastCompleted, stepError} = useFormContext();
 
   // const [activeStep, setActiveStep] = React.useState(0);
 
@@ -29,6 +29,10 @@ export default function HorizontalLinearStepper() {
   //   setActiveStep(0);
   // };
 
+  const isStepFailed = (step: number) => {
+    return step === stepLastCompleted && stepError.length > 0
+  }
+
   return (
     <Box sx={{ width: '100%', mt: 2 }}>
       <Stepper activeStep={stepLastCompleted} alternativeLabel>
@@ -36,7 +40,16 @@ export default function HorizontalLinearStepper() {
           const stepProps: { completed?: boolean } = {};
           const labelProps: {
             optional?: React.ReactNode;
+            error?: boolean;
           } = {};
+          if (isStepFailed(index)) {
+            labelProps.optional = (
+              <Typography variant="caption" color="error">
+                {stepError + '.'}
+              </Typography>
+            );
+             labelProps.error = true;
+          }
           // if (isStepOptional(index)) {
           //   labelProps.optional = (
           //     <Typography variant="caption">Optional</Typography>
