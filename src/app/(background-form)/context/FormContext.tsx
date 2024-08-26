@@ -1,34 +1,47 @@
 import { PropsWithChildren, useState, createContext, useContext } from "react";
 
 
+export type InfoData = {
+  catalogYear: string,
+  major: string,
+  gradDate: string,
+  planner: string,
+}
+
 export const FormContext = createContext({
-  catalogYear: '',
-  setCatalogYear: (year: string) => { },
-  major: '',
-  setMajor: (major: string) => { },
-  gradDate: '',
-  setGradDate: (date: string) => { },
-  planner: '',
-  setPlanner: (planner: string) => { },
+  infoData: {
+    catalogYear: '',
+    major: '',
+    gradDate: '',
+    planner: '',
+  },
+  setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => {},
+  stepLastCompleted: 0,
+  setStepLastCompleted: (step: number) => {}
 })
 
 
 export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [catalogYear, setCatalogYear] = useState('');
-  const [major, setMajor] = useState('');
-  const [gradDate, setGradDate] = useState('');
-  const [planner, setPlanner] = useState('');
+  const [infoData, setInfoData] = useState({
+    catalogYear: '',
+    major: '',
+    gradDate: '',
+    planner: ''
+  });
+  const [stepLastCompleted, setStepLastCompleted] = useState(0);
+
+
+  // const [catalogYear, setCatalogYear] = useState('');
+  // const [major, setMajor] = useState('');
+  // const [gradDate, setGradDate] = useState('');
+  // const [planner, setPlanner] = useState('');
 
   return (
     <FormContext.Provider value = {{
-      catalogYear,
-      setCatalogYear,
-      major,
-      setMajor,
-      gradDate,
-      setGradDate,
-      planner,
-      setPlanner,
+      infoData,
+      setInfoData,
+      stepLastCompleted,
+      setStepLastCompleted
     }}>
       {children}
     </FormContext.Provider>  

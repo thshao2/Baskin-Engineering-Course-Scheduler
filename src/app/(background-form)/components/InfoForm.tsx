@@ -7,6 +7,11 @@ import Button from '@mui/material/Button'
 
 import { useFormContext } from '../context/FormContext';
 
+import {InfoData} from '../context/FormContext';
+import { validateInfoForm } from '../formActions';
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
 
 const getGradOptions = () => {
   const date = new Date();
@@ -46,12 +51,24 @@ const getGradOptions = () => {
 }
 
 export default function InfoForm() {
+  const router = useRouter();
   const gradOptions = getGradOptions();
   const formContext = useFormContext();
+
+  const handleInfoForm = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const result = await validateInfoForm(formContext.infoData);
+    if (!result.success) {
+      return;
+    }
+    formContext.setStepLastCompleted(1);
+    router.push('/background-courses');
+  }
   
   return (
     <>
       <Box
+        component = "form"
         sx={{
           width: '70%',               // Box width set to 50% of the screen width
           mx: 'auto',                 // Horizontally centers the Box using margin auto
@@ -60,8 +77,10 @@ export default function InfoForm() {
           alignItems: 'center',       // Centers child components horizontally
           // justifyContent: 'center',   // Centers child components vertically
           // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
-          padding: 1,                 // Adds some padding for aesthetic spacing
+          padding: 1,
+          mt: 2,
         }}
+        onSubmit={handleInfoForm}
       >
         <Select
           auto="24"
@@ -75,8 +94,8 @@ export default function InfoForm() {
               { option: '2022-2023', value: '22' }
             ]
           }
-          state = {formContext.catalogYear}
-          mutator = {formContext.setCatalogYear}
+          state = {formContext.infoData.catalogYear}
+          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, catalogYear: value }))}
         />
         <Select
           auto="CS"
@@ -84,8 +103,8 @@ export default function InfoForm() {
           subtitle=''
           inputLabel="Major"
           options={[{ option: 'Computer Science (B.S.)', value: 'CS' }]}
-          state = {formContext.major}
-          mutator = {formContext.setMajor}        
+          state = {formContext.infoData.major}
+          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, major: value }))}
         />
         <Select
           auto=""
@@ -93,8 +112,8 @@ export default function InfoForm() {
           subtitle="Your planned last quarter here as an undergraduate at UCSC."
           inputLabel="Date"
           options={gradOptions}
-          state = {formContext.gradDate}
-          mutator = {formContext.setGradDate}
+          state = {formContext.infoData.gradDate}
+          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, gradDate: value }))}
         />
         <Select
           auto="1"
@@ -107,11 +126,11 @@ export default function InfoForm() {
               { option: 'Full Academic Planners', value: '2'}
             ]
           }
-          state = {formContext.planner}
-          mutator = {formContext.setPlanner}  
+          state = {formContext.infoData.planner}
+          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
         />
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <Button variant='contained' color = 'warning'>
+          <Button type= 'submit' variant='contained' color = 'warning'>
             Next
           </Button>
         </Box>

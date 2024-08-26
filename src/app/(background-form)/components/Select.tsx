@@ -25,15 +25,13 @@ interface BasicSelectProps {
   }
 
 const BasicSelect = React.memo(({auto, title, subtitle, inputLabel, options, state, mutator}: BasicSelectProps) => {
-  const [option, setOption] = React.useState(auto);
+  const [option, setOption] = React.useState(state ? state : auto);
 
   React.useEffect(() => {
     mutator(option);
-  }, [mutator, option])
+  }, [option])
 
   const handleChange = (event: SelectChangeEvent) => {
-    // console.log(event.target.value)
-    // mutator(event.target.value as string);
     setOption(event.target.value as string);
   };
 
@@ -55,6 +53,7 @@ const BasicSelect = React.memo(({auto, title, subtitle, inputLabel, options, sta
           value={option}
           label="option"
           onChange={handleChange}
+          name = "select"
         >
             {options.map((opt) => (
                 <MenuItem key = {opt.value} value = {opt.value}>{opt.option}</MenuItem>
