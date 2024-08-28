@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/joy/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import InfoForm from '../components/InfoForm';
+import InfoForm from '../components/forms/InfoForm';
 
 
 

@@ -8,6 +8,24 @@ export type InfoData = {
   planner: string,
 }
 
+export type UndergradData = {
+  math: string,
+  writing: string,
+  testout: string[],
+}
+
+export type UniversityReq = {
+  ahr: boolean,
+  entry: boolean,
+  coreCourse: string,
+}
+
+export type BackgroundCourseData = {
+  universityReq: UniversityReq,
+  generalEdCourses: string[],
+  majorCourses: string[],
+}
+
 export const FormContext = createContext({
   infoData: {
     catalogYear: '',
@@ -18,9 +36,22 @@ export const FormContext = createContext({
   setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => {},
   studentStatus: '',
   setStudentStatus: (student: string) => {},
-  // backgroundData: {
-
-  // }
+  undergradData: {
+    math: '',
+    writing: '',
+    testout: [] as string[],
+  },
+  setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => {},
+  backgroundCourseData: {
+    universityReq: {
+      ahr: false,
+      entry: false,
+      coreCourse: '',
+    },
+    generalEdCourses: [] as string[],
+    majorCourses: [] as string[],
+  },
+  setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => {},
   stepLastCompleted: 0,
   setStepLastCompleted: (step: number) => {},
   stepError: '',
@@ -39,10 +70,31 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   const [stepError, setStepError] = useState('');
   const [studentStatus, setStudentStatus] = useState('');
 
+  const [undergradData, setUndergradData] = useState<UndergradData>({
+    math: '',
+    writing: '',
+    testout: [],
+  })
+
+  const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({
+    universityReq: {
+      ahr: false,
+      entry: false,
+      coreCourse: '',
+    },
+    generalEdCourses: [],
+    majorCourses: [],
+  })
+
+
   return (
     <FormContext.Provider value = {{
       infoData,
       setInfoData,
+      undergradData,
+      setUndergradData,
+      backgroundCourseData,
+      setBackgroundCourseData,
       stepLastCompleted,
       setStepLastCompleted,
       stepError,

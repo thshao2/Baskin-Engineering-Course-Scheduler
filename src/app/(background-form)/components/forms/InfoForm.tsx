@@ -1,14 +1,14 @@
 'use client'
 
-import Select from './Select'
+import Select from '../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { useFormContext } from '../context/FormContext';
+import { useFormContext } from '../../context/FormContext';
 
-import {InfoData} from '../context/FormContext';
-import { validateInfoForm } from '../formActions';
+import {InfoData} from '../../context/FormContext';
+import { validateInfoForm } from '../../formActions';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -55,16 +55,20 @@ export default function InfoForm() {
   const gradOptions = getGradOptions();
   const formContext = useFormContext();
 
+  const [isPending, startTransition] = React.useTransition();
+
   const handleInfoForm = async (event: React.FormEvent) => {
     event.preventDefault();
-    const result = await validateInfoForm(formContext.infoData);
-    if (!result.success) {
-      console.log(result.errors ? result.errors[0] : 'nothing');
-      formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
-      return;
-    }
-    formContext.setStepError('');
-    formContext.setStepLastCompleted(1);
+    startTransition(async () => {
+      const result = await validateInfoForm(formContext.infoData);
+      if (!result.success) {
+        // console.log(result.errors ? result.errors[0] : 'nothing');
+        formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
+        return;
+      }
+      formContext.setStepError('');
+      formContext.setStepLastCompleted(1);
+    })
     router.push('/background-courses');
   }
   
@@ -133,7 +137,7 @@ export default function InfoForm() {
           mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
         />
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <Button type= 'submit' variant='contained' color = 'warning'>
+          <Button type= 'submit' disabled = {isPending} variant='contained' color = 'warning'>
             Next
           </Button>
         </Box>

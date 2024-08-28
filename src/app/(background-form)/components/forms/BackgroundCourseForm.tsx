@@ -1,15 +1,17 @@
 'use client'
 
-import Select from './Select'
+import Select from '../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { useFormContext } from '../context/FormContext';
+import { useFormContext } from '../../context/FormContext';
 
-import { InfoData } from '../context/FormContext';
+import { InfoData } from '../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+
+import CourseHistoryForm from './CourseHistoryForm';
 
 
 
@@ -55,11 +57,16 @@ export default function BackGroundCoursesForm() {
             state={formContext.studentStatus}
             mutator={formContext.setStudentStatus}
           />
-          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-            <Button variant='contained' color='warning'>
-              Next
-            </Button>
-          </Box>
+          {formContext.studentStatus &&
+            <>
+              <CourseHistoryForm/>
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                <Button variant='contained' color='warning'>
+                  Next
+                </Button>
+              </Box>
+            </>
+          }
         </Box>
       </>
     );
