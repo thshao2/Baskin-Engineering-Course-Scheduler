@@ -9,10 +9,10 @@ import { useFormContext } from '../../context/FormContext';
 
 import { InfoData } from '../../context/FormContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 import CourseHistoryForm from './CourseHistoryForm';
-
 
 
 export default function BackGroundCoursesForm() {
@@ -26,6 +26,11 @@ export default function BackGroundCoursesForm() {
       formContext.setStepLastCompleted(1);
     }
   }, [formContext.stepLastCompleted, router]);
+
+  const handleBack = () => {
+    // formContext.setStepLastCompleted(0);
+    router.replace('/info');
+  }
 
   if (formContext.stepLastCompleted === 1) {
     return (
@@ -57,22 +62,31 @@ export default function BackGroundCoursesForm() {
             state={formContext.studentStatus}
             mutator={formContext.setStudentStatus}
           />
-          {formContext.studentStatus &&
+          {formContext.studentStatus ? (
             <>
-              <CourseHistoryForm/>
-              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+              <CourseHistoryForm />
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                <Button variant="contained" color='primary' onClick={handleBack}>
+                  Back
+                </Button>
                 <Button variant='contained' color='warning'>
                   Next
                 </Button>
               </Box>
             </>
-          }
+          ) : (
+            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
+              {/* <Link href='/info'> */}
+              <Button variant="contained" color='primary' onClick={handleBack}>
+                Back
+              </Button>
+              {/* </Link> */}
+            </Box>
+          )}
         </Box>
       </>
     );
   } else {
     return null;
   }
-
-  
 }

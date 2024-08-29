@@ -1,5 +1,7 @@
 'use client'
 
+import * as React from 'react';
+
 import Select from '../inputs/Select'
 import Box from '@mui/material/Box';
 
@@ -9,7 +11,6 @@ import { useFormContext } from '../../context/FormContext';
 
 import {InfoData} from '../../context/FormContext';
 import { validateInfoForm } from '../../formActions';
-import React from 'react';
 import { useRouter } from 'next/navigation';
 
 
@@ -56,6 +57,10 @@ export default function InfoForm() {
   const formContext = useFormContext();
 
   const [isPending, startTransition] = React.useTransition();
+
+  React.useEffect(() => {
+    formContext.setStepLastCompleted(0);
+  }, [])
 
   const handleInfoForm = async (event: React.FormEvent) => {
     event.preventDefault();
