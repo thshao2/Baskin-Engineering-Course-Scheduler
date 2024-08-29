@@ -4,15 +4,18 @@ import Select from "../inputs/Select";
 
 
 export default function WritingPlacement() {
-  const { undergradData, setUndergradData } = useFormContext();
+  const { studentStatus, undergradData, setUndergradData } = useFormContext();
 
   return (
     <Select
       auto=""
       title="Writing Placement"
       subtitle=
-      {`Select the writing course you will first be taking here at UCSC. To find out what your writing placement is, learn more about
-        Directed-Self Placement or whether you have already satisfied the Entry-Level Writing Requirement.`}
+      {studentStatus === 'U' ? `Select the writing course you will first be taking here at UCSC. To find out what your writing placement is, learn more about
+        Directed-Self Placement or whether you have already satisfied the Entry-Level Writing Requirement.` : 
+        `If you have already completed the Writing General Education Requirement or have transfer credit for it, 
+        select the 'Composition' checkbox in the "General Education Courses" section to indicate that you have already completed this requirement. 
+        Otherwise, select the next writing course you will be taking here at UCSC.`}
       inputLabel="Course"
       options={
         [

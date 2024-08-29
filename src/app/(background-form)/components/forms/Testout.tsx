@@ -14,23 +14,23 @@ import Box from "@mui/material/Box";
 export default function Testout() {
   const { infoData, undergradData, setUndergradData } = useFormContext();
 
-  const [value, setValue] = useState(undergradData.testout.length == 1 ? undergradData.testout[0] : '');
+  const [value, setValue] = useState(undergradData.testout['CSE20'] == undefined ? '' : undergradData.testout['CSE20'].toString());
 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = (event.target as HTMLInputElement).value.toString();
     setValue(input);
-    if (input.charAt(0) === '-') {
+    if (input === 'false') {
       setUndergradData((prev) => ({
         ...prev,
-        testout: prev.testout.filter(course => course !== input.slice(1))
+        testout: {...prev.testout, CSE20: false}
       }));
-      return;
+    } else {
+      setUndergradData((prev) => ({
+        ...prev,
+        testout: {...prev.testout, CSE20: true}
+      }));
     }
-    setUndergradData((prev: UndergradData) => ({
-      ...prev,
-      testout: [...prev.testout, input],
-    }));
   };
 
   console.log(undergradData.testout)
@@ -51,8 +51,8 @@ export default function Testout() {
                   mt: 1,
                 }}
               >
-                <FormControlLabel value="-CSE 20" control={<Radio />} label="No, I will enroll in CSE 20 in my first quarter." />
-                <FormControlLabel value="CSE 20" control={<Radio />} label="Yes, doing so will allow me to enroll in CSE 30." />
+                <FormControlLabel value="false" control={<Radio />} label="No, I will enroll in CSE 20 in my first quarter." />
+                <FormControlLabel value="true" control={<Radio />} label="Yes, doing so will allow me to enroll in CSE 30." />
               </RadioGroup>
             </FormControl>
           </Box>

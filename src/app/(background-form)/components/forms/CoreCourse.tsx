@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { BackgroundCourseData, useFormContext } from "../../context/FormContext";
 import MultipleSelect from "../inputs/MultipleSelect";
-
+import TwoSelect from "../inputs/TwoSelect";
 
 export default function CoreCourse() {
 
@@ -34,6 +34,26 @@ export default function CoreCourse() {
     </>
   );
 
+}
+
+export function ContinuingCoreCourse() {
+  const {backgroundCourseData, setBackgroundCourseData} = useFormContext();
+
+  return (
+    <TwoSelect
+        title = "Have you completed your College Core Course?"
+        subtitle = {`For most continuing students, you have already completed your core course. 
+          This option is for undergraduates affiliated with Stevenson (with a two-quarter core course) who are planning for their second quarter at UCSC.`}
+        options = {
+          [
+            { option: "No. I am taking a two-quarter core course and will be taking the second part next quarter.", value: '2'},
+            { option: "Yes, I have completed my college core course.", value: ''},
+          ]
+        }
+        state = {backgroundCourseData.universityReq.coreCourse}
+        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: {...prev.universityReq, coreCourse: value}}))}
+      />
+  )
 }
 
 interface CoreCourseLabelProps {

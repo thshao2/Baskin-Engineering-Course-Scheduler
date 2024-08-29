@@ -3,6 +3,11 @@ import { BackgroundCourseData, useFormContext } from "../../context/FormContext"
 import TwoSelect from "../inputs/TwoSelect";
 import CheckboxGroup from "../inputs/Checkbox";
 
+import Select from "../inputs/Select";
+
+import { UndergradData } from "../../context/FormContext";
+import WritingPlacement from "./WritingPlacement";
+
 const codes = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
 type AutoObject = {
   [code in typeof codes[number]]: boolean;
@@ -10,7 +15,7 @@ type AutoObject = {
 
 export default function GeneralEd() {
 
-  const { backgroundCourseData, setBackgroundCourseData } = useFormContext();
+  const { studentStatus, undergradData, setUndergradData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
   
   
   const auto: AutoObject = codes.reduce((acc, key) => {
@@ -23,7 +28,10 @@ export default function GeneralEd() {
       <CheckboxGroup
         auto= {auto}
         title="General Education Courses"
-        subtitle={`Select General Education Requirements that you have already satisfied through transfer credit.`}
+        subtitle={studentStatus !== 'C' ? 
+          `Select General Education Requirements that you have already satisfied through transfer credit.` :
+          `Select GE Courses that you have already taken, or have already received credit for.`
+        }
         options={
           [
             { option: "CC (Cross-Cultural Anaylsis)", value: 'CC' },
@@ -41,6 +49,9 @@ export default function GeneralEd() {
         state={backgroundCourseData.completedGeneralEdCourses}
         mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedGeneralEdCourses: arr }))}
       />
+      {!backgroundCourseData.completedGeneralEdCourses.includes('C') && 
+        <WritingPlacement/>
+      }
       <TwoSelect
         title = "Have you satisfied the AHR (American History and Institutions) University Requirement?"
         subtitle = "Details for whether you have satisfied the AHR Requirement can be found here."

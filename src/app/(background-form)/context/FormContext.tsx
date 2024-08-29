@@ -11,7 +11,7 @@ export type InfoData = {
 export type UndergradData = {
   math: string,
   writing: string,
-  testout: string[],
+  testout: { [key: string]: boolean },
 }
 
 export type UniversityReq = {
@@ -39,7 +39,7 @@ export const FormContext = createContext({
   undergradData: {
     math: '',
     writing: '',
-    testout: [] as string[],
+    testout: {} as Record<string, boolean>,
   },
   setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => {},
   backgroundCourseData: {
@@ -73,7 +73,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   const [undergradData, setUndergradData] = useState<UndergradData>({
     math: '',
     writing: '',
-    testout: [],
+    testout: {},
   })
 
   const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({
