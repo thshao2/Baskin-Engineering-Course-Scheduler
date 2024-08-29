@@ -7,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
+import { Grid } from '@mui/material';
 
 interface Option {
   option: string;
@@ -40,11 +41,11 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
       ...values,
-      [event.target.name]: event.target.checked,
+      [event.target.value]: event.target.checked,
     });
   };
 
-  console.log(values)
+  console.log(state)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
@@ -52,16 +53,28 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
         <FormLabel component="legend">{title}</FormLabel>
         <Typography sx={{ mt: 0.5 }} variant='subtitle2'>{subtitle}</Typography>
         <FormGroup>
-          {options.map((opt: Option) => (
-            <FormControlLabel
-              control={
-                <Checkbox key = {opt.value} value = {opt.value} checked={values[opt.value]} onChange={handleChange} />
-              }
-              label={opt.option}
-            />
-          ))}
+          <Grid
+            container
+            spacing={2}
+          >
+            {options.map((opt: Option) => (
+              <Grid
+                item
+                xs={12} // Full width on smaller screens
+                lg={6}  // Half width on large screens
+                key={opt.value}
+                sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox key={opt.value} value={opt.value} checked={values[opt.value]} onChange={handleChange} />
+                  }
+                  label={opt.option}
+                />
+              </Grid>
+            ))}
+          </Grid>
         </FormGroup>
-        {/* <FormHelperText>Be careful</FormHelperText> */}
       </FormControl>
     </Box>
   );

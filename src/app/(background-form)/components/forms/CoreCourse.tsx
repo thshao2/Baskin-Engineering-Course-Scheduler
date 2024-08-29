@@ -21,7 +21,7 @@ export default function CoreCourse() {
             { option: <CoreCourseLabel name = 'Crown College:' title ="Ethical Issues in Emerging Technologies"/>, value: 'T' },
             { option: <CoreCourseLabel name = 'Merrill College:' title ="Cultural Identities and Global Consciousness"/>, value: 'M' },
             { option: <CoreCourseLabel name = 'Porter College:' title ="Writing Across the Arts"/>, value: 'P' },
-            { option: <CoreCourseLabel name = 'Kresge College:' title ="Power and Representation,"/>, value: 'K' },
+            { option: <CoreCourseLabel name = 'Kresge College:' title ="Power and Representation"/>, value: 'K' },
             { option: <CoreCourseLabel name = 'Oakes College:' title ="Communicating Diversity for a Just Society"/>, value: 'O' },
             { option: <CoreCourseLabel name = 'Rachel Carson College:' title ="Environment and Society"/>, value: 'R' },
             { option: <CoreCourseLabel name = 'College Nine:' title ="International and Global Issues"/>, value: 'N' },

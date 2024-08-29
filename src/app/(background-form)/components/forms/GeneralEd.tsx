@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { BackgroundCourseData, useFormContext } from "../../context/FormContext";
-import MultipleSelect from "../inputs/MultipleSelect";
+import TwoSelect from "../inputs/TwoSelect";
 import CheckboxGroup from "../inputs/Checkbox";
 
 const codes = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
@@ -38,8 +38,20 @@ export default function GeneralEd() {
             { option: "C (Composition)", value: 'C' },
           ]
         }
-        state={backgroundCourseData.generalEdCourses}
-        mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, generalEdCourses: arr }))}
+        state={backgroundCourseData.completedGeneralEdCourses}
+        mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedGeneralEdCourses: arr }))}
+      />
+      <TwoSelect
+        title = "Have you satisfied the AHR (American History and Institutions) University Requirement?"
+        subtitle = "Details for whether you have satisfied the AHR Requirement can be found here."
+        options = {
+          [
+            { option: "Yes, I have satisfied the AHR University Requirement.", value: 'T'},
+            { option: "No, I have not satisfied the AHR University Requirement.", value: 'F'},
+          ]
+        }
+        state = {backgroundCourseData.universityReq.ahr}
+        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: {...prev.universityReq, ahr: value}}))}
       />
     </>
   );
