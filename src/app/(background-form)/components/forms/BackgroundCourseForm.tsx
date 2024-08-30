@@ -10,14 +10,17 @@ import { useFormContext } from '../../context/FormContext';
 import { InfoData } from '../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import CourseHistoryForm from './CourseHistoryForm';
+import { validateBackgroundCourseForm } from '../../formActions';
 
 
 export default function BackGroundCoursesForm() {
   const router = useRouter();
   const formContext = useFormContext();
+
+  const [isPending, startTransition] = React.useTransition();
 
   useEffect(() => {
     if (formContext.stepLastCompleted < 1) {
@@ -25,17 +28,42 @@ export default function BackGroundCoursesForm() {
     } else {
       formContext.setStepLastCompleted(1);
     }
-  }, [formContext.stepLastCompleted, router]);
+  }, [router]);
 
   const handleBack = () => {
     // formContext.setStepLastCompleted(0);
     router.replace('/info');
   }
 
+  const handleBackgroundForm = async (event: React.FormEvent) => {
+    event.preventDefault();
+    startTransition(async () => {
+      if (formContext.studentStatus === 'T') {
+        formContext.setBackgroundCourseData({ ...formContext.backgroundCourseData, universityReq: { ...formContext.backgroundCourseData.universityReq, coreCourse: '1' } })
+      }
+      const result = await validateBackgroundCourseForm(formContext.studentStatus, formContext.undergradData, formContext.backgroundCourseData);
+      console.log(result);
+      if (!result.success) {
+        formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
+        return;
+      }
+      formContext.setStepError('');
+      
+      if (formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') ||
+        formContext.undergradData.writing === '2') {
+          formContext.setBackgroundCourseData({ ...formContext.backgroundCourseData, universityReq: { ...formContext.backgroundCourseData.universityReq, entry: true }})
+        }
+      formContext.setStepLastCompleted(2);
+      router.push('/student-preferences');
+    })
+  }
+
   if (formContext.stepLastCompleted === 1) {
     return (
       <>
         <Box
+          component="form"
           sx={{
             width: '70%',               // Box width set to 50% of the screen width
             mx: 'auto',                 // Horizontally centers the Box using margin auto
@@ -46,6 +74,7 @@ export default function BackGroundCoursesForm() {
             // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
             padding: 1,                 // Adds some padding for aesthetic spacing
           }}
+          onSubmit={handleBackgroundForm}
         >
           <Select
             auto=""
@@ -69,7 +98,7 @@ export default function BackGroundCoursesForm() {
                 <Button variant="contained" color='primary' onClick={handleBack}>
                   Back
                 </Button>
-                <Button variant='contained' color='warning'>
+                <Button variant='contained' color='warning' type="submit" disabled={isPending}>
                   Next
                 </Button>
               </Box>

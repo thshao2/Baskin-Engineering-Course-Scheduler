@@ -8,6 +8,8 @@ import CoreCourse from "./CoreCourse";
 import GeneralEd from "./GeneralEd";
 import MajorCourses from "./MajorCourses";
 import { ContinuingCoreCourse } from "./CoreCourse";
+import { UndergradMathTransfer } from "./MajorCourses"
+
 
 export default function CourseHistoryForm() {
   const { studentStatus } = useFormContext();
@@ -18,7 +20,7 @@ export default function CourseHistoryForm() {
       {studentStatus === 'U' ? (
         <>
           <MathPlacement />
-          <WritingPlacement />
+          <UndergradMathTransfer />
           <Testout />
           <CoreCourse />
           <GeneralEd />

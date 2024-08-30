@@ -73,8 +73,8 @@ export default function InfoForm() {
       }
       formContext.setStepError('');
       formContext.setStepLastCompleted(1);
+      router.push('/background-courses');
     })
-    router.push('/background-courses');
   }
   
   return (

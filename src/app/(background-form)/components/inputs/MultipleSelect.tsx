@@ -56,7 +56,7 @@ const MultipleSelect = React.memo(({auto, title, subtitle, options, state, mutat
         >
           <Grid
             container
-            spacing={2} // Adds spacing between grid items
+            spacing={0.5} // Adds spacing between grid items
           >
             {options.map((opt: Option) => (
               <Grid

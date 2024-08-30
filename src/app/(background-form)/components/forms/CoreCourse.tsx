@@ -47,7 +47,7 @@ export function ContinuingCoreCourse() {
         options = {
           [
             { option: "No. I am taking a two-quarter core course and will be taking the second part next quarter.", value: '2'},
-            { option: "Yes, I have completed my college core course.", value: ''},
+            { option: "Yes, I have completed my college core course.", value: '1'},
           ]
         }
         state = {backgroundCourseData.universityReq.coreCourse}

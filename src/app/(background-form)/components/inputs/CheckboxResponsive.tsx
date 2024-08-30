@@ -67,7 +67,7 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
         <FormGroup>
           <Grid
             container
-            spacing={2}
+            spacing={0.5}
           >
             {options.map((opt: Option) => (
               <Grid
