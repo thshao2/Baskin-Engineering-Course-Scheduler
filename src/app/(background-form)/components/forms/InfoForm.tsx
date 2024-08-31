@@ -79,7 +79,6 @@ export default function InfoForm() {
     })
   }
 
-  console.log(formContext.stepLastCompleted);
   
   return (
     <>

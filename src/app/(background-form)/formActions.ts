@@ -71,13 +71,17 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
 
   let coreCourseSchema = z.string();
 
-  // Fix Regex for coreCourse
-
-  if (studentStatus !== 'T') {
+  if (studentStatus === 'U') {
       coreCourseSchema = z.string()
-        .min(1, {message: studentStatus === 'U' ? 'College Core Course is Required' : 'Please indicate whether you have completed your College Core Course'})
-        .regex(/^[A-Z12]$/, {
-        message: "Invalid Input. Error: College Core Course",
+        .min(1, {message: 'College Core Course is Required'})
+        .regex(/^[CSTMPKORNJ]$/, {
+        message: "Invalid Input. Error: College Core Course is Required",
+      })
+  } else if (studentStatus === 'C') {
+    coreCourseSchema = z.string()
+        .min(1, {message: 'Please indicate whether you have completed your College Core Course'})
+        .regex(/^[12]$/, {
+        message: "Invalid Input. Error: Please indicate whether you have completed your College Core Course",
       })
   }
 

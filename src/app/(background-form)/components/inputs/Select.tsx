@@ -39,7 +39,7 @@ const BasicSelect: React.FC<BasicSelectProps> = ({auto, title, subtitle, inputLa
     mutator(event.target.value as string);
   };
 
-  // console.log(state);
+  console.log(`${title}: ${state}`)
 
   return (
     <Box sx={{ width: '100%' }}>

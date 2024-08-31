@@ -39,7 +39,8 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, op
     mutator(Object.keys(newValue).filter(key => newValue[key]));
   };
 
-  // console.log(state)
+  console.log(`${title}: ${state}`)
+  // console.log(`${title}: ${JSON.stringify(values)}`)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>

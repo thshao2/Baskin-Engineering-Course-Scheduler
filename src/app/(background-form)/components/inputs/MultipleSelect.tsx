@@ -42,7 +42,7 @@ const MultipleSelect: React.FC<MultipleSelectProps> = ({auto, title, subtitle, o
     mutator(value);
   };
 
-  // console.log(state)
+  console.log(`${title}: ${state}`)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>

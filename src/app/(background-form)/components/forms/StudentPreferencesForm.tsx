@@ -37,8 +37,6 @@ export default function StduentPreferencesForm() {
     formContext.setStepLastCompleted(1);
   }
 
-  console.log(stepLastCompleted)
-
 
   if (formContext.stepLastCompleted === 2) {
     return (

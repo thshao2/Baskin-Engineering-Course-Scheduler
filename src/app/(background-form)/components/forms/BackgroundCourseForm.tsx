@@ -73,8 +73,6 @@ export default function BackGroundCoursesForm() {
     })
   }
 
-  console.log(formContext.stepLastCompleted)
-
   if (formContext.stepLastCompleted === 1) {
     return (
       <>

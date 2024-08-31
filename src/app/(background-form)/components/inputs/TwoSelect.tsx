@@ -38,7 +38,7 @@ const TwoSelect: React.FC<TwoSelectProps> = ({ title, subtitle, options, state, 
     mutator(input);
   };
 
-  // console.log(state)
+  console.log(`${title}: ${state}`)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
