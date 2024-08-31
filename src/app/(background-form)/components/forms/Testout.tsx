@@ -33,7 +33,7 @@ export default function Testout() {
     }
   };
 
-  console.log(undergradData.testout)
+  // console.log(undergradData.testout)
 
   const renderTestout = () => {
     switch (infoData.major) {

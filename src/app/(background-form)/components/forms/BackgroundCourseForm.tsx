@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { useFormContext } from '../../context/FormContext';
+import { BackgroundCourseData, useFormContext } from '../../context/FormContext';
 
 import { InfoData } from '../../context/FormContext';
 import { useRouter } from 'next/navigation';
@@ -20,19 +20,33 @@ export default function BackGroundCoursesForm() {
   const router = useRouter();
   const formContext = useFormContext();
 
+  const {
+    studentStatus,
+    setBackgroundCourseData,
+    stepLastCompleted,
+    setStepLastCompleted } = useFormContext();
+
   const [isPending, startTransition] = React.useTransition();
 
   useEffect(() => {
-    if (formContext.stepLastCompleted < 1) {
+    if (stepLastCompleted < 1) {
       router.replace('/info');
-    } else {
-      formContext.setStepLastCompleted(1);
     }
-  }, [router]);
+  }, [stepLastCompleted, router]);
+
+  useEffect(() => {
+    setStepLastCompleted(1);
+  }, [setStepLastCompleted])
+
+  useEffect(() => {
+    if (studentStatus === 'T') {
+      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) => ({ ...backgroundCourseData, completedMajorCourses: [] }));
+    }
+  }, [studentStatus, setBackgroundCourseData])
+
 
   const handleBack = () => {
-    // formContext.setStepLastCompleted(0);
-    router.replace('/info');
+    setStepLastCompleted(0);
   }
 
   const handleBackgroundForm = async (event: React.FormEvent) => {
@@ -49,15 +63,17 @@ export default function BackGroundCoursesForm() {
         return;
       }
       formContext.setStepError('');
-      
+
       if (formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') ||
         formContext.undergradData.writing === '2') {
-          formContext.setBackgroundCourseData({ ...formContext.backgroundCourseData, universityReq: { ...formContext.backgroundCourseData.universityReq, entry: true }})
-        }
+        formContext.setBackgroundCourseData({ ...formContext.backgroundCourseData, universityReq: { ...formContext.backgroundCourseData.universityReq, entry: true } })
+      }
       formContext.setStepLastCompleted(2);
       router.push('/student-preferences');
     })
   }
+
+  console.log(formContext.stepLastCompleted)
 
   if (formContext.stepLastCompleted === 1) {
     return (

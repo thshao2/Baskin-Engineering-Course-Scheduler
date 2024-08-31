@@ -23,8 +23,7 @@ interface CheckboxGroupProps {
   mutator: (state: string[]) => void;
 }
 
-
-const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutator }: CheckboxGroupProps) => {
+const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, options, state, mutator }: CheckboxGroupProps) => {
   const [values, setValues] = React.useState(() => {
     return state.reduce((acc, key) => {
       if (key in acc) {
@@ -34,18 +33,13 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
     }, { ...auto });
   });
 
-  React.useEffect(() => {
-    mutator(Object.keys(values).filter(key => values[key]))
-  }, [values])
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({
-      ...values,
-      [event.target.value]: event.target.checked,
-    });
+    const newValue = {...values, [event.target.value]: event.target.checked};
+    setValues(newValue);
+    mutator(Object.keys(newValue).filter(key => newValue[key]));
   };
 
-  console.log(state)
+  // console.log(state)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
@@ -78,6 +72,9 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
       </FormControl>
     </Box>
   );
-});
+};
 
-export default CheckboxGroup;
+// Wrap with React.memo
+const MemoizedCheckboxGroup = React.memo(CheckboxGroup);
+
+export default MemoizedCheckboxGroup;

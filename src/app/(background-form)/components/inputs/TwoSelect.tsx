@@ -21,20 +21,24 @@ interface TwoSelectProps {
   mutator: (state: string) => void;
 }
 
-const TwoSelect = React.memo(({ title, subtitle, options, state, mutator }: TwoSelectProps) => {
+const TwoSelect: React.FC<TwoSelectProps> = ({ title, subtitle, options, state, mutator }: TwoSelectProps) => {
   const [value, setValue] = React.useState<string>(state);
 
+  
+  // Sync initial state on first render
   React.useEffect(() => {
-    mutator(value);
-  }, [value])
+    if (state !== value) {
+      mutator(value);
+    }
+  }, [state, value, mutator]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = (event.target as HTMLInputElement).value;
-    // const booleanValue = input === 'true'; // Convert to boolean
     setValue(input);
+    mutator(input);
   };
 
-  console.log(state)
+  // console.log(state)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
@@ -65,6 +69,9 @@ const TwoSelect = React.memo(({ title, subtitle, options, state, mutator }: TwoS
     </Box>
   );
 
-});
+};
 
-export default TwoSelect;
+const MemoizedTwoSelect = React.memo(TwoSelect);
+
+
+export default MemoizedTwoSelect;

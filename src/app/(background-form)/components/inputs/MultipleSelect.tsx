@@ -25,20 +25,24 @@ interface MultipleSelectProps {
 }
 
 
-const MultipleSelect = React.memo(({auto, title, subtitle, options, state, mutator} : MultipleSelectProps) => {
+const MultipleSelect: React.FC<MultipleSelectProps> = ({auto, title, subtitle, options, state, mutator} : MultipleSelectProps) => {
 
   const [value, setValue] = React.useState(state ? state : auto);
 
+  // Sync initial state on first render
   React.useEffect(() => {
-    mutator(value);
-  }, [value])
+    if (state !== value) {
+      mutator(value);
+    }
+  }, [state, value, mutator]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = (event.target as HTMLInputElement).value.toString();
     setValue(input);
+    mutator(value);
   };
 
-  console.log(state)
+  // console.log(state)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
@@ -79,6 +83,9 @@ const MultipleSelect = React.memo(({auto, title, subtitle, options, state, mutat
       </FormControl>
     </Box>
   );
-});
+};
 
-export default MultipleSelect;
+// Wrap with React.memo
+const MemoizedMultipleSelect = React.memo(MultipleSelect);
+
+export default MemoizedMultipleSelect;

@@ -56,11 +56,13 @@ export default function InfoForm() {
   const gradOptions = getGradOptions();
   const formContext = useFormContext();
 
-  const [isPending, startTransition] = React.useTransition();
+  const {setStepLastCompleted} = useFormContext();
 
   React.useEffect(() => {
-    formContext.setStepLastCompleted(0);
-  }, [])
+    setStepLastCompleted(0);
+  }, [setStepLastCompleted]);
+
+  const [isPending, startTransition] = React.useTransition();
 
   const handleInfoForm = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -76,6 +78,8 @@ export default function InfoForm() {
       router.push('/background-courses');
     })
   }
+
+  console.log(formContext.stepLastCompleted);
   
   return (
     <>

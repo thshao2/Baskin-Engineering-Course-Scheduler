@@ -15,7 +15,7 @@ interface Option {
   value: string;
 }
 
-interface CheckboxGroupProps {
+interface CheckboxResponsiveProps {
   auto: { [key: string]: boolean }; // Object with string keys and boolean values
   title: string;
   subtitle: string;
@@ -25,9 +25,7 @@ interface CheckboxGroupProps {
 }
 
 
-const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutator }: CheckboxGroupProps) => {
-
-  const { studentStatus } = useFormContext();
+const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitle, options, state, mutator }: CheckboxResponsiveProps) => {
 
   const [values, setValues] = React.useState(() => {
     return state.reduce((acc, key) => {
@@ -38,22 +36,10 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
     }, { ...auto });
   });
 
-
-  React.useEffect(() => {
-    if (studentStatus === 'T') {
-      setValues(auto);
-    }
-  }, [studentStatus])
-
-  React.useEffect(() => {
-    mutator(Object.keys(values).filter(key => values[key]))
-  }, [values])
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({
-      ...values,
-      [event.target.value]: event.target.checked,
-    });
+    const newValue = {...values, [event.target.value]: event.target.checked};
+    setValues(newValue);
+    mutator(Object.keys(values).filter(key => newValue[key]))
   };
 
   console.log(state)
@@ -92,6 +78,9 @@ const CheckboxGroup = React.memo(({ auto, title, subtitle, options, state, mutat
       </FormControl>
     </Box>
   );
-});
+};
 
-export default CheckboxGroup;
+// Wrap with React.memo
+const CheckboxResponsive = React.memo(CheckboxGroup);
+
+export default CheckboxResponsive;

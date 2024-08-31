@@ -71,6 +71,8 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
 
   let coreCourseSchema = z.string();
 
+  // Fix Regex for coreCourse
+
   if (studentStatus !== 'T') {
       coreCourseSchema = z.string()
         .min(1, {message: studentStatus === 'U' ? 'College Core Course is Required' : 'Please indicate whether you have completed your College Core Course'})

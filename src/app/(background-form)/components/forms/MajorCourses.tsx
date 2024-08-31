@@ -5,7 +5,7 @@ import CheckboxResponsive from "../inputs/CheckboxResponsive";
 import CheckboxGroup from "../inputs/Checkbox";
 
 import { BackgroundCourseData } from "../../context/FormContext";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const codes = [
   'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
@@ -42,40 +42,45 @@ type AutoObject = {
   [code in typeof codes[number]]: boolean;
 };
 
-const renderMajorCourses = () => {
-  const { studentStatus, infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
+const auto: AutoObject = codes.reduce((acc, key) => {
+  acc[key] = false;
+  return acc;
+}, {} as AutoObject)
 
-  React.useEffect(() => {
-    if (studentStatus === 'T') {
-      setBackgroundCourseData({ ...backgroundCourseData, completedMajorCourses: [] })
-    }
-  }, [])
+const auto2: AutoObject = tcodes.reduce((acc, key) => {
+  acc[key] = false;
+  return acc;
+}, {} as AutoObject);
 
-  const auto: AutoObject = codes.reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {} as AutoObject);
+const RenderMajorCourses: React.FC = () => {
+  const { studentStatus, infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();  
 
-  let options;
+  let options = majorLabels.map((label, index) => ({
+    option: label,
+    value: codes[index]
+  }));
+
 
   if (studentStatus === 'T') {
     options = tmajorLabels.map((label, index) => ({
       option: label,
       value: tcodes[index]
     }));
-  } else {
-    options = majorLabels.map((label, index) => ({
-      option: label,
-      value: codes[index]
-    }));
   }
 
+  const [autoProps, setAutoProps] = useState(studentStatus === 'C' ? auto : auto2); 
+
+  useEffect(() => {
+    const newAutoProps = studentStatus === 'C' ? auto : auto2;
+    setAutoProps({...newAutoProps})
+  }, [studentStatus])
 
   switch (infoData.major) {
     case 'CS':
       return (
         <CheckboxResponsive
-          auto={auto}
+          key = {JSON.stringify(autoProps)}
+          auto={autoProps}
           title="Major Courses"
           subtitle={studentStatus !== 'C' ?
             `Select Required Major Courses that you have already satisfied through transfer credit.` :
@@ -97,7 +102,7 @@ const renderMajorCourses = () => {
 export default function MajorCourses() {
   return (
     <>
-      {renderMajorCourses()}
+      <RenderMajorCourses/>
     </>
   )
 }

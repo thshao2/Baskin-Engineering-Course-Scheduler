@@ -17,21 +17,27 @@ export default function StduentPreferencesForm() {
   const router = useRouter();
   const formContext = useFormContext();
 
+  const {stepLastCompleted, setStepLastCompleted} = useFormContext();
+
   const [isPending, startTransition] = React.useTransition();
 
   useEffect(() => {
-    if (formContext.stepLastCompleted === 1) {
+    if (stepLastCompleted === 1) {
       router.replace('/background-courses');
-    } else if (formContext.stepLastCompleted === 0) {
+    } else if (stepLastCompleted === 0) {
       router.replace('/info');
-    } else {
-      formContext.setStepLastCompleted(2);
     }
-  }, []);
+  }, [stepLastCompleted, router]);
+
+  useEffect(() => {
+    setStepLastCompleted(2);
+  }, [setStepLastCompleted])
 
   const handleBack = () => {
-    router.replace('/background-courses');
+    formContext.setStepLastCompleted(1);
   }
+
+  console.log(stepLastCompleted)
 
 
   if (formContext.stepLastCompleted === 2) {

@@ -24,18 +24,22 @@ interface BasicSelectProps {
     mutator: (state: string) => void;
   }
 
-const BasicSelect = React.memo(({auto, title, subtitle, inputLabel, options, state, mutator}: BasicSelectProps) => {
+const BasicSelect: React.FC<BasicSelectProps> = ({auto, title, subtitle, inputLabel, options, state, mutator}: BasicSelectProps) => {
   const [option, setOption] = React.useState(state ? state : auto);
 
+  // Sync initial state on first render
   React.useEffect(() => {
-    mutator(option);
-  }, [option])
+    if (state !== option) {
+      mutator(option);
+    }
+  }, [state, option, mutator]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setOption(event.target.value as string);
+    mutator(event.target.value as string);
   };
 
-  console.log(state);
+  // console.log(state);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -62,6 +66,9 @@ const BasicSelect = React.memo(({auto, title, subtitle, inputLabel, options, sta
       </FormControl>
     </Box>
   );
-});
+};
 
-export default BasicSelect;
+const MemoizedBasicSelect = React.memo(BasicSelect);
+
+
+export default MemoizedBasicSelect;
