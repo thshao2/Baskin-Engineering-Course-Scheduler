@@ -6,6 +6,7 @@ export type InfoData = {
   major: string,
   gradDate: string,
   planner: string,
+  startPlanner: string,
 }
 
 export type UndergradData = {
@@ -32,6 +33,7 @@ export const FormContext = createContext({
     major: '',
     gradDate: '',
     planner: '',
+    startPlanner: '',
   },
   setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => {},
   studentStatus: '',
@@ -64,7 +66,8 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     catalogYear: '',
     major: '',
     gradDate: '',
-    planner: ''
+    planner: '',
+    startPlanner: '',
   });
   const [stepLastCompleted, setStepLastCompleted] = useState(0);
   const [stepError, setStepError] = useState('');

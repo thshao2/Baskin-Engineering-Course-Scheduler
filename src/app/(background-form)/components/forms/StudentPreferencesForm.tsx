@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 import { validateBackgroundCourseForm } from '../../formActions';
+import NumCoursesPreference from './NumCoursesPreference';
 
 
 export default function StduentPreferencesForm() {
@@ -54,6 +55,7 @@ export default function StduentPreferencesForm() {
             padding: 1,                 // Adds some padding for aesthetic spacing
           }}
         >
+          <NumCoursesPreference />
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="contained" color='primary' onClick={handleBack}>
               Back

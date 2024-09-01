@@ -12,6 +12,7 @@ import { useFormContext } from '../../context/FormContext';
 import {InfoData} from '../../context/FormContext';
 import { validateInfoForm } from '../../formActions';
 import { useRouter } from 'next/navigation';
+import StartPlanner from './StartPlanner';
 
 
 const getGradOptions = () => {
@@ -19,9 +20,11 @@ const getGradOptions = () => {
   const currentYear = date.getFullYear();
   const currentMonth = date.getMonth();
   let start = 0;
-  if (currentMonth > 4) {
+  if (currentMonth >= 10) {
+    start = 3;
+  } else if (currentMonth > 3 && currentMonth < 10) {
     start = 2;
-  } else if (currentMonth > 1) {
+  } else if (currentMonth > 0) {
     start = 1;
   }
 
@@ -32,7 +35,7 @@ const getGradOptions = () => {
 
   for (let i = start; i < 3; i++) {
     possibleGradDates.push(`${quarters[i]} ${currentYear}`);
-    valueGradDates.push(`${quarters[i].charAt(0)}${Number(currentYear) % 1000}`)
+    valueGradDates.push(`${quarters[i].charAt(0)}${Number(currentYear) % 2000}`)
   }
 
   for (let year = currentYear + 1; year <= currentYear + 5; year++) {
@@ -69,7 +72,6 @@ export default function InfoForm() {
     startTransition(async () => {
       const result = await validateInfoForm(formContext.infoData);
       if (!result.success) {
-        // console.log(result.errors ? result.errors[0] : 'nothing');
         formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
         return;
       }
@@ -93,7 +95,7 @@ export default function InfoForm() {
           // justifyContent: 'center',   // Centers child components vertically
           // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
           padding: 1,
-          mt: 2,
+          mt: 1,
         }}
         onSubmit={handleInfoForm}
       >
@@ -144,6 +146,7 @@ export default function InfoForm() {
           state = {formContext.infoData.planner}
           mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
         />
+        <StartPlanner />
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
           <Button type= 'submit' disabled = {isPending} variant='contained' color = 'warning'>
             Next
