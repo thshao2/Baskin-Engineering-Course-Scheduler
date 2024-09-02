@@ -73,6 +73,7 @@ export default function InfoForm() {
       const result = await validateInfoForm(formContext.infoData);
       if (!result.success) {
         formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
         return;
       }
       formContext.setStepError('');

@@ -5,19 +5,72 @@ import { BackgroundCourseData, UndergradData } from "./context/FormContext";
 
 import { z } from 'zod';
 
+async function checkStartEndPlan(start: string, end: string) {
+  const startPlannerYear = parseInt(start.slice(1), 10);
+  const gradDateYear = parseInt(end.slice(1), 10);
+
+  if (startPlannerYear === gradDateYear) {
+    const q = ['W', 'S', 'F'];
+    const startPlannerQuarter = start.charAt(0);
+    const endPlannerQuarter = end.charAt(0);
+    return q.indexOf(startPlannerQuarter) <= q.indexOf(endPlannerQuarter);
+
+  } else {
+    return startPlannerYear < gradDateYear;
+  }
+}
+
 export async function validateInfoForm(infoForm: InfoData) {
   const date = new Date();
   const curMonth = date.getMonth();
+  const curYear = date.getFullYear() % 1000;
   let toCatalog = curMonth > 6 ? date.getFullYear() % 1000 : (date.getFullYear() - 1) % 1000;
   let startGradDate;
   let endGradDate;
 
   if (curMonth > 9) {
-    startGradDate = (date.getFullYear() + 1) % 1000;
+    startGradDate = curYear + 1;
   } else {
-    startGradDate = date.getFullYear() % 1000;
+    startGradDate = curYear;
   }
-  endGradDate = startGradDate + 5;
+  endGradDate = curYear + 5;
+
+  let startPlannerRegex;
+  let yearStartPlan = curYear;
+  let yearEndStartPlan = curYear;
+  let possibleLetters;
+
+  if (curMonth > 9) {
+    possibleLetters = 'WS';
+    yearStartPlan = curYear + 1;
+    yearEndStartPlan = curYear + 1;
+  } else if (curMonth > 3) {
+    possibleLetters = 'FW';
+    yearEndStartPlan = curYear + 1;
+  } else if (curMonth > 1) {
+    possibleLetters = 'SF';
+  } else if (curMonth > 0) {
+    possibleLetters = 'S';
+  } else {
+    possibleLetters = 'WS';
+  }
+
+  startPlannerRegex = new RegExp(`^[${possibleLetters}]\\d{2}$`)
+
+  // if (curMonth > 9) {
+  //   startPlannerRegex = /^[WS]\d{2}$/;
+  //   yearStartPlan = curYear + 1;
+  //   yearEndStartPlan = curYear + 1;
+  // } else if (curMonth > 3) {
+  //   startPlannerRegex = /^[FW]\d{2}$/;
+  //   yearEndStartPlan = curYear + 1;
+  // } else if (curMonth > 1) {
+  //   startPlannerRegex = /^[SF]\d{2}$/;
+  // } else if (curMonth > 0) {
+  //   startPlannerRegex = /^S\d{2}$/;
+  // } else {
+  //   startPlannerRegex = /^[WS]\d{2}$/;
+  // }
 
 
   const schema = z.object({
@@ -40,6 +93,13 @@ export async function validateInfoForm(infoForm: InfoData) {
       .refine(val => val === '1' || val === '2', {
         message: 'Invalid Input. Error: Type of Planner',
       }),
+    StartPlanner: z.string()
+      .min(1, {message: 'Planner Start Date is Required'}) // Ensure it isn't empty
+      .refine(val => startPlannerRegex.test(val), {message: 'Invalid Input. Error: Planner Start Date'})
+      .refine(val => {
+        const year = parseInt(val.slice(1), 10); // Extract the two digits after the first letter
+        return year >= yearStartPlan && year <= yearEndStartPlan;
+      }, { message: 'Invalid Input. Error: Planner Start Date' }),
   });
 
   const result = schema.safeParse({
@@ -47,11 +107,18 @@ export async function validateInfoForm(infoForm: InfoData) {
     Major: infoForm.major,
     GradDate: infoForm.gradDate,
     Planner: infoForm.planner,
+    StartPlanner: infoForm.startPlanner,
   })
 
   if (!result.success) {
     const errorMessages = result.error.errors.map(error => error.message);
     return {success: false, errors: errorMessages};
+  }
+
+  const checkValidStart = await checkStartEndPlan(infoForm.startPlanner, infoForm.gradDate);
+
+  if (!checkValidStart) {
+    return {success: false, errors: ['Planner Start Date must be on or before Expected Graduation Date']};
   }
 
   return {success: true};
