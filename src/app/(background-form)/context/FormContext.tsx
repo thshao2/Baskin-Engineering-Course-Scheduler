@@ -27,6 +27,11 @@ export type BackgroundCourseData = {
   completedMajorCourses: string[],
 }
 
+export type NumCoursesPreference = {
+  numCoursesPerQuarter: string[],
+  numMajorCourses: string[],
+}
+
 export const FormContext = createContext({
   infoData: {
     catalogYear: '',
@@ -53,6 +58,11 @@ export const FormContext = createContext({
     completedGeneralEdCourses: [] as string[],
     completedMajorCourses: [] as string[],
   },
+  numCoursesPreference: {
+    numCoursesPerQuarter: [] as string[],
+    numMajorCourses: [] as string[],
+  },
+  setNumCoursesPreference: (data: NumCoursesPreference | ((prev: NumCoursesPreference) => NumCoursesPreference)) => {},
   setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => {},
   stepLastCompleted: 0,
   setStepLastCompleted: (step: number) => {},
@@ -89,6 +99,11 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     completedMajorCourses: [],
   })
 
+  const [numCoursesPreference, setNumCoursesPreference] = useState<NumCoursesPreference>({
+    numCoursesPerQuarter: [],
+    numMajorCourses: [],
+  })
+
 
   return (
     <FormContext.Provider value = {{
@@ -98,6 +113,8 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
       setUndergradData,
       backgroundCourseData,
       setBackgroundCourseData,
+      numCoursesPreference,
+      setNumCoursesPreference,
       stepLastCompleted,
       setStepLastCompleted,
       stepError,

@@ -14,7 +14,7 @@ import { useFormContext } from "../../context/FormContext";
 import Grid from '@mui/material/Grid2'
 
 
-const getEnrolledQuarters = (gradDate: string, start: string, plannerType: string) => {
+const getEnrolledQuarters = (gradDate: string, start: string) => {
   const quarters = ['Winter', 'Spring', 'Fall'];
   const gradYear = Number(gradDate.slice(1));
   const gradQuarter = gradDate.charAt(0);
@@ -49,7 +49,7 @@ const getEnrolledQuarters = (gradDate: string, start: string, plannerType: strin
     }
   }
 
-  if (plannerType === '1' && options.length === 3) {
+  if (options.length === 3) {
     return options;
   }
 
@@ -58,10 +58,7 @@ const getEnrolledQuarters = (gradDate: string, start: string, plannerType: strin
     // Loop through each quarter
     for (let i = 0; i < 3; i++) {
       options.push({ option: `${quarters[i]} ${year + 2000}`, value: `${quarters[i].charAt(0)}${Number(year) % 2000}` })
-      if (year === gradYear && i === endQuarter) {
-        break;
-      }
-      if (plannerType === '1' && options.length === 3) {
+      if ((year === gradYear && i === endQuarter) || options.length === 3) {
         return options;
       }
     }
@@ -73,22 +70,16 @@ const getEnrolledQuarters = (gradDate: string, start: string, plannerType: strin
 
 
 
-export default function NumCoursesPreference() {
-  const [defaultNumCourses, setDefaultNumCourses] = useState('3');
+export default function NumMajorCoursesPreference() {
+  const [defaultNumMajorCourses, setDefaultNumMajorCourses] = useState('2');
   const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
-  const { infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
+  const { infoData } = useFormContext();
 
-  let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner, infoData.planner);
+  let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner);
 
   const handleDefaultChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value as string;
-    setDefaultNumCourses(value);
-    const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(value);
-    setNumCoursesPreference((prev) => ({
-      ...prev,
-      numCoursesPerQuarter: newNumCoursesPerQuarter,
-    }));
+    setDefaultNumMajorCourses(event.target.value as string);
   };
 
   const handleAdvancedToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,11 +90,11 @@ export default function NumCoursesPreference() {
   return (
     <Box sx={{ width: '100%'}}>
       <Typography sx={{ mt: 2, mb: 1, fontWeight: 'bold', fontSize: 18 }}>
-        Preferred Number of Courses Per Quarter
+        Preferred Number of Major Courses Per Quarter
       </Typography>
       <Typography sx={{ mb: 2, fontSize: 14 }}>
-        {`The suggested course load is 3 classes per quarter (default). However, you may override this setting by choosing a different
-            option or by selecting the "Advanced" tab to indiciate the number of classes you want to take for specific quarters (optional).`}
+        {`The suggested Baskin Engineering course load is 2 major classes per quarter (default). However, you may override this setting by choosing a different
+            option or by selecting the "Advanced" tab to indiciate the number of major classes you want to take for specific quarters (optional).`}
       </Typography>
       <Box sx={{ mb: 2 }}>
         <FormControlLabel control={
@@ -133,10 +124,10 @@ export default function NumCoursesPreference() {
                   <TextField
                     id={`number-courses-${opt.value}`}
                     select
-                    defaultValue={defaultNumCourses}
+                    defaultValue={defaultNumMajorCourses}
                     sx={{ mb: 2, width: 80 }}
                   >
-                    {['2', '3', '4', '5'].map((num) => (
+                    {['1', '2', '3', '4', '5'].map((num) => (
                       <MenuItem key={num} value={num}>{num}</MenuItem>
                     ))}
                   </TextField>
@@ -150,10 +141,10 @@ export default function NumCoursesPreference() {
           <TextField
             id="number-courses-per-quarter"
             select
-            defaultValue={defaultNumCourses}
+            defaultValue={defaultNumMajorCourses}
             onChange={handleDefaultChange}
           >
-            {['3', '4', '5'].map((opt) => (
+            {['1', '2', '3', '4', '5'].map((opt) => (
               <MenuItem key={opt} value={opt}>{opt}</MenuItem>
             ))}
           </TextField>

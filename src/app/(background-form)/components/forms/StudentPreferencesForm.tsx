@@ -12,13 +12,14 @@ import React, { useEffect } from 'react';
 
 import { validateBackgroundCourseForm } from '../../formActions';
 import NumCoursesPreference from './NumCoursesPreference';
+import NumMajorCoursesPreference from './NumMajorCoursesPreference';
 
 
 export default function StduentPreferencesForm() {
   const router = useRouter();
   const formContext = useFormContext();
 
-  const {stepLastCompleted, setStepLastCompleted} = useFormContext();
+  const {stepLastCompleted, setStepLastCompleted, infoData} = useFormContext();
 
   const [isPending, startTransition] = React.useTransition();
 
@@ -56,6 +57,7 @@ export default function StduentPreferencesForm() {
           }}
         >
           <NumCoursesPreference />
+          {infoData.planner === '1' && <NumMajorCoursesPreference />}
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="contained" color='primary' onClick={handleBack}>
               Back
