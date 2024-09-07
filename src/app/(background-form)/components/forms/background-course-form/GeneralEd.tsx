@@ -1,11 +1,10 @@
 import { Typography } from "@mui/material";
-import { BackgroundCourseData, useFormContext } from "../../context/FormContext";
-import TwoSelect from "../inputs/TwoSelect";
-import CheckboxGroup from "../inputs/Checkbox";
+import { BackgroundCourseData, useFormContext, UndergradData } from "../../../context/FormContext";
+import TwoSelect from "../../inputs/TwoSelect";
+import CheckboxGroup from "../../inputs/Checkbox";
 
-import Select from "../inputs/Select";
+import Select from "../../inputs/Select";
 
-import { UndergradData } from "../../context/FormContext";
 import WritingPlacement from "./WritingPlacement";
 
 const codes = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;

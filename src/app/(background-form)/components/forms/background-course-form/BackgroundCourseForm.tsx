@@ -1,19 +1,19 @@
 'use client'
 
-import Select from '../inputs/Select'
+import Select from '../../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { BackgroundCourseData, useFormContext } from '../../context/FormContext';
+import { BackgroundCourseData, useFormContext } from '../../../context/FormContext';
 
-import { InfoData } from '../../context/FormContext';
+import { InfoData } from '../../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 import CourseHistoryForm from './CourseHistoryForm';
-import { validateBackgroundCourseForm } from '../../formActions';
+import { validateBackgroundCourseForm } from '../../../formActions';
 
 
 export default function BackGroundCoursesForm() {

@@ -1,9 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import StudentPreferencesForm from '../components/forms/student-preferences-form/StudentPreferencesForm';
+
+import MajorPreferencesFrom from '../components/forms/major-preferences-form/MajorPreferencesForm'
 
 
-export default function StduentPreferencesForm() {
+export default function MajorCoursePreferencesForm() {
   return (
     <>
       <Box
@@ -12,7 +13,7 @@ export default function StduentPreferencesForm() {
           justifyContent: 'center',
         }}
       >
-        <StudentPreferencesForm />
+        <MajorPreferencesFrom />
       </Box>
     </>
 

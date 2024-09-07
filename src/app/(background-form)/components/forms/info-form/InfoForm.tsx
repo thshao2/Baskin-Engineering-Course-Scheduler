@@ -2,15 +2,15 @@
 
 import * as React from 'react';
 
-import Select from '../inputs/Select'
+import Select from '../../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { useFormContext } from '../../context/FormContext';
+import { useFormContext } from '../../../context/FormContext';
 
-import {InfoData} from '../../context/FormContext';
-import { validateInfoForm } from '../../formActions';
+import {InfoData} from '../../../context/FormContext';
+import { validateInfoForm } from '../../../formActions';
 import { useRouter } from 'next/navigation';
 import StartPlanner from './StartPlanner';
 

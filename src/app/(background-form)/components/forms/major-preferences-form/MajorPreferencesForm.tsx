@@ -1,30 +1,30 @@
 'use client'
 
-import Select from '../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { useFormContext } from '../../context/FormContext';
+import { useFormContext } from '../../../context/FormContext';
 
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import { validateBackgroundCourseForm } from '../../formActions';
-import NumCoursesPreference from './NumCoursesPreference';
 import NumMajorCoursesPreference from './NumMajorCoursesPreference';
+
 
 
 export default function StduentPreferencesForm() {
   const router = useRouter();
   const formContext = useFormContext();
 
-  const {stepLastCompleted, setStepLastCompleted, infoData} = useFormContext();
+  const { stepLastCompleted, setStepLastCompleted, infoData } = useFormContext();
 
   const [isPending, startTransition] = React.useTransition();
 
   useEffect(() => {
-    if (stepLastCompleted === 1) {
+    if (stepLastCompleted === 2) {
+      router.replace('/student-preferences');
+    } else if (stepLastCompleted === 1) {
       router.replace('/background-courses');
     } else if (stepLastCompleted === 0) {
       router.replace('/info');
@@ -32,15 +32,15 @@ export default function StduentPreferencesForm() {
   }, [stepLastCompleted, router]);
 
   useEffect(() => {
-    setStepLastCompleted(2);
+    setStepLastCompleted(3);
   }, [setStepLastCompleted])
 
   const handleBack = () => {
-    formContext.setStepLastCompleted(1);
+    formContext.setStepLastCompleted(2);
   }
 
 
-  if (formContext.stepLastCompleted === 2) {
+  if (formContext.stepLastCompleted === 3) {
     return (
       <>
         <Box
@@ -56,7 +56,6 @@ export default function StduentPreferencesForm() {
             padding: 1,                 // Adds some padding for aesthetic spacing
           }}
         >
-          <NumCoursesPreference />
           {infoData.planner === '1' && <NumMajorCoursesPreference />}
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="contained" color='primary' onClick={handleBack}>

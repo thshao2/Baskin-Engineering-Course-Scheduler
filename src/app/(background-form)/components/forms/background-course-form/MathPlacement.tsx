@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
-import { UndergradData, useFormContext } from "../../context/FormContext";
-import Select from "../inputs/Select";
+import { UndergradData, useFormContext } from "../../../context/FormContext";
+import Select from "../../inputs/Select";
 import MajorCourses from "./MajorCourses";
 
 

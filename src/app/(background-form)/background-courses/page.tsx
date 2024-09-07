@@ -1,6 +1,6 @@
 import * as React from 'react';
-import Box from '@mui/joy/Box';
-import BackGroundCoursesForm from '../components/forms/BackgroundCourseForm';
+import Box from '@mui/material/Box';
+import BackGroundCoursesForm from '../components/forms/background-course-form/BackgroundCourseForm';
 
 
 export default function BackgroundCourseInfoForm() {

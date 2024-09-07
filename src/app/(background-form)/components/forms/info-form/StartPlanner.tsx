@@ -1,8 +1,8 @@
-import Select from '../inputs/Select'
+import Select from '../../inputs/Select'
 
-import { useFormContext } from '../../context/FormContext'
+import { useFormContext } from '../../../context/FormContext'
 
-import { InfoData } from '../../context/FormContext';
+import { InfoData } from '../../../context/FormContext';
 
 const getStartPlannerOptions = () => {
   const date = new Date();

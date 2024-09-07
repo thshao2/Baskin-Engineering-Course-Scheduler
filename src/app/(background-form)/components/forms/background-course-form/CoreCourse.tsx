@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
-import { BackgroundCourseData, useFormContext } from "../../context/FormContext";
-import MultipleSelect from "../inputs/MultipleSelect";
-import TwoSelect from "../inputs/TwoSelect";
+import { BackgroundCourseData, useFormContext } from "../../../context/FormContext";
+import MultipleSelect from "../../inputs/MultipleSelect";
+import TwoSelect from "../../inputs/TwoSelect";
 
 export default function CoreCourse() {
 

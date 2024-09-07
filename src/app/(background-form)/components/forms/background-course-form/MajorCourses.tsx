@@ -1,10 +1,10 @@
-import { useFormContext } from "../../context/FormContext";
+import { useFormContext } from "../../../context/FormContext";
 
 import { Typography } from "@mui/material";
-import CheckboxResponsive from "../inputs/CheckboxResponsive";
-import CheckboxGroup from "../inputs/Checkbox";
+import CheckboxResponsive from "../../inputs/CheckboxResponsive";
+import CheckboxGroup from "../../inputs/Checkbox";
 
-import { BackgroundCourseData } from "../../context/FormContext";
+import { BackgroundCourseData } from "../../../context/FormContext";
 import React, { useEffect, useState } from "react";
 
 const codes = [
