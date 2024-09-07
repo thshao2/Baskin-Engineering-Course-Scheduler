@@ -10,7 +10,7 @@ import { useFormContext } from '../../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import { validateBackgroundCourseForm } from '../../../formActions';
+import { validateStudentPreferencesForm } from '../../../formActions';
 import NumCoursesPreference from './NumCoursesPreference';
 import NumMajorCoursesPreference from '../major-preferences-form/NumMajorCoursesPreference';
 
@@ -36,7 +36,24 @@ export default function StduentPreferencesForm() {
   }, [setStepLastCompleted])
 
   const handleBack = () => {
+    formContext.setStepError('');
     formContext.setStepLastCompleted(1);
+  }
+
+  const handleStudentPreferencesForm = async (event: React.FormEvent) => {
+    event.preventDefault();
+    startTransition(async () => {
+      const result = await validateStudentPreferencesForm(formContext.infoData, formContext.numCoursesPreference.numCoursesPerQuarter)
+      console.log(result);
+      if (!result.success) {
+        formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
+        return;
+      }
+      formContext.setStepError('');
+      formContext.setStepLastCompleted(3);
+      router.push('/major-course-preferences');
+    })
   }
 
 
@@ -55,14 +72,14 @@ export default function StduentPreferencesForm() {
             // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
             padding: 1,                 // Adds some padding for aesthetic spacing
           }}
+          onSubmit={handleStudentPreferencesForm}
         >
           <NumCoursesPreference />
-          {infoData.planner === '1' && <NumMajorCoursesPreference />}
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="contained" color='primary' onClick={handleBack}>
               Back
             </Button>
-            <Button variant='contained' color='warning'>
+            <Button variant='contained' type= "submit" color='warning' disabled = {isPending}>
               Next
             </Button>
           </Box>

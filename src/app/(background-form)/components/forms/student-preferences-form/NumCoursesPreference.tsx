@@ -78,13 +78,13 @@ export default function NumCoursesPreference() {
   const { infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
 
   const [defaultNumCourses, setDefaultNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length === 1 ? numCoursesPreference.numCoursesPerQuarter[0] :  '3');
-  const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.numCoursesPerQuarter.length > 1);
 
   let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner, infoData.planner);
+  
+  const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.numCoursesPerQuarter.length > 1 && numCoursesPreference.numCoursesPerQuarter.length === enrolledQuarters.length);
+  const [advancedNumCourses, setAdvancedNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length === enrolledQuarters.length ? numCoursesPreference.numCoursesPerQuarter : Array(enrolledQuarters.length).fill(defaultNumCourses, 0))
 
-  const [advancedNumCourses, setAdvancedNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length > 1 ? numCoursesPreference.numCoursesPerQuarter : Array(enrolledQuarters.length).fill(defaultNumCourses))
-
-
+  console.log(enrolledQuarters.length)
   // useEffect(() => {
   //   if (numCoursesPreference.numCoursesPerQuarter.length === 0) {
   //     setNumCoursesPreference((prev) => ({
@@ -106,7 +106,7 @@ export default function NumCoursesPreference() {
   const handleAdvancedToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAdvancedMode((prev) => !prev);
     if (event.target.checked) {
-      const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(defaultNumCourses);
+      const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(defaultNumCourses, 0);
       setNumCoursesPreference((prev) => ({
         ...prev,
         numCoursesPerQuarter: newNumCoursesPerQuarter,
@@ -171,7 +171,7 @@ export default function NumCoursesPreference() {
                   <TextField
                     id={`number-courses-${opt.value}`}
                     select
-                    value={advancedNumCourses[index]}
+                    value={advancedNumCourses[index] ? advancedNumCourses[index] : defaultNumCourses}
                     onChange={handleAdvancedCourseChange(index)}
                     sx={{ mb: 2, width: 80 }}
                   >

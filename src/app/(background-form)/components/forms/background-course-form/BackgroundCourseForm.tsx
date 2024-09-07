@@ -46,6 +46,7 @@ export default function BackGroundCoursesForm() {
 
 
   const handleBack = () => {
+    formContext.setStepError('');
     setStepLastCompleted(0);
   }
 
