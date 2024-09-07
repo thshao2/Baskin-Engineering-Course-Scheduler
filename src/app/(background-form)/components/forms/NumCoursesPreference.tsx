@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
@@ -74,26 +74,64 @@ const getEnrolledQuarters = (gradDate: string, start: string, plannerType: strin
 
 
 export default function NumCoursesPreference() {
-  const [defaultNumCourses, setDefaultNumCourses] = useState('3');
-  const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
   const { infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
 
+  const [defaultNumCourses, setDefaultNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length === 1 ? numCoursesPreference.numCoursesPerQuarter[0] :  '3');
+  const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.numCoursesPerQuarter.length > 1);
+
   let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner, infoData.planner);
+
+  const [advancedNumCourses, setAdvancedNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length > 1 ? numCoursesPreference.numCoursesPerQuarter : Array(enrolledQuarters.length).fill(defaultNumCourses))
+
+
+  // useEffect(() => {
+  //   if (numCoursesPreference.numCoursesPerQuarter.length === 0) {
+  //     setNumCoursesPreference((prev) => ({
+  //       ...prev,
+  //       numCoursesPerQuarter: ['3'],
+  //     }));
+  //   }
+  // }, [numCoursesPreference.numCoursesPerQuarter, setNumCoursesPreference])
 
   const handleDefaultChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value as string;
     setDefaultNumCourses(value);
-    const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(value);
     setNumCoursesPreference((prev) => ({
       ...prev,
-      numCoursesPerQuarter: newNumCoursesPerQuarter,
+      numCoursesPerQuarter: [value],
     }));
   };
 
   const handleAdvancedToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAdvancedMode((prev) => !prev);
+    if (event.target.checked) {
+      const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(defaultNumCourses);
+      setNumCoursesPreference((prev) => ({
+        ...prev,
+        numCoursesPerQuarter: newNumCoursesPerQuarter,
+      }));
+      setAdvancedNumCourses(newNumCoursesPerQuarter);
+    } else {
+      setNumCoursesPreference((prev) => ({
+        ...prev,
+        numCoursesPerQuarter: [defaultNumCourses],
+      }));
+    }
+    
   };
+
+  const handleAdvancedCourseChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedCourses = [...advancedNumCourses];
+    updatedCourses[index] = event.target.value as string;
+    setAdvancedNumCourses(updatedCourses);
+    setNumCoursesPreference((prev) => ({
+      ...prev,
+      numCoursesPerQuarter: updatedCourses,
+    }));
+  };
+
+  console.log(numCoursesPreference.numCoursesPerQuarter)
 
 
   return (
@@ -119,11 +157,11 @@ export default function NumCoursesPreference() {
           container
           spacing={0.5}
         >
-          {enrolledQuarters.map((opt) => (
+          {enrolledQuarters.map((opt, index) => (
             <Grid
               size = {{xs: 6, sm: 4, md: 3, lg: 3}}
               key={opt.value}
-              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ mb: 1, fontSize: 14 }}>
@@ -133,7 +171,8 @@ export default function NumCoursesPreference() {
                   <TextField
                     id={`number-courses-${opt.value}`}
                     select
-                    defaultValue={defaultNumCourses}
+                    value={advancedNumCourses[index]}
+                    onChange={handleAdvancedCourseChange(index)}
                     sx={{ mb: 2, width: 80 }}
                   >
                     {['2', '3', '4', '5'].map((num) => (
@@ -150,7 +189,7 @@ export default function NumCoursesPreference() {
           <TextField
             id="number-courses-per-quarter"
             select
-            defaultValue={defaultNumCourses}
+            value={defaultNumCourses}
             onChange={handleDefaultChange}
           >
             {['3', '4', '5'].map((opt) => (

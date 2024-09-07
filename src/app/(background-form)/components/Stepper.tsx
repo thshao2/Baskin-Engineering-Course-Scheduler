@@ -9,11 +9,11 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useFormContext } from '../context/FormContext';
 
-const steps = ['Select Year and Catalog', 'Background Course Information', 'Student Preferences'];
+const steps = ['Select Year and Catalog', 'Background Course Information', 'Student Preferences', 'Major Course Preferences'];
 
 export default function HorizontalLinearStepper() {
 
-  const {stepLastCompleted, stepError} = useFormContext();
+  const { stepLastCompleted, stepError } = useFormContext();
 
   // const [activeStep, setActiveStep] = React.useState(0);
 
@@ -34,7 +34,17 @@ export default function HorizontalLinearStepper() {
   }
 
   return (
-    <Box sx={{ width: '100%', mt: 2 }}>
+    <Box sx={{
+      width: '100%',
+      mt: 2,
+      '& .MuiStepLabel-label': {
+        fontSize: { xs: '0.75rem', sm: '0.875rem' }, // Smaller font on small screens
+        whiteSpace: { xs: 'break-spaces', sm: 'normal' }, // Allow text to wrap on small screens
+      },
+      // '& .MuiStepConnector-line': {
+      //   minWidth: { xs: '12px', sm: '24px' }, // Smaller spacing between steps on small screens
+      // }
+    }}>
       <Stepper activeStep={stepLastCompleted} alternativeLabel>
         {steps.map((label, index) => {
           const stepProps: { completed?: boolean } = {};
@@ -48,7 +58,7 @@ export default function HorizontalLinearStepper() {
                 {stepError + '.'}
               </Typography>
             );
-             labelProps.error = true;
+            labelProps.error = true;
           }
           // if (isStepOptional(index)) {
           //   labelProps.optional = (

@@ -100,8 +100,8 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   })
 
   const [numCoursesPreference, setNumCoursesPreference] = useState<NumCoursesPreference>({
-    numCoursesPerQuarter: [],
-    numMajorCourses: [],
+    numCoursesPerQuarter: ['3'],
+    numMajorCourses: ['2'],
   })
 
 
