@@ -7,7 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import { Grid } from '@mui/material';
+import Grid  from '@mui/material/Grid2';
 import { useFormContext } from '../../context/FormContext';
 
 interface Option {
@@ -42,14 +42,14 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
     mutator(Object.keys(values).filter(key => newValue[key]))
   };
 
-  console.log(`${title}: ${state}`)
+  // console.log(`${title}: ${state}`)
   // console.log(`${title}: ${JSON.stringify(values)}`)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
       <FormControl component="fieldset" variant="standard">
         <FormLabel component="legend">{title}</FormLabel>
-        <Typography sx={{ mt: 0.5 }} variant='subtitle2'>{subtitle}</Typography>
+        <Typography sx={{ mt: 0.5, mb: 2 }} variant='subtitle2'>{subtitle}</Typography>
         <FormGroup>
           <Grid
             container
@@ -57,11 +57,7 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
           >
             {options.map((opt: Option) => (
               <Grid
-                item
-                xs={12} // Full width on smaller screens
-                sm={6}
-                md={4}
-                lg={3}  // Half width on large screens
+                size = {{xs: 12, lg: 6}}
                 key={opt.value}
                 sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
               >
@@ -70,7 +66,8 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
                     <Checkbox key={opt.value} value={opt.value} checked={values[opt.value]} onChange={handleChange} />
                   }
                   label={opt.option}
-                />
+                  sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.85rem' } }} // Adjust the font size here
+                  />
               </Grid>
             ))}
           </Grid>

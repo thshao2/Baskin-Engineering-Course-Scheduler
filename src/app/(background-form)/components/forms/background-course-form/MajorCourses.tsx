@@ -7,30 +7,52 @@ import CheckboxGroup from "../../inputs/Checkbox";
 import { BackgroundCourseData } from "../../../context/FormContext";
 import React, { useEffect, useState } from "react";
 
+import MajorElectives from "./MajorElectives";
+
 const codes = [
   'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
-  'CSE20', 'CSE30', 'CSE40', 'CSE12', 'CSE13S', 'CSE16',
-  'AM10', 'AM30', 'STAT131', 'ECE30',
-  'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S',
+  'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
+  'AM10', 'AM30', 'ECE30', 'STAT131',
+  'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S', 'CSE195'
 ] as const;
 
 const majorLabels = [
-  'MATH 19A', 'MATH 19B', 'MATH 21', 'MATH 23A',
-  'CSE 20', 'CSE 30', 'CSE 40', 'CSE 12', 'CSE 13S', 'CSE 16',
-  'AM 10', 'AM 30', 'STAT 131', 'ECE 30',
-  'CSE 101', 'CSE 101M', 'CSE 102', 'CSE 103', 'CSE 107', 'CSE 114A', 'CSE 115A', 'CSE 120', 'CSE 130', 'CSE 185S',
+  'MATH 19A: Calculus for Science, Engineering, and Mathematics I', 
+  'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
+  'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
+  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming', 
+  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python', 
+  'CSE 30: Programming Abstractions: Python', 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods',
+  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers', 
+  'ECE 30: Engineering Principles of Electronics', 'STAT 131: Introduction to Probability Theory',
+  'CSE 101: Introduction to Data Structures and Algorithms', 
+  'CSE 101M: Mathematical Thinking for Computer Science', 
+  'CSE 102: Introduction to Analysis of Algorithms', 
+  'CSE 103: Computational Models', 'CSE 107: Probability and Statistics for Engineers', 
+  'CSE 114A: Foundations of Programming Languages', 
+  'CSE 115A: Introduction to Software Engineering', 
+  'CSE 120: Computer Architecture', 'CSE 130: Principles of Computer Systems Design', 
+  'CSE 185S: Technical Writing for Computer Science and Engineering',
+  'CSE 195: Senior Thesis Research'
 ] as const;
 
 const tcodes = [
   'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
-  'CSE20', 'CSE30', 'CSE40', 'CSE12', 'CSE13S', 'CSE16',
-  'AM10', 'AM30', 'STAT131', 'ECE30', 'CSE101', 'CSE107'
+  'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
+  'AM10', 'AM30', 'ECE30', 'STAT131', 'CSE101', 'CSE107'
 ] as const;
 
 const tmajorLabels = [
-  'MATH 19A', 'MATH 19B', 'MATH 21', 'MATH 23A',
-  'CSE 20', 'CSE 30', 'CSE 40', 'CSE 12', 'CSE 13S', 'CSE 16',
-  'AM 10', 'AM 30', 'STAT 131', 'ECE 30', 'CSE 101', 'CSE 107'
+  'MATH 19A: Calculus for Science, Engineering, and Mathematics I', 
+  'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
+  'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
+  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming', 
+  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python', 
+  'CSE 30: Programming Abstractions: Python', 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods',
+  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers', 
+  'ECE 30: Engineering Principles of Electronics', 'STAT 131: Introduction to Probability Theory',
+  'CSE 101: Introduction to Data Structures and Algorithms',
+  'CSE 107: Probability and Statistics for Engineers',
 ] as const;
 
 const ucodes = [
@@ -78,18 +100,21 @@ const RenderMajorCourses: React.FC = () => {
   switch (infoData.major) {
     case 'CS':
       return (
-        <CheckboxResponsive
-          key = {JSON.stringify(autoProps)}
-          auto={autoProps}
-          title="Major Courses"
-          subtitle={studentStatus !== 'C' ?
-            `Select Required Major Courses that you have already satisfied through transfer credit.` :
-            `Select Required Major Courses that you have already taken, or have already received credit for.`
-          }
-          options={options}
-          state={backgroundCourseData.completedMajorCourses}
-          mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
-        />
+        <>
+          <CheckboxResponsive
+            key = {JSON.stringify(autoProps)}
+            auto={autoProps}
+            title="Major Courses"
+            subtitle={studentStatus !== 'C' ?
+              `Select required major courses that you have already satisfied through transfer credit.` :
+              `Select required major courses that you have already taken, or have already received credit for.`
+            }
+            options={options}
+            state={backgroundCourseData.completedMajorCourses}
+            mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
+          />
+          {studentStatus === 'C' && <MajorElectives />}
+        </>
       );
     default:
       return (

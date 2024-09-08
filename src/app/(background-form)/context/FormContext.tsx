@@ -25,6 +25,9 @@ export type BackgroundCourseData = {
   universityReq: UniversityReq,
   completedGeneralEdCourses: string[],
   completedMajorCourses: string[],
+  completedMajorElectives: string[],
+  completedCapstoneElectives: string[],
+  completedAlternativeElectives: string[],
 }
 
 export type NumCoursesPreference = {
@@ -57,6 +60,9 @@ export const FormContext = createContext({
     },
     completedGeneralEdCourses: [] as string[],
     completedMajorCourses: [] as string[],
+    completedMajorElectives: [] as string[],
+    completedCapstoneElectives: [] as string[],
+    completedAlternativeElectives: [] as string[],
   },
   setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => {},
   numCoursesPreference: {
@@ -99,6 +105,10 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     },
     completedGeneralEdCourses: [],
     completedMajorCourses: [],
+    completedMajorElectives: [],
+    completedCapstoneElectives: [],
+    completedAlternativeElectives: [],
+
   })
 
   const [numCoursesPreference, setNumCoursesPreference] = useState<NumCoursesPreference>({
