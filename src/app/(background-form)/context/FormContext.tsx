@@ -58,12 +58,14 @@ export const FormContext = createContext({
     completedGeneralEdCourses: [] as string[],
     completedMajorCourses: [] as string[],
   },
+  setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => {},
   numCoursesPreference: {
     numCoursesPerQuarter: [] as string[],
     numMajorCourses: [] as string[],
   },
+  majorChoices: [] as string[],
+  setMajorChoices: (data: string[] | ((prev: string[]) => string[])) => {},
   setNumCoursesPreference: (data: NumCoursesPreference | ((prev: NumCoursesPreference) => NumCoursesPreference)) => {},
-  setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => {},
   stepLastCompleted: 0,
   setStepLastCompleted: (step: number) => {},
   stepError: '',
@@ -104,6 +106,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     numMajorCourses: ['2'],
   })
 
+  const [majorChoices, setMajorChoices] = useState<string[]>([]);
 
   return (
     <FormContext.Provider value = {{
@@ -115,6 +118,8 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
       setBackgroundCourseData,
       numCoursesPreference,
       setNumCoursesPreference,
+      majorChoices, 
+      setMajorChoices,
       stepLastCompleted,
       setStepLastCompleted,
       stepError,

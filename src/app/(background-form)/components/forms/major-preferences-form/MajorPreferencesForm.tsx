@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 import NumMajorCoursesPreference from './NumMajorCoursesPreference';
+import MajorCourseChoices from './MajorCourseChoices';
 
 
 
@@ -36,6 +37,7 @@ export default function StduentPreferencesForm() {
   }, [setStepLastCompleted])
 
   const handleBack = () => {
+    formContext.setStepError('');
     formContext.setStepLastCompleted(2);
   }
 
@@ -57,6 +59,7 @@ export default function StduentPreferencesForm() {
           }}
         >
           {infoData.planner === '1' && <NumMajorCoursesPreference />}
+          <MajorCourseChoices />
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="contained" color='primary' onClick={handleBack}>
               Back

@@ -14,7 +14,7 @@ import { useFormContext } from "../../../context/FormContext";
 import Grid from '@mui/material/Grid2'
 
 
-const getEnrolledQuarters = (gradDate: string, start: string, plannerType: string) => {
+export const getEnrolledQuarters = (gradDate: string, start: string, plannerType: string) => {
   const quarters = ['Winter', 'Spring', 'Fall'];
   const gradYear = Number(gradDate.slice(1));
   const gradQuarter = gradDate.charAt(0);
@@ -98,7 +98,7 @@ export default function NumCoursesPreference() {
     const value = event.target.value as string;
     setDefaultNumCourses(value);
     setNumCoursesPreference((prev) => ({
-      ...prev,
+      numMajorCourses: ['2'],
       numCoursesPerQuarter: [value],
     }));
   };
@@ -108,13 +108,13 @@ export default function NumCoursesPreference() {
     if (event.target.checked) {
       const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(defaultNumCourses, 0);
       setNumCoursesPreference((prev) => ({
-        ...prev,
+        numMajorCourses: ['2'],
         numCoursesPerQuarter: newNumCoursesPerQuarter,
       }));
       setAdvancedNumCourses(newNumCoursesPerQuarter);
     } else {
       setNumCoursesPreference((prev) => ({
-        ...prev,
+        numMajorCourses: ['2'],
         numCoursesPerQuarter: [defaultNumCourses],
       }));
     }
@@ -126,7 +126,7 @@ export default function NumCoursesPreference() {
     updatedCourses[index] = event.target.value as string;
     setAdvancedNumCourses(updatedCourses);
     setNumCoursesPreference((prev) => ({
-      ...prev,
+      numMajorCourses: ['2'],
       numCoursesPerQuarter: updatedCourses,
     }));
   };

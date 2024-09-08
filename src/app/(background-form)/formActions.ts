@@ -276,8 +276,6 @@ export async function validateStudentPreferencesForm(infoData: InfoData, arrNumC
     advancedNumCourseShema,
   ]);
 
-  // arrNumCourses = ['4', '4', '1'];
-
   const studentPreferencesFormSchema = z.object({
     numCoursesPerQuarter: numCoursesPerQuarterSchema,
   })

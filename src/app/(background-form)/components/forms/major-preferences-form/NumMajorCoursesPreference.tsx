@@ -12,83 +12,92 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useFormContext } from "../../../context/FormContext";
 
 import Grid from '@mui/material/Grid2'
-
-
-const getEnrolledQuarters = (gradDate: string, start: string) => {
-  const quarters = ['Winter', 'Spring', 'Fall'];
-  const gradYear = Number(gradDate.slice(1));
-  const gradQuarter = gradDate.charAt(0);
-  let endQuarter;
-
-  if (gradQuarter === 'F') {
-    endQuarter = 2;
-  } else if (gradQuarter === 'S') {
-    endQuarter = 1;
-  } else {
-    endQuarter = 0;
-  }
-
-  const startQuarter = start.charAt(0);
-  let startQuarterNum;
-  if (startQuarter === 'F') {
-    startQuarterNum = 2;
-  } else if (startQuarter === 'S') {
-    startQuarterNum = 1;
-  } else {
-    startQuarterNum = 0;
-  }
-
-  const startYear = Number(start.slice(1));
-
-  const options = [];
-
-  for (let i = startQuarterNum; i < 3; i++) {
-    options.push({ option: `${quarters[i]} ${startYear + 2000}`, value: `${quarters[i].charAt(0)}${startYear}` })
-    if (i === endQuarter && gradYear === startYear) {
-      return options;
-    }
-  }
-
-  if (options.length === 3) {
-    return options;
-  }
-
-
-  for (let year = startYear + 1; year <= gradYear; year++) {
-    // Loop through each quarter
-    for (let i = 0; i < 3; i++) {
-      options.push({ option: `${quarters[i]} ${year + 2000}`, value: `${quarters[i].charAt(0)}${Number(year) % 2000}` })
-      if ((year === gradYear && i === endQuarter) || options.length === 3) {
-        return options;
-      }
-    }
-
-  }
-  return options;
-
-}
-
+import { getEnrolledQuarters } from "../student-preferences-form/NumCoursesPreference";
 
 
 export default function NumMajorCoursesPreference() {
-  const [defaultNumMajorCourses, setDefaultNumMajorCourses] = useState('2');
-  const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+  const { infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
 
-  const { infoData } = useFormContext();
+  const [defaultNumMajorCourses, setDefaultNumMajorCourses] = useState(numCoursesPreference.numMajorCourses.length === 1 ? numCoursesPreference.numMajorCourses[0] : '2');
 
-  let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner);
+  const enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner, infoData.planner).slice(0, 3);
+
+  const numCoursesPerQuarter = numCoursesPreference.numCoursesPerQuarter;
+  let allowedDefaultOptions: string[] = [];
+  let allowedAdvancedOptions: string[][] = [];
+
+  if (numCoursesPerQuarter.length === 1) {
+    const num = parseInt(numCoursesPerQuarter[0], 10);
+    const temp = [];
+    for (let i = 1; i <= num; i++) {
+      temp.push(i.toString());
+    }
+    allowedDefaultOptions = temp;
+    allowedAdvancedOptions.push(...Array(3).fill(temp)); // Fills array with three temp arrays
+  } else {
+    const newArr = numCoursesPerQuarter.map(Number);
+    const min = Math.min(...newArr);
+    for (let i = 1; i <= min; i++) {
+      allowedDefaultOptions.push(i.toString());
+    }
+    for (let i = 0; i <= 2; i++) {
+      const num = newArr[i];
+      const temp = [];
+      for (let i = 1; i <= num; i++) {
+        temp.push(i.toString());
+      }
+      allowedAdvancedOptions.push(temp);
+    }
+  }
+
+  const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.numMajorCourses.length === 3);
+  const [advancedNumMajorCourses, setAdvancedNumMajorCourses] = useState(
+    numCoursesPreference.numMajorCourses.length === 3 ?
+      numCoursesPreference.numMajorCourses :
+      Array(3).fill(defaultNumMajorCourses, 0))
 
   const handleDefaultChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDefaultNumMajorCourses(event.target.value as string);
+    const value = event.target.value as string;
+    setDefaultNumMajorCourses(value);
+    setNumCoursesPreference((prev) => ({
+      ...prev,
+      numMajorCourses: [value],
+    }));
   };
 
   const handleAdvancedToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAdvancedMode((prev) => !prev);
+    if (event.target.checked) {
+      const newNumMajorCourses = Array(3).fill(defaultNumMajorCourses, 0);
+      setNumCoursesPreference((prev) => ({
+        ...prev,
+        numMajorCourses: newNumMajorCourses,
+      }));
+      setAdvancedNumMajorCourses(newNumMajorCourses);
+    } else {
+      setNumCoursesPreference((prev) => ({
+        ...prev,
+        numMajorCourses: [defaultNumMajorCourses],
+      }));
+    }
+
   };
+
+  const handleAdvancedCourseChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedCourses = [...advancedNumMajorCourses];
+    updatedCourses[index] = event.target.value as string;
+    setAdvancedNumMajorCourses(updatedCourses);
+    setNumCoursesPreference((prev) => ({
+      ...prev,
+      numMajorCourses: updatedCourses,
+    }));
+  };
+
+  console.log(numCoursesPreference.numMajorCourses)
 
 
   return (
-    <Box sx={{ width: '100%'}}>
+    <Box sx={{ width: '100%' }}>
       <Typography sx={{ mt: 2, mb: 1, fontWeight: 'bold', fontSize: 18 }}>
         Preferred Number of Major Courses Per Quarter
       </Typography>
@@ -110,11 +119,11 @@ export default function NumMajorCoursesPreference() {
           container
           spacing={0.5}
         >
-          {enrolledQuarters.map((opt) => (
+          {enrolledQuarters.map((opt, index) => (
             <Grid
-              size = {{xs: 6, sm: 4, md: 3, lg: 3}}
+              size={{ xs: 6, sm: 4, md: 3, lg: 3 }}
               key={opt.value}
-              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ mb: 1, fontSize: 14 }}>
@@ -122,12 +131,13 @@ export default function NumMajorCoursesPreference() {
                 </Typography>
                 <FormControl>
                   <TextField
-                    id={`number-courses-${opt.value}`}
+                    id={`number-major-courses-${opt.value}`}
                     select
-                    defaultValue={defaultNumMajorCourses}
+                    value={advancedNumMajorCourses[index]}
+                    onChange={handleAdvancedCourseChange(index)}
                     sx={{ mb: 2, width: 80 }}
                   >
-                    {['1', '2', '3', '4', '5'].map((num) => (
+                    {allowedAdvancedOptions[index].map((num) => (
                       <MenuItem key={num} value={num}>{num}</MenuItem>
                     ))}
                   </TextField>
@@ -139,12 +149,12 @@ export default function NumMajorCoursesPreference() {
       ) : (
         <FormControl sx={{ minWidth: 80 }}>
           <TextField
-            id="number-courses-per-quarter"
+            id="number-major-courses-per-quarter"
             select
-            defaultValue={defaultNumMajorCourses}
+            value={defaultNumMajorCourses}
             onChange={handleDefaultChange}
           >
-            {['1', '2', '3', '4', '5'].map((opt) => (
+            {allowedDefaultOptions.map((opt) => (
               <MenuItem key={opt} value={opt}>{opt}</MenuItem>
             ))}
           </TextField>
