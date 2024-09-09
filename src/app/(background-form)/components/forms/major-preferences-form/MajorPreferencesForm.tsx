@@ -41,6 +41,11 @@ export default function StduentPreferencesForm() {
     formContext.setStepLastCompleted(2);
   }
 
+  const handleSubmission = async (event: React.FormEvent) => {
+    event.preventDefault();
+    formContext.setStepLastCompleted(4);
+    router.push('/planners');
+  }
 
   if (formContext.stepLastCompleted === 3) {
     return (
@@ -48,7 +53,7 @@ export default function StduentPreferencesForm() {
         <Box
           component="form"
           sx={{
-            width: '70%',               // Box width set to 50% of the screen width
+            width: '75%',               // Box width set to 50% of the screen width
             mx: 'auto',                 // Horizontally centers the Box using margin auto
             display: 'flex',            // Flexbox layout
             flexDirection: 'column',    // Stacks child components vertically
@@ -57,6 +62,7 @@ export default function StduentPreferencesForm() {
             // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
             padding: 1,                 // Adds some padding for aesthetic spacing
           }}
+          onSubmit = {handleSubmission}
         >
           {infoData.planner === '1' && <NumMajorCoursesPreference />}
           <MajorCourseChoices />
@@ -64,8 +70,8 @@ export default function StduentPreferencesForm() {
             <Button variant="contained" color='primary' onClick={handleBack}>
               Back
             </Button>
-            <Button variant='contained' color='warning'>
-              Next
+            <Button variant='contained' color='warning' type = "submit">
+              Finish
             </Button>
           </Box>
         </Box>

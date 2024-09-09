@@ -42,7 +42,7 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
     mutator(Object.keys(values).filter(key => newValue[key]))
   };
 
-  // console.log(`${title}: ${state}`)
+  console.log(`${title}: ${state}`)
   // console.log(`${title}: ${JSON.stringify(values)}`)
 
   return (
@@ -57,7 +57,7 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
           >
             {options.map((opt: Option) => (
               <Grid
-                size = {{xs: 12, lg: 6}}
+                size = {{xs: 12, sm: 6}}
                 key={opt.value}
                 sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
               >
@@ -66,7 +66,7 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
                     <Checkbox key={opt.value} value={opt.value} checked={values[opt.value]} onChange={handleChange} />
                   }
                   label={opt.option}
-                  sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.85rem' } }} // Adjust the font size here
+                  sx={{ '& .MuiFormControlLabel-label': { fontSize: {xs: '0.75rem', sm: '0.7rem', md: '0.75rem'} } }} // Adjust the font size here
                   />
               </Grid>
             ))}

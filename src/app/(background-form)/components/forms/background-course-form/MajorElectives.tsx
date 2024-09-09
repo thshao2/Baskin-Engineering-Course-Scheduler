@@ -159,7 +159,8 @@ const RenderMajorElectives: React.FC = () => {
           <CheckboxResponsive
             auto={auto2}
             title="Capstone Electives"
-            subtitle=''
+            subtitle={`A passed capstone elective also counts toward satisfying the ${infoData.catalogYear === '23' ? 3 : 4} 
+              upper-division major electives requirement.`}
             options={options2}
             state={backgroundCourseData.completedCapstoneElectives}
             mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedCapstoneElectives: arr }))}

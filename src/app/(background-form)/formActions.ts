@@ -1,6 +1,6 @@
 'use server'
 
-import { InfoData } from "./context/FormContext";
+import { FormContextType, InfoData } from "./context/FormContext";
 import { BackgroundCourseData, UndergradData } from "./context/FormContext";
 
 import { z } from 'zod';
@@ -299,4 +299,8 @@ export async function validateStudentPreferencesForm(infoData: InfoData, arrNumC
   }
 
   return { success: true };
+}
+
+export async function validateEntireForm(formContext: FormContextType) {
+  
 }

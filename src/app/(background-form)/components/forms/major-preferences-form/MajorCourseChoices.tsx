@@ -14,7 +14,7 @@ const RenderMajorCourseChoices: React.FC = () => {
         <>
           {
             (!backgroundCourseData.completedMajorCourses.includes('AM10')
-              && !backgroundCourseData.completedGeneralEdCourses.includes('MATH21')) &&
+              && !backgroundCourseData.completedMajorCourses.includes('MATH21')) &&
             <MultipleSelect
               auto=""
               title="Course Preference (Linear Algebra): AM 10 or MATH 21"
@@ -36,7 +36,7 @@ const RenderMajorCourseChoices: React.FC = () => {
           }
           {
             (!backgroundCourseData.completedMajorCourses.includes('AM30')
-              && !backgroundCourseData.completedGeneralEdCourses.includes('MATH23A')) &&
+              && !backgroundCourseData.completedMajorCourses.includes('MATH23A')) &&
             <MultipleSelect
               auto=""
               title="Course Preference (Multivariate Calculus): AM 30 or MATH 23A"
@@ -58,7 +58,7 @@ const RenderMajorCourseChoices: React.FC = () => {
           }
           {
             (!backgroundCourseData.completedMajorCourses.includes('CSE102')
-              && !backgroundCourseData.completedGeneralEdCourses.includes('CSE103')
+              && !backgroundCourseData.completedMajorCourses.includes('CSE103')
               && parseInt(infoData.catalogYear, 10) >= 24) &&
             <MultipleSelect
               auto=""
@@ -81,7 +81,7 @@ const RenderMajorCourseChoices: React.FC = () => {
           }
           {
             (!backgroundCourseData.completedMajorCourses.includes('STAT131')
-              && !backgroundCourseData.completedGeneralEdCourses.includes('CSE107')) &&
+              && !backgroundCourseData.completedMajorCourses.includes('CSE107')) &&
             <MultipleSelect
               auto=""
               title="Course Preference (Statistics): STAT131 or CSE107"
@@ -103,8 +103,8 @@ const RenderMajorCourseChoices: React.FC = () => {
           }
           {
             (!backgroundCourseData.completedMajorCourses.includes('CSE115A')
-              && !backgroundCourseData.completedGeneralEdCourses.includes('CSE185S') 
-              && !backgroundCourseData.completedGeneralEdCourses.includes('CSE195')) &&
+              && !backgroundCourseData.completedMajorCourses.includes('CSE185S') 
+              && !backgroundCourseData.completedMajorCourses.includes('CSE195')) &&
             <MultipleSelect
               auto=""
               title="DC Preference: CSE115A, CSE185S, or CSE 195"

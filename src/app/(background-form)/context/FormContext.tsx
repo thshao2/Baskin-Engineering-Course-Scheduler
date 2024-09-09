@@ -35,6 +35,27 @@ export type NumCoursesPreference = {
   numMajorCourses: string[],
 }
 
+// Define the full FormContext type
+export type FormContextType = {
+  infoData: InfoData,
+  setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => void,
+  studentStatus: string,
+  setStudentStatus: (student: string) => void,
+  undergradData: UndergradData,
+  setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => void,
+  backgroundCourseData: BackgroundCourseData,
+  setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => void,
+  numCoursesPreference: NumCoursesPreference,
+  setNumCoursesPreference: (data: NumCoursesPreference | ((prev: NumCoursesPreference) => NumCoursesPreference)) => void,
+  majorChoices: string[],
+  setMajorChoices: (data: string[] | ((prev: string[]) => string[])) => void,
+  stepLastCompleted: number,
+  setStepLastCompleted: (step: number) => void,
+  stepError: string,
+  setStepError: (error: string) => void
+}
+
+
 export const FormContext = createContext({
   infoData: {
     catalogYear: '',
