@@ -69,6 +69,7 @@ export default function BackGroundCoursesForm() {
         formContext.undergradData.writing === '2') {
         formContext.setBackgroundCourseData({ ...formContext.backgroundCourseData, universityReq: { ...formContext.backgroundCourseData.universityReq, entry: true } })
       }
+      formContext.setMajorChoices(Array(10).fill(''));
       formContext.setStepLastCompleted(2);
       router.push('/student-preferences');
     })

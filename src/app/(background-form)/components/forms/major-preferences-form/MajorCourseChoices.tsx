@@ -8,6 +8,8 @@ const RenderMajorCourseChoices: React.FC = () => {
 
   const { infoData, backgroundCourseData, majorChoices, setMajorChoices } = useFormContext();
 
+  console.log(majorChoices)
+
   switch (infoData.major) {
     case 'CS':
       return (
@@ -18,11 +20,12 @@ const RenderMajorCourseChoices: React.FC = () => {
             <MultipleSelect
               auto=""
               title="Course Preference (Linear Algebra): AM 10 or MATH 21"
-              subtitle="Choose one of the following:"
+              subtitle="Select one of the following options. If you have no preference, you may leave this section blank."
               options={[
                 { option: 'AM 10: Mathematical Methods for Engineers I (Recommended)', value: 'AM10' },
                 { option: 'MATH 21: Linear Algebra', value: 'MATH21' },
-                { option: 'I am unsure so far and I am open to taking any of these courses.', value: 'BOTH2' }
+                { option: 'No Preference', value: 'Any' },
+
               ]}
               state={majorChoices[0]}
               mutator={(value: string) =>
@@ -40,11 +43,11 @@ const RenderMajorCourseChoices: React.FC = () => {
             <MultipleSelect
               auto=""
               title="Course Preference (Multivariate Calculus): AM 30 or MATH 23A"
-              subtitle="Choose one of the following:"
+              subtitle="Select one of the following options. If you have no preference, you may leave this section blank."
               options={[
                 { option: 'AM 30: Multivariate Calculus for Engineers', value: 'AM30' },
                 { option: 'MATH 23A: Vector Calculus', value: 'MATH23A' },
-                { option: 'I am unsure so far and I am open to taking any of these courses.', value: 'BOTH2' }
+                { option: 'No Preference', value: 'Any' },
               ]}
               state={majorChoices[1]}
               mutator={(value: string) =>
@@ -63,11 +66,11 @@ const RenderMajorCourseChoices: React.FC = () => {
             <MultipleSelect
               auto=""
               title="Course Preference: CSE 102 or CSE 103"
-              subtitle="Choose one of the following:"
+              subtitle="Select one of the following options. If you have no preference, you may leave this section blank."
               options={[
                 { option: 'CSE 102: Introduction to Analysis of Algorithms', value: 'CSE102' },
                 { option: 'CSE 103: Computational Models', value: 'CSE103' },
-                { option: 'I am unsure so far and I am open to taking any of these courses.', value: 'BOTH2' }
+                { option: 'No Preference', value: 'Any' },
               ]}
               state={majorChoices[2]}
               mutator={(value: string) =>
@@ -84,12 +87,12 @@ const RenderMajorCourseChoices: React.FC = () => {
               && !backgroundCourseData.completedMajorCourses.includes('CSE107')) &&
             <MultipleSelect
               auto=""
-              title="Course Preference (Statistics): STAT131 or CSE107"
-              subtitle="Choose one of the following:"
+              title="Course Preference (Statistics): CSE 107 or STAT 131"
+              subtitle="Select one of the following options. If you have no preference, you may leave this section blank."
               options={[
-                { option: 'CSE 107: Probability and Statistics for Engineers', value: 'CSE107' },
+                { option: 'CSE 107: Probability and Statistics for Engineers (Recommended)', value: 'CSE107' },
                 { option: 'STAT 131: Introduction to Probability Theory', value: 'STAT131' },
-                { option: 'I am unsure so far and I am open to taking any of these courses.', value: 'BOTH2' }
+                { option: 'No Preference', value: 'Any' },
               ]}
               state={majorChoices[3]}
               mutator={(value: string) =>
@@ -107,13 +110,13 @@ const RenderMajorCourseChoices: React.FC = () => {
               && !backgroundCourseData.completedMajorCourses.includes('CSE195')) &&
             <MultipleSelect
               auto=""
-              title="DC Preference: CSE115A, CSE185S, or CSE 195"
-              subtitle="Choose one of the following:"
+              title="DC Preference: CSE 115A, CSE 185S, or CSE 195"
+              subtitle="Select one of the following options. If you have no preference, you may leave this section blank."
               options={[
                 { option: 'CSE 115A: Introduction to Software Engineering', value: 'CSE115A' },
                 { option: 'CSE 185S: Technical Writing for Computer Science and Engineering', value: 'CSE185S' },
                 { option: 'CSE 195: Senior Thesis', value: 'CSE195' },
-                { option: 'I am unsure so far and I am open to taking any of these courses.', value: 'ALL3' }
+                { option: 'No Preference', value: 'Any' },
               ]}
               state={majorChoices[4]}
               mutator={(value: string) =>
