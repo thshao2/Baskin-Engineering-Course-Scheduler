@@ -161,7 +161,7 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
 
   const BackgroundCourseDataSchema = z.object({
     universityReq: UniversityReqSchema,
-    completedGeneralEdCourses: z.array(z.string().regex(/^[A-Z]{2}|C$/, {
+    completedGeneralEdCourses: z.array(z.string().regex(/^(CC|ER|IM|MF|SI|SR|TA|PE|PR|C)$/, {
       message: "Invalid Input. Error: General Education Courses",
     })),
     completedMajorCourses: z.array(z.string().regex(/^[A-Z]{2,4}\d{1,3}[A-Z]?$/, {
