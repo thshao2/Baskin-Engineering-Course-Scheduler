@@ -18,19 +18,37 @@ const CS_MajorElectives = [
   'CSE110A', 'CSE111', 'CSE113', 'CSE115B', 'CSE117', 'CSE118',
   'CSE122', 'CSE123A', 'CSE123B', 'CSE125', 'CSE132', 'CSE142', 'CSE146',
   'CSE150', 'CSE151', 'CSE164', 'CSE166A', 'CSE180', 'CSE186', 'CSE195'
-] as const;
+];
 
 const CS_CapstoneElectives = [
   'CSE110B', 'CSE115C', 'CSE115D', 'CSE121', 'CSE134', 'CSE138',
   'CSE140', 'CSE143', 'CSE144', 'CSE156', 'CSE157', 'CSE160',
   'CSE163', 'CSE168', 'CSE181', 'CSE183', 'CSE187', 'CMPM172'
-] as const;
+];
 
 const CS_AlternativeElectives = [
   'AM114', 'AM147', 'CMPM120', 'CMPM131', 'CMPM146', 'CMPM163', 'CMPM164', 'CMPM171', 'CMPM172',
   'MATH110', 'MATH115', 'MATH116', 'MATH117', 'MATH118', 'MATH134', 'MATH145', 'MATH148', 'MATH160',
   'MATH161', 'STAT132', 'PHYS5B', 'PHYS5C', 'PHYS6B', 'PHYS6C'
-] as const;
+];
+
+// const CSPreReq = {
+//   MATH3: ['MATH19A', 'AM10'],
+//   MATH19A: ['MATH19B', 'MATH21'],
+//   MATH19B: ['MATH23A', 'ECE30', 'CSE40', 'STAT131'],
+//   MATH21: [],
+//   MATH23A: ['CSE107'],
+//   CSE12: ['CSE13S', 'CSE101'],
+//   CSE13S: ['CSE101'],
+//   CSE16: ['CSE101', 'CSE107'],
+//   CSE20: ['CSE30', 'CSE12'],
+//   CSE30: ['CSE40', 'CSE101'],
+//   CSE40: [],
+//   AM10: ['AM30'],
+//   ECE30: [],
+//   STAT131: [],
+//   CSE101: ['CSE101M', 'CSE102', 'CSE103', 'CSE114A', 'CSE115A', 'CSE130', 'CSE185S'],
+// }
 
 export async function getNumQuartersBetweenStartAndEndDate(start: string, end: string) {
   let numQuarters = 0;
@@ -60,6 +78,71 @@ async function getDifference(array1: readonly string[], array2: string[]) {
   return array1.filter(item => !array2.includes(item));
 }
 
+async function checkCSElectiveRequirements(allCompletedElectives: string[], electiveReq: { [key: string]: boolean }) {
+  const courseType = (course: string, prefix: string) => course.startsWith(prefix);
+  const checkValidMajorElective = (course: string) => {
+    return CS_MajorElectives.includes(course) || CS_CapstoneElectives.includes(course) || CS_AlternativeElectives.includes(course)
+  }
+
+  for (const course of allCompletedElectives) {
+    if (!electiveReq.capstone && CS_CapstoneElectives.includes(course)) {
+      electiveReq.capstone = true;
+    }
+
+    // Elective 1: Must be an upper-div CSE course
+    if (!electiveReq.elective1 && courseType(course, 'CSE')) {
+      electiveReq.elective1 = true;
+      continue;
+    }
+
+    // Elective 2: Must be either an upper-div CSE or valid CMPM course
+    if (!electiveReq.elective2 && (courseType(course, 'CSE') || courseType(course, 'CMPM')) && checkValidMajorElective(course)) {
+      electiveReq.elective2 = true;
+      continue;
+    }
+
+     // Elective 3: Any valid CS elective course except PHYS
+     if (!electiveReq.elective3 && !courseType(course, 'PHYS') && checkValidMajorElective(course)) {
+      electiveReq.elective3 = true;
+      continue;
+    }
+
+    // Elective 4: Any valid CS elective in General Catalog
+    if (!electiveReq.elective4 && checkValidMajorElective(course)) {
+      electiveReq.elective4 = true;
+      continue;
+    }
+  }
+
+  return electiveReq;
+
+}
+
+async function getNeededCSElectives(electiveReq: { [key: string]: boolean }) {
+  const neededElectives = [];
+  let hasCapstone = electiveReq.capstone;
+
+  if (!electiveReq.elective2) {
+    neededElectives.push(hasCapstone ? 'Major Elective' : 'Capstone Elective');
+    hasCapstone = true;
+  }
+  if (!electiveReq.elective1) {
+    neededElectives.push(hasCapstone ? 'Major Elective' : 'Capstone Elective (CSE)');
+    hasCapstone = true;
+  }
+  if (!hasCapstone) {
+    neededElectives.push('Capstone Elective');
+  }
+  if (!electiveReq.elective3) {
+    neededElectives.push('Major Elective');
+  }
+  if (!electiveReq.elective4) {
+    neededElectives.push('Major Elective')
+  }
+  
+  return neededElectives;
+}
+
 export default async function getPlanners(formContext: FormContextType) {
   const catalog = formContext.infoData.catalogYear;
   const gradDate = parseInt(formContext.infoData.gradDate, 10);
@@ -82,11 +165,19 @@ export default async function getPlanners(formContext: FormContextType) {
   }
   let neededGeneralEdCourses = await getDifference(GE, formContext.backgroundCourseData.completedGeneralEdCourses);
   let neededMajorCourses = await getDifference(CS_MajorCourses, formContext.backgroundCourseData.completedMajorCourses);
-  let neededMajorElectives = await getDifference(CS_MajorElectives, formContext.backgroundCourseData.completedMajorElectives);
-  let neededCapstoneElectives = await getDifference(CS_CapstoneElectives, formContext.backgroundCourseData.completedCapstoneElectives);
-  let neededAlternativeElectives = await getDifference(CS_AlternativeElectives, formContext.backgroundCourseData.completedAlternativeElectives);
-
+  let completedMajorElectives = formContext.backgroundCourseData.completedMajorElectives;
+  let completedCapstoneElectives = formContext.backgroundCourseData.completedCapstoneElectives;
+  let completedAlternativeElectives = formContext.backgroundCourseData.completedAlternativeElectives;
   const majorChoices = formContext.majorChoices;
+
+  let allCompletedElectives = [...completedCapstoneElectives, ...completedMajorElectives, ...completedAlternativeElectives];
+
+  // For 2023-2024 Catalog set elective 2 to true as default
+  let electiveReq = {elective1: false, elective2: catalog === '23' ? true : false, elective3: false, elective4: false, capstone: false}
+  
+  await checkCSElectiveRequirements(allCompletedElectives, electiveReq);
+
+  let neededElectives = await getNeededCSElectives(electiveReq);
 
   let numCoursesPerQuarter = formContext.numCoursesPreference.numCoursesPerQuarter.map(Number);
   if (numQuartersToGenerate > 1 && numCoursesPerQuarter.length === 1) {
