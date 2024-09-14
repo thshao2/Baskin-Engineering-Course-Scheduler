@@ -1,146 +1,34 @@
-import 'server-only'
+import 'server-only';
 
 import { FormContextType } from '../(background-form)/context/FormContext';
+import {
+  getNumQuartersBetweenStartAndEndDate,
+  getDifference, getNeededCSElectives, 
+  getPriorityList, getInDegreeList,
+  GE, CS_MajorCourses, checkCSElectiveRequirements,
+  getQuarterName
+} from './helper'
 
-const q = ['W', 'S', 'F']
+export async function generateCoursesForQuarter(courses: string[], x: number): Promise<string[][]> {
+  const result: string[][] = [];
 
-const GE = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
-
-const CS_MajorCourses = [
-  'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
-  'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
-  'AM10', 'AM30', 'ECE30', 'STAT131',
-  'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S', 'CSE195'
-] as const;
-
-const CS_MajorElectives = [
-  'CSE100', 'CSE101M', 'CSE104', 'CSE105', 'CSE108', 'CSE109',
-  'CSE110A', 'CSE111', 'CSE113', 'CSE115B', 'CSE117', 'CSE118',
-  'CSE122', 'CSE123A', 'CSE123B', 'CSE125', 'CSE132', 'CSE142', 'CSE146',
-  'CSE150', 'CSE151', 'CSE164', 'CSE166A', 'CSE180', 'CSE186', 'CSE195'
-];
-
-const CS_CapstoneElectives = [
-  'CSE110B', 'CSE115C', 'CSE115D', 'CSE121', 'CSE134', 'CSE138',
-  'CSE140', 'CSE143', 'CSE144', 'CSE156', 'CSE157', 'CSE160',
-  'CSE163', 'CSE168', 'CSE181', 'CSE183', 'CSE187', 'CMPM172'
-];
-
-const CS_AlternativeElectives = [
-  'AM114', 'AM147', 'CMPM120', 'CMPM131', 'CMPM146', 'CMPM163', 'CMPM164', 'CMPM171', 'CMPM172',
-  'MATH110', 'MATH115', 'MATH116', 'MATH117', 'MATH118', 'MATH134', 'MATH145', 'MATH148', 'MATH160',
-  'MATH161', 'STAT132', 'PHYS5B', 'PHYS5C', 'PHYS6B', 'PHYS6C'
-];
-
-// const CSPreReq = {
-//   MATH3: ['MATH19A', 'AM10'],
-//   MATH19A: ['MATH19B', 'MATH21'],
-//   MATH19B: ['MATH23A', 'ECE30', 'CSE40', 'STAT131'],
-//   MATH21: [],
-//   MATH23A: ['CSE107'],
-//   CSE12: ['CSE13S', 'CSE101'],
-//   CSE13S: ['CSE101'],
-//   CSE16: ['CSE101', 'CSE107'],
-//   CSE20: ['CSE30', 'CSE12'],
-//   CSE30: ['CSE40', 'CSE101'],
-//   CSE40: [],
-//   AM10: ['AM30'],
-//   ECE30: [],
-//   STAT131: [],
-//   CSE101: ['CSE101M', 'CSE102', 'CSE103', 'CSE114A', 'CSE115A', 'CSE130', 'CSE185S'],
-// }
-
-export async function getNumQuartersBetweenStartAndEndDate(start: string, end: string) {
-  let numQuarters = 0;
-  let startQ = start.charAt(0);
-  let startYear = parseInt(start.slice(1), 10);
-  const endQ = end.charAt(0);
-  const endYear = parseInt(end.slice(1), 10);
-
-  while (startQ != endQ) {
-    numQuarters++;
-    if (q.indexOf(startQ) === 2) {
-      startYear++;
-    }
-    startQ = q[(q.indexOf(startQ) + 1) % 3];
-  }
-
-  if (startYear !== endYear) {
-    numQuarters += (((endYear - startYear) * 3) + 1)
-  } else {
-    numQuarters++;
-  }
-
-  return numQuarters;
-}
-
-async function getDifference(array1: readonly string[], array2: string[]) {
-  return array1.filter(item => !array2.includes(item));
-}
-
-async function checkCSElectiveRequirements(allCompletedElectives: string[], electiveReq: { [key: string]: boolean }) {
-  const courseType = (course: string, prefix: string) => course.startsWith(prefix);
-  const checkValidMajorElective = (course: string) => {
-    return CS_MajorElectives.includes(course) || CS_CapstoneElectives.includes(course) || CS_AlternativeElectives.includes(course)
-  }
-
-  for (const course of allCompletedElectives) {
-    if (!electiveReq.capstone && CS_CapstoneElectives.includes(course)) {
-      electiveReq.capstone = true;
+  async function generateCombination(start: number, currentCombo: string[]) {
+    // If the combination is of size x, add it to the result
+    if (currentCombo.length === x) {
+      result.push([...currentCombo]);
+      return;
     }
 
-    // Elective 1: Must be an upper-div CSE course
-    if (!electiveReq.elective1 && courseType(course, 'CSE')) {
-      electiveReq.elective1 = true;
-      continue;
-    }
-
-    // Elective 2: Must be either an upper-div CSE or valid CMPM course
-    if (!electiveReq.elective2 && (courseType(course, 'CSE') || courseType(course, 'CMPM')) && checkValidMajorElective(course)) {
-      electiveReq.elective2 = true;
-      continue;
-    }
-
-     // Elective 3: Any valid CS elective course except PHYS
-     if (!electiveReq.elective3 && !courseType(course, 'PHYS') && checkValidMajorElective(course)) {
-      electiveReq.elective3 = true;
-      continue;
-    }
-
-    // Elective 4: Any valid CS elective in General Catalog
-    if (!electiveReq.elective4 && checkValidMajorElective(course)) {
-      electiveReq.elective4 = true;
-      continue;
+    // Generate combinations
+    for (let i = start; i < courses.length; i++) {
+      currentCombo.push(courses[i]);
+      generateCombination(i + 1, currentCombo);
+      currentCombo.pop(); // Backtrack to try another combination
     }
   }
 
-  return electiveReq;
-
-}
-
-async function getNeededCSElectives(electiveReq: { [key: string]: boolean }) {
-  const neededElectives = [];
-  let hasCapstone = electiveReq.capstone;
-
-  if (!electiveReq.elective2) {
-    neededElectives.push(hasCapstone ? 'Major Elective' : 'Capstone Elective');
-    hasCapstone = true;
-  }
-  if (!electiveReq.elective1) {
-    neededElectives.push(hasCapstone ? 'Major Elective' : 'Capstone Elective (CSE)');
-    hasCapstone = true;
-  }
-  if (!hasCapstone) {
-    neededElectives.push('Capstone Elective');
-  }
-  if (!electiveReq.elective3) {
-    neededElectives.push('Major Elective');
-  }
-  if (!electiveReq.elective4) {
-    neededElectives.push('Major Elective')
-  }
-  
-  return neededElectives;
+  await generateCombination(0, []);
+  return result;
 }
 
 export default async function getPlanners(formContext: FormContextType) {
@@ -156,11 +44,11 @@ export default async function getPlanners(formContext: FormContextType) {
   }
   const student = formContext.studentStatus;
   const mathPlacement = formContext.undergradData.math;
-  const writingPlacement = formContext.undergradData.writing;
+  let writingPlacement = formContext.undergradData.writing;
   const testout = formContext.undergradData.testout;
   const universityReq = {
-    ahr: formContext.backgroundCourseData.universityReq.ahr === 'T' ? true : false, 
-    entry: formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') || formContext.undergradData.writing === '2',
+    ahr: formContext.backgroundCourseData.universityReq.ahr === 'T' ? true : false,
+    entry: formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') || writingPlacement === '2',
     core: formContext.backgroundCourseData.universityReq.coreCourse
   }
   let neededGeneralEdCourses = await getDifference(GE, formContext.backgroundCourseData.completedGeneralEdCourses);
@@ -170,11 +58,19 @@ export default async function getPlanners(formContext: FormContextType) {
   let completedAlternativeElectives = formContext.backgroundCourseData.completedAlternativeElectives;
   const majorChoices = formContext.majorChoices;
 
+  if (neededGeneralEdCourses.includes('C') && writingPlacement !== '2') {
+    const writingLevels = ['25', '26', '1'];
+    const index = writingLevels.indexOf(writingPlacement);
+    for (let i = index; i < writingLevels.length; i++) {
+      neededGeneralEdCourses.push(writingLevels[i]);
+    }
+  }
+
   let allCompletedElectives = [...completedCapstoneElectives, ...completedMajorElectives, ...completedAlternativeElectives];
 
   // For 2023-2024 Catalog set elective 2 to true as default
-  let electiveReq = {elective1: false, elective2: catalog === '23' ? true : false, elective3: false, elective4: false, capstone: false}
-  
+  let electiveReq = { elective1: false, elective2: catalog === '23' ? true : false, elective3: false, elective4: false, capstone: false }
+
   await checkCSElectiveRequirements(allCompletedElectives, electiveReq);
 
   let neededElectives = await getNeededCSElectives(electiveReq);
@@ -187,22 +83,95 @@ export default async function getPlanners(formContext: FormContextType) {
   // Each element will be an array (schedule), where each element in each array will be an object with quarter and courses attributes
   // Example: {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}
   const planners = [];
+  const priorityList = await getPriorityList();
+  let inDegreeObject = await getInDegreeList(neededMajorCourses);
 
-  async function generateNextQuarter() {
+  /* 
+  Consider: 
+  Is this the student's first quarter? => Core Course
+  Student's second quarter and in Stevenson? => Core Course Part 2
+  Still have GE Requirements? => CC, ER, IM, MF, SI, SR, TA, PE, PR
+  Still have Writing Requirements? => Writing 25, 26, 1, or 2
+    Writing 25: Offered only in Fall
+    Writing 26: Offered in Fall, Winter
+    Writing 1: Offered most in Winter, Spring
+    Writing 2: Offered most in Fall, Spring
+  Still need to satisfy AHR? => will be put in elective
+  */
+  async function generateFirstQuarter() {
+    let numCourses = numCoursesPerQuarter[0];
+    const addToCourses = [];
+    if (student === 'U') {
+      numCourses--;
+      addToCourses.push('College Core Course');
+    }
+    if (student === 'C' && universityReq.core === '2') {
+      numCourses--;
+      addToCourses.push('College Core Course (Part 2)');
+    }
+    const startQuarter = startDate.charAt(0);
+    if (writingPlacement === '25' && startQuarter === 'F') {
+      numCourses--;
+      addToCourses.push('Writing 25');
+      writingPlacement = '26';
+    } else if (writingPlacement === '26' && (startQuarter === 'F' || startQuarter === 'W')) {
+      numCourses--;
+      addToCourses.push('Writing 26');
+      writingPlacement = '1';
+    } else if (writingPlacement === '1' && (startQuarter === 'W' || startQuarter === 'S')) {
+      numCourses--;
+      addToCourses.push('Writing 1/Writing 1E');
+      writingPlacement = '2T'; // This will need to be put on hold
+    }
 
+    const queue = [];
+    for (const course in inDegreeObject) {
+      if (inDegreeObject[course] === 0) {
+        queue.push(course);
+      }
+    }
+    let temp = [];
+    for (let i = 1; i <= numCourses; i++) {
+      // let activeNeededGERequirements = [...neededGeneralEdCourses];
+      temp = await generateCoursesForQuarter(queue, i);
+      const date = await getQuarterName(startDate);
+      const fillCourses = [...addToCourses];
+      for (let j = 0; j < numCourses - i; i++) {
+        if (writingPlacement === '2' && (startQuarter === 'F' || startQuarter === 'S')){
+          fillCourses.push('Writing 2/Writing 2H');
+          writingPlacement = 'C';
+          neededGeneralEdCourses = neededGeneralEdCourses.filter(ge => ge !== 'C');
+          continue;
+        }
+        if (neededGeneralEdCourses.length > 1 || (neededGeneralEdCourses.length === 1 && neededGeneralEdCourses[0] !== 'C')) {
+          fillCourses.push('GE Course')
+          const indexToRemove = neededGeneralEdCourses.findIndex(ge => ge !== 'C');
+          neededGeneralEdCourses.splice(indexToRemove, 1)
+          continue;
+        }
+        fillCourses.push('Elective');
+      }
+      for (const courses of temp) {
+        const newCourses = [...courses, ...fillCourses];
+        planners.push({quarter: date, courses: newCourses});
+      }
+    }
+    if (writingPlacement === '2T') {
+      writingPlacement = '2';
+    }
   }
 
   async function generatePlanners() {
-    
+
   }
 
   if (numQuartersToGenerate === 1) {
 
   } else if (numQuartersToGenerate <= 3) {
-    let numMajorCourses = formContext.numCoursesPreference.numMajorCourses.map(Number);
-    if (numMajorCourses.length === 1) {
-      numMajorCourses = Array(numQuartersToGenerate).fill(numMajorCourses[0]);
-    }
+    // let numMajorCourses = formContext.numCoursesPreference.numMajorCourses.map(Number);
+    // if (numMajorCourses.length === 1) {
+    //   numMajorCourses = Array(numQuartersToGenerate).fill(numMajorCourses[0]);
+    // }
     // Call Function to Fill Next Quarter Schedule: generateNextQuarter(planners);
     // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
   } else {
@@ -231,7 +200,7 @@ UndergradData:
   Writing Placement (Required):
     Form: 25, 26, 1, 2, or empty (if C GE was checked)
     Visual Planner Site: Either 25, 26, 1, 2, or C (completed)
-  Testout (Required only for U Student Status):
+  Testout (Required only for U Student Status): // This will be depreciated in formContext
     Must have 'CSE20' property in object
 
   BackgroundCourseData:
@@ -254,9 +223,6 @@ NumCoursesPreference:
   Number of Courses/Quarter (Required for Form, in Advanced Settings in Visual Planner Site):
     Array Length of 1: number applied to all quarters
     Array Length > 1: specific number of courses/quarter
-  Number of Major Courses/Quarter (Required only for Form):
-    Array Length of 1: number applied to all quarters
-    Array Length = 3: specific number of major courses/quarter
 
 MajorChoices (Required for Form, in Advanced Settings in Visual Planner Site)
 */
