@@ -17,7 +17,6 @@ export type UndergradData = {
 
 export type UniversityReq = {
   ahr: string,
-  entry: boolean,
   coreCourse: string,
 }
 
@@ -76,7 +75,6 @@ export const FormContext = createContext({
   backgroundCourseData: {
     universityReq: {
       ahr: '',
-      entry: false,
       coreCourse: '',
     },
     completedGeneralEdCourses: [] as string[],
@@ -121,7 +119,6 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({
     universityReq: {
       ahr: '',
-      entry: false,
       coreCourse: '',
     },
     completedGeneralEdCourses: [],

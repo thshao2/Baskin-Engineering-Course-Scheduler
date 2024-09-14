@@ -200,13 +200,12 @@ UndergradData:
   Writing Placement (Required):
     Form: 25, 26, 1, 2, or empty (if C GE was checked)
     Visual Planner Site: Either 25, 26, 1, 2, or C (completed)
-  Testout (Required only for U Student Status): // This will be depreciated in formContext
+  Testout (Required only for U Student Status): // This will be deprecated in formContext
     Must have 'CSE20' property in object
 
   BackgroundCourseData:
     University Requirements (Required):
       AHR: 'T' (true) or 'F' (false)
-      Entry-Level Writing: true or false (boolean) // This will be depreciated in formContext
       Core Course / College:
         Form:
           C, S, T, M, P, K, O, R, N, or J (if U student Status)

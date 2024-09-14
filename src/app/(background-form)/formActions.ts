@@ -155,7 +155,6 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
 
   const UniversityReqSchema = z.object({
     ahr: z.enum(['T', 'F'], { message: 'Please indicate whether you have completed the AHR Requirement' }),
-    entry: z.boolean(),
     coreCourse: coreCourseSchema,
   });
 
