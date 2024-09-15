@@ -74,7 +74,7 @@ export default async function getPlanners(formContext: FormContextType) {
 
   let neededElectives = await getNeededCSElectives(electiveReq);
 
-  let numCoursesPerQuarter = formContext.numCoursesPreference.numCoursesPerQuarter.map(Number);
+  let numCoursesPerQuarter = formContext.numCoursesPreference.map(Number);
   if (numQuartersToGenerate > 1 && numCoursesPerQuarter.length === 1) {
     numCoursesPerQuarter = Array(numQuartersToGenerate).fill(numCoursesPerQuarter[0]);
   }
@@ -167,10 +167,6 @@ export default async function getPlanners(formContext: FormContextType) {
   if (numQuartersToGenerate === 1) {
 
   } else if (numQuartersToGenerate <= 3) {
-    // let numMajorCourses = formContext.numCoursesPreference.numMajorCourses.map(Number);
-    // if (numMajorCourses.length === 1) {
-    //   numMajorCourses = Array(numQuartersToGenerate).fill(numMajorCourses[0]);
-    // }
     // Call Function to Fill Next Quarter Schedule: generateNextQuarter(planners);
     // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
   } else {
@@ -215,8 +211,7 @@ UndergradData:
     Completed Capstone Electives (Required only for Form)
     Completed Alternative Electives (Required only for Form)
   
-NumCoursesPreference:
-  Number of Courses/Quarter (Required for Form, in Advanced Settings in Visual Planner Site):
+NumCoursesPreference (Required for Form, in Advanced Settings in Visual Planner Site):
     Array Length of 1: number applied to all quarters
     Array Length > 1: specific number of courses/quarter
 

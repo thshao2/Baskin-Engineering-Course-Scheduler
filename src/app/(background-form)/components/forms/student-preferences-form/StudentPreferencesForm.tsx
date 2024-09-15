@@ -12,7 +12,6 @@ import React, { useEffect } from 'react';
 
 import { validateStudentPreferencesForm } from '../../../formActions';
 import NumCoursesPreference from './NumCoursesPreference';
-import NumMajorCoursesPreference from '../major-preferences-form/NumMajorCoursesPreference';
 
 
 export default function StduentPreferencesForm() {
@@ -43,7 +42,7 @@ export default function StduentPreferencesForm() {
   const handleStudentPreferencesForm = async (event: React.FormEvent) => {
     event.preventDefault();
     startTransition(async () => {
-      const result = await validateStudentPreferencesForm(formContext.infoData, formContext.numCoursesPreference.numCoursesPerQuarter)
+      const result = await validateStudentPreferencesForm(formContext.infoData, formContext.numCoursesPreference)
       console.log(result);
       if (!result.success) {
         formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');

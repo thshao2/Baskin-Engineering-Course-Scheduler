@@ -9,10 +9,7 @@ import { useFormContext } from '../../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import NumMajorCoursesPreference from './NumMajorCoursesPreference';
 import MajorCourseChoices from './MajorCourseChoices';
-
-
 
 export default function StduentPreferencesForm() {
   const router = useRouter();
@@ -64,7 +61,6 @@ export default function StduentPreferencesForm() {
           }}
           onSubmit = {handleSubmission}
         >
-          {infoData.planner === '1' && <NumMajorCoursesPreference />}
           <MajorCourseChoices />
           <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button variant="contained" color='primary' onClick={handleBack}>

@@ -77,46 +77,29 @@ export default function NumCoursesPreference() {
 
   const { infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
 
-  const [defaultNumCourses, setDefaultNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length === 1 ? numCoursesPreference.numCoursesPerQuarter[0] :  '3');
+  const [defaultNumCourses, setDefaultNumCourses] = useState(numCoursesPreference.length === 1 ? numCoursesPreference[0] :  '3');
 
   let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner, infoData.planner);
   
-  const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.numCoursesPerQuarter.length > 1 && numCoursesPreference.numCoursesPerQuarter.length === enrolledQuarters.length);
-  const [advancedNumCourses, setAdvancedNumCourses] = useState(numCoursesPreference.numCoursesPerQuarter.length === enrolledQuarters.length ? numCoursesPreference.numCoursesPerQuarter : Array(enrolledQuarters.length).fill(defaultNumCourses, 0))
+  const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.length > 1 && numCoursesPreference.length === enrolledQuarters.length);
+  const [advancedNumCourses, setAdvancedNumCourses] = useState(numCoursesPreference.length === enrolledQuarters.length ? numCoursesPreference : Array(enrolledQuarters.length).fill(defaultNumCourses, 0))
 
   console.log(enrolledQuarters.length)
-  // useEffect(() => {
-  //   if (numCoursesPreference.numCoursesPerQuarter.length === 0) {
-  //     setNumCoursesPreference((prev) => ({
-  //       ...prev,
-  //       numCoursesPerQuarter: ['3'],
-  //     }));
-  //   }
-  // }, [numCoursesPreference.numCoursesPerQuarter, setNumCoursesPreference])
 
   const handleDefaultChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value as string;
     setDefaultNumCourses(value);
-    setNumCoursesPreference((prev) => ({
-      numMajorCourses: ['2'],
-      numCoursesPerQuarter: [value],
-    }));
+    setNumCoursesPreference([value]);
   };
 
   const handleAdvancedToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAdvancedMode((prev) => !prev);
     if (event.target.checked) {
       const newNumCoursesPerQuarter = Array(enrolledQuarters.length).fill(defaultNumCourses, 0);
-      setNumCoursesPreference((prev) => ({
-        numMajorCourses: ['2'],
-        numCoursesPerQuarter: newNumCoursesPerQuarter,
-      }));
+      setNumCoursesPreference(newNumCoursesPerQuarter);
       setAdvancedNumCourses(newNumCoursesPerQuarter);
     } else {
-      setNumCoursesPreference((prev) => ({
-        numMajorCourses: ['2'],
-        numCoursesPerQuarter: [defaultNumCourses],
-      }));
+      setNumCoursesPreference([defaultNumCourses]);
     }
     
   };
@@ -125,13 +108,10 @@ export default function NumCoursesPreference() {
     const updatedCourses = [...advancedNumCourses];
     updatedCourses[index] = event.target.value as string;
     setAdvancedNumCourses(updatedCourses);
-    setNumCoursesPreference((prev) => ({
-      numMajorCourses: ['2'],
-      numCoursesPerQuarter: updatedCourses,
-    }));
+    setNumCoursesPreference(updatedCourses);
   };
 
-  console.log(numCoursesPreference.numCoursesPerQuarter)
+  console.log(numCoursesPreference)
 
 
   return (

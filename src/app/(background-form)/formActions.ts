@@ -1,6 +1,6 @@
 'use server'
 
-import { FormContextType, InfoData, NumCoursesPreference } from "./context/FormContext";
+import { FormContextType, InfoData } from "./context/FormContext";
 import { BackgroundCourseData, UndergradData } from "./context/FormContext";
 
 import { z } from 'zod';
@@ -291,65 +291,18 @@ export async function validateStudentPreferencesForm(infoData: InfoData, arrNumC
   return { success: true };
 }
 
-async function validateMajorChoices(plannerType: string, numCoursesPreference: NumCoursesPreference, majorChoices: string[]) {
-  let numMajorCourseSchema;
-
-  const numMajorCourses = numCoursesPreference.numMajorCourses;
-
-
-  if (plannerType === '1') {
-    numMajorCourseSchema = z.array(z.string().regex(/^\d{1}$/, { message: "Invalid Input. Error: Number of Major Courses Per Quarter." }))
-      .refine(arr => arr.length === 1 || arr.length === 3, {
-        message: 'Invalid Input. Error: Number of Major Courses Per Quarter.',
-      });
-  } else {
-    numMajorCourseSchema = z.array(z.string());
-  }
-
+async function validateMajorChoices(majorChoices: string[]) {
   const schema = z.object({
-    numMajorCourses: numMajorCourseSchema,
     majorChoices: z.array(z.string()).length(10, { message: 'Invalid Input. Error: Major Course Preferences' }),
   })
 
   const result = schema.safeParse({
-    numMajorCourses: numMajorCourses,
     majorChoices: majorChoices
   });
 
   if (!result.success) {
     const errorMessages = result.error.errors.map(error => error.message);
     return { success: false, errors: errorMessages }
-  }
-
-  let numErrors = [];
-
-  if (plannerType === '1') {
-    const numMajorArr = numMajorCourses.map(Number);
-    const numCourseArr = numCoursesPreference.numCoursesPerQuarter.map(Number);
-    if (numCourseArr.length === 1) {
-      for (let i = 0; i < numMajorArr.length; i++) {
-        if (numMajorArr[i] > numCourseArr[0]) {
-          numErrors.push(`Error: Selected number of preferred major courses for one or more quarter(s) 
-            is greater than the selected number of preferred courses for those quarters. To fix this, 
-            edit the "Preferred Number of Courses Per Quarter" or "Preferred Number of Major Courses Per Quarter" section.`)
-          break;
-        }
-      }
-    } else {
-      const check = numMajorArr.length === 1;
-      for (let i = 0; i < numCourseArr.length; i++) {
-        if (numMajorArr[check ? 0 : i] > numCourseArr[i]) {
-          numErrors.push(`Error: Selected number of preferred major courses for one or more quarter(s) 
-            is greater than the selected number of preferred courses for those quarters. To fix this, 
-            edit the "Preferred Number of Courses Per Quarter" or "Preferred Number of Major Courses Per Quarter" section.`)
-          break;
-        }
-      }
-    }
-  }
-
-  if (numErrors.length > 0) {
-    return { success: false, errors: numErrors };
   }
 
   return { success: true }
@@ -360,8 +313,8 @@ async function validateEntireForm(formContext: FormContextType) {
   let errors = [];
   let result;
   const infoData: InfoData = formContext.infoData;
-  const numCoursesPreference: NumCoursesPreference = formContext.numCoursesPreference;
-  result = await validateStudentPreferencesForm(infoData, numCoursesPreference.numCoursesPerQuarter);
+  const numCoursesPreference: string[] = formContext.numCoursesPreference;
+  result = await validateStudentPreferencesForm(infoData, numCoursesPreference);
   if (!result.success) {
     if (result.errors) {
       errors.push(...result.errors)
@@ -380,7 +333,7 @@ async function validateEntireForm(formContext: FormContextType) {
     return { success: false, errors: errors }
   }
   const majorChoices: string[] = formContext.majorChoices;
-  result = await validateMajorChoices(infoData.planner, numCoursesPreference, majorChoices);
+  result = await validateMajorChoices(majorChoices);
   if (!result.success) {
     return { success: false, errors: result.errors ? result.errors : [] };
   }
@@ -392,7 +345,7 @@ async function validateEntireForm(formContext: FormContextType) {
 export async function validateAndGeneratePlanners(
   infoData: InfoData, studentStatus: string,
   undergradData: UndergradData, backgroundCourseData: BackgroundCourseData,
-  numCoursesPreference: NumCoursesPreference, majorChoices: string[]) {
+  numCoursesPreference: string[], majorChoices: string[]) {
 
   const formContext = {
     infoData: infoData,

@@ -28,18 +28,13 @@ export type BackgroundCourseData = {
   completedAlternativeElectives: string[],
 }
 
-export type NumCoursesPreference = {
-  numCoursesPerQuarter: string[],
-  numMajorCourses: string[],
-}
-
 // Define the full FormContext type
 export type FormContextType = {
   infoData: InfoData,
   studentStatus: string,
   undergradData: UndergradData,
   backgroundCourseData: BackgroundCourseData,
-  numCoursesPreference: NumCoursesPreference,
+  numCoursesPreference: string[],
   majorChoices: string[],
 }
 
@@ -72,13 +67,10 @@ export const FormContext = createContext({
     completedAlternativeElectives: [] as string[],
   },
   setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => {},
-  numCoursesPreference: {
-    numCoursesPerQuarter: [] as string[],
-    numMajorCourses: [] as string[],
-  },
+  numCoursesPreference: [] as string[],
+  setNumCoursesPreference: (data: string[] | ((prev: string[]) => string[])) => {},
   majorChoices: [] as string[],
   setMajorChoices: (data: string[] | ((prev: string[]) => string[])) => {},
-  setNumCoursesPreference: (data: NumCoursesPreference | ((prev: NumCoursesPreference) => NumCoursesPreference)) => {},
   stepLastCompleted: 0,
   setStepLastCompleted: (step: number) => {},
   stepError: '',
@@ -116,10 +108,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
 
   })
 
-  const [numCoursesPreference, setNumCoursesPreference] = useState<NumCoursesPreference>({
-    numCoursesPerQuarter: ['3'],
-    numMajorCourses: ['2'],
-  })
+  const [numCoursesPreference, setNumCoursesPreference] = useState<string[]>(['3'])
 
   const [majorChoices, setMajorChoices] = useState<string[]>(Array(10).fill(''));
 
