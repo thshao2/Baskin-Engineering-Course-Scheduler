@@ -192,7 +192,6 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
 
   let mathSchema = z.string();
   let writingSchema = z.string();
-  let testoutSchema;
 
   if (!backgroundCourseData.completedGeneralEdCourses.includes('C')) {
     writingSchema = z.string()
@@ -208,19 +207,11 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
       .regex(/^\d{1,2}([AB])?$/, {
         message: "Invalid Input. Error: Math Placement"
       })
-    testoutSchema = z.object({
-      'CSE20': z.boolean().optional(), // 'CSE20' is expected but marked optional for initial presence check
-    }).refine((data) => data.hasOwnProperty('CSE20'), {
-      message: 'Please indicate whether you have or plan to take the CSE 20 testout exam',
-    });
-  } else {
-    testoutSchema = z.record(z.boolean())
   }
 
   const UndergradDataSchema = z.object({
     math: mathSchema,
     writing: writingSchema,
-    testout: testoutSchema,
   });
 
   const validateBackgroundCourseFormSchema = z.object({

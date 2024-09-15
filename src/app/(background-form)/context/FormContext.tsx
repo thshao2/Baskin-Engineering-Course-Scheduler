@@ -12,7 +12,6 @@ export type InfoData = {
 export type UndergradData = {
   math: string,
   writing: string,
-  testout: { [key: string]: boolean },
 }
 
 export type UniversityReq = {
@@ -37,21 +36,11 @@ export type NumCoursesPreference = {
 // Define the full FormContext type
 export type FormContextType = {
   infoData: InfoData,
-  // setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => void,
   studentStatus: string,
-  // setStudentStatus: (student: string) => void,
   undergradData: UndergradData,
-  // setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => void,
   backgroundCourseData: BackgroundCourseData,
-  // setBackgroundCourseData: (data: BackgroundCourseData | ((prev: BackgroundCourseData) => BackgroundCourseData)) => void,
   numCoursesPreference: NumCoursesPreference,
-  // setNumCoursesPreference: (data: NumCoursesPreference | ((prev: NumCoursesPreference) => NumCoursesPreference)) => void,
   majorChoices: string[],
-  // setMajorChoices: (data: string[] | ((prev: string[]) => string[])) => void,
-  // stepLastCompleted: number,
-  // setStepLastCompleted: (step: number) => void,
-  // stepError: string,
-  // setStepError: (error: string) => void
 }
 
 
@@ -69,7 +58,6 @@ export const FormContext = createContext({
   undergradData: {
     math: '',
     writing: '',
-    testout: {} as Record<string, boolean>,
   },
   setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => {},
   backgroundCourseData: {
@@ -113,7 +101,6 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   const [undergradData, setUndergradData] = useState<UndergradData>({
     math: '',
     writing: '',
-    testout: {},
   })
 
   const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({

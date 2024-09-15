@@ -12,23 +12,23 @@ import Box from "@mui/material/Box";
 
 
 export default function Testout() {
-  const { infoData, undergradData, setUndergradData } = useFormContext();
+  const { infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
 
-  const [value, setValue] = useState(undergradData.testout['CSE20'] == undefined ? '' : undergradData.testout['CSE20'].toString());
+  const [value, setValue] = useState(backgroundCourseData.completedMajorCourses.includes('CSE20') ? 'true' : 'false');
 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = (event.target as HTMLInputElement).value.toString();
     setValue(input);
     if (input === 'false') {
-      setUndergradData((prev) => ({
+      setBackgroundCourseData((prev) => ({
         ...prev,
-        testout: {...prev.testout, CSE20: false}
+        completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => course !== 'CSE20')
       }));
     } else {
-      setUndergradData((prev) => ({
+      setBackgroundCourseData((prev) => ({
         ...prev,
-        testout: {...prev.testout, CSE20: true}
+        completedMajorCourses: [...backgroundCourseData.completedMajorCourses, 'CSE20']
       }));
     }
   };

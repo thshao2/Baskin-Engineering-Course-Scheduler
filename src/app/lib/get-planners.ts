@@ -45,7 +45,6 @@ export default async function getPlanners(formContext: FormContextType) {
   const student = formContext.studentStatus;
   const mathPlacement = formContext.undergradData.math;
   let writingPlacement = formContext.undergradData.writing;
-  const testout = formContext.undergradData.testout;
   const universityReq = {
     ahr: formContext.backgroundCourseData.universityReq.ahr === 'T' ? true : false,
     entry: formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') || writingPlacement === '2',
@@ -200,8 +199,6 @@ UndergradData:
   Writing Placement (Required):
     Form: 25, 26, 1, 2, or empty (if C GE was checked)
     Visual Planner Site: Either 25, 26, 1, 2, or C (completed)
-  Testout (Required only for U Student Status): // This will be deprecated in formContext
-    Must have 'CSE20' property in object
 
   BackgroundCourseData:
     University Requirements (Required):

@@ -39,7 +39,7 @@ export default function BackGroundCoursesForm() {
   }, [setStepLastCompleted])
 
   useEffect(() => {
-    if (studentStatus === 'T') {
+    if (studentStatus !== 'C') {
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) => ({ ...backgroundCourseData, completedMajorCourses: [] }));
     }
   }, [studentStatus, setBackgroundCourseData])
