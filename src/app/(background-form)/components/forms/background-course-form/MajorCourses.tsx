@@ -10,13 +10,14 @@ import React, { useEffect, useState } from "react";
 import MajorElectives from "./MajorElectives";
 
 const codes = [
-  'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
+  'MATH3', 'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
   'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
   'AM10', 'AM30', 'ECE30', 'STAT131',
   'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S', 'CSE195'
 ] as const;
 
 const majorLabels = [
+  'MATH 3: Precalculus',
   'MATH 19A: Calculus for Science, Engineering, and Mathematics I', 
   'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
   'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
@@ -106,8 +107,13 @@ const RenderMajorCourses: React.FC = () => {
             auto={autoProps}
             title="Major Courses"
             subtitle={studentStatus !== 'C' ?
-              `Select required major courses that you have already satisfied through transfer credit.` :
-              `Select required major courses that you have already taken, or have already received credit for.`
+              `Please select all major courses that you have satisfied through transfer credit.` :
+              `Please select all major courses that you have completed or have satisfied through transfer credit.
+               Important:
+                For the first three MATH courses ([MATH 3, MATH 19A, MATH 19B]), you only need to check one of these options.
+                Selecting "MATH 19A" will automatically grant you credit for "MATH 3".
+                Selecting "MATH 19B" will grant you credit for both "MATH 3" and "MATH 19A".
+               `
             }
             options={options}
             state={backgroundCourseData.completedMajorCourses}

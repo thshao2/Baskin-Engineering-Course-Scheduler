@@ -5,7 +5,7 @@ export const q = ['W', 'S', 'F']
 export const GE = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
 
 export const CS_MajorCourses = [
-  'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
+  'MATH3', 'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
   'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
   'AM10', 'AM30', 'ECE30', 'STAT131',
   'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S', 'CSE195'
@@ -63,6 +63,11 @@ export const CSCoursesOffered = {
   CSE101M: { F: true, W: true, S: false },
   CSE103: { F: false, W: true, S: true },
 }
+
+// export type elective = {
+//   option: string,
+//   value: string,
+// }
 
 // export type priority = {
 //   outDegree: number,
@@ -205,7 +210,7 @@ export async function checkCSElectiveRequirements(allCompletedElectives: string[
 }
 
 export async function getNeededCSElectives(electiveReq: { [key: string]: boolean }) {
-  const neededElectives = [];
+  const neededElectives: string[] = [];
   let hasCapstone = electiveReq.capstone;
 
   if (!electiveReq.elective2) {
@@ -213,7 +218,7 @@ export async function getNeededCSElectives(electiveReq: { [key: string]: boolean
     hasCapstone = true;
   }
   if (!electiveReq.elective1) {
-    neededElectives.push(hasCapstone ? 'Major Elective' : 'Capstone Elective (CSE)');
+    neededElectives.push(hasCapstone ? 'Major Elective' : 'Capstone Elective (CSE course)');
     hasCapstone = true;
   }
   if (!hasCapstone) {
@@ -226,5 +231,33 @@ export async function getNeededCSElectives(electiveReq: { [key: string]: boolean
     neededElectives.push('Major Elective')
   }
 
+  const capstoneIndex = neededElectives.findIndex(
+    (e) => e === 'Capstone Elective' || e === 'Capstone Elective (CSE course)'
+  );
+
+  if (capstoneIndex !== -1) {
+    // Remove the Capstone Elective from the array
+    const [capstoneElective] = neededElectives.splice(capstoneIndex, 1);
+    // Add it to the end of the array
+    neededElectives.push(capstoneElective);
+  }
+
   return neededElectives;
+}
+
+export async function getElectivesToAdd(neededMajorCourses: string[], neededElectives: string[]) {
+  const completedMajorCourses = await getDifference(CS_MajorCourses, neededMajorCourses);
+  const numNeeded = neededElectives.length;
+  if (!completedMajorCourses.includes('CSE101')) {
+    return 0;
+  }
+  const req = ['CSE40', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE120', 'CSE130'];
+  let count = completedMajorCourses.filter(course => req.includes(course)).length;
+  if (count < 4) {
+    return numNeeded < 2 ? numNeeded : 2;
+  } else if (count < 6) {
+    return numNeeded < 3 ? numNeeded : 3;
+  } else {
+    return numNeeded < 4 ? numNeeded : 4;
+  }
 }

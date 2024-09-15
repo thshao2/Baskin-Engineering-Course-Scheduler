@@ -5,11 +5,13 @@ import { generateCoursesForQuarter } from "@/app/lib/get-planners"
 
 export default async function Test() {
   const neededMajorCourses = ['CSE20', 'MATH19B', 'CSE40', 'CSE30', 'CSE12', 'MATH23A', 'AM30', 'CSE13S', 'CSE16', 'AM10', 'MATH21', 'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE120', 'CSE130', 'CSE114A', 'CSE107', 'STAT131', 'ECE30', 'CSE115A', 'CSE185S', 'CSE195']
-  const courses = ['CSE40', 'CSE101', 'CSE107', 'CSE120', 'CSE130', 'CSE114A', 'CSE115A', 'CSE144', 'CSE150']
+  const courses = ['CSE101', 'CSE120', 'CSE130', 'CSE114A', 'CSE115A', 'CSE144', 'CSE150', 'Major Elective']
+  // const courses = ['Major Elective', 'CSE114A', 'CSE120', 'CSE115A', 'CSE144', 'CSE150', 'Major Elective', 'Major Elective', 'MATH21']
+  // const courses = ['CSE 114A', 'Major Elective', 'Major Elective', 'CSE 150', 'CSE 144', 'Major Elective'];
 
   const temp = await getPriorityList();
   const temp2 = await getInDegreeList(neededMajorCourses);
-  const temp3 = await generateCoursesForQuarter(courses, 1);
+  const temp3 = await generateCoursesForQuarter(courses, 3);
   // console.log(temp)
   return (
     <>
