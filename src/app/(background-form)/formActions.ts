@@ -1,5 +1,6 @@
 'use server'
 
+import getPlanners from "../lib/get-planners";
 import { FormContextType, InfoData } from "./context/FormContext";
 import { BackgroundCourseData, UndergradData } from "./context/FormContext";
 
@@ -359,8 +360,9 @@ export async function validateAndGeneratePlanners(
   const result = await validateEntireForm(formContext);
   if (result.success) {
     // Generate Schedules
-    return result;
+    const planners = await getPlanners(formContext)
+    return {...result, data: planners};
   } else {
-    return result;
+    return {...result, data: []};
   }
 }

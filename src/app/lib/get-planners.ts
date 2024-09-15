@@ -7,9 +7,13 @@ import {
   getPriorityList, getInDegreeList,
   GE, CS_MajorCourses, checkCSElectiveRequirements,
   getQuarterName,
-  getElectivesToAdd
+  getElectivesToAdd, EquivalentCSCourses, newEquivalentCSCourses
 } from './helper'
 
+export type quarterSchedule = {
+  quarter: string,
+  courses: string[],
+}
 
 type currentSnapshot = {
   currentTerm: string,
@@ -97,6 +101,19 @@ export default async function getPlanners(formContext: FormContextType) {
     }
   }
 
+  // Add Equivalency Major Courses
+  const equivalency = [];
+  const equivList = parseInt(catalog, 10) > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
+  for (const course of completedMajorCourses) {
+    if (equivList[course] !== undefined) {
+      for (const equivCourse of equivList[course]) {
+        equivalency.push(equivCourse);
+      }
+    }  
+  }
+
+  completedMajorCourses.push(...equivalency);
+
   // Needed Major Courses
   let neededMajorCourses = await getDifference(CS_MajorCourses, completedMajorCourses);
 
@@ -141,7 +158,7 @@ export default async function getPlanners(formContext: FormContextType) {
 
   // Each element will be an array (schedule), where each element in each array will be an object with quarter and courses attributes
   // Example: {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}
-  const planners = [];
+  const planners: quarterSchedule[][] = [];
 
   // Each element will be an array (snapshots for a specific schedule),
   // where each element in each array will be an object with quarter and snapshot attributes
@@ -167,6 +184,15 @@ export default async function getPlanners(formContext: FormContextType) {
     Writing 1: Offered most in Winter, Spring
     Writing 2: Offered most in Fall, Spring
   Still need to satisfy AHR? => will be put in elective
+
+  Still to Consider in Algorithm:
+    DC Requirement => Senior Thesis shouldn't show until 4 or more core completed
+                      185S shouldn't show unless 2 or more core completed
+                      115A => Prereq.
+    Major Choices
+    Eqivalency courses should NOT collide
+    Let user pick # of major courses after generation?
+    Remember 101M not required in 22 catalog
   */
   async function generateFirstQuarter() {
     const nextSnapshot: currentSnapshot = {
@@ -206,7 +232,7 @@ export default async function getPlanners(formContext: FormContextType) {
     } else if (writingPlacement === '1' && (startQuarter === 'W' || startQuarter === 'S')) {
       numCourses--;
       addToCourses.push('Writing 1/Writing 1E');
-      nextSnapshot.writingPlacement = '2';
+      nextSnapshot.writingPlacement = '2T';
     }
 
     const queue = [];
@@ -218,13 +244,14 @@ export default async function getPlanners(formContext: FormContextType) {
     let temp = [];
     const electiveIndex = await getElectivesToAdd(nextSnapshot.neededMajorCourses, nextSnapshot.neededElectives);
     queue.push(...nextSnapshot.neededElectives.slice(0, electiveIndex));
-    for (let i = 1; i <= numCourses; i++) {
+    const numMajorCoursesStart = numCourses > 4 ? 4 : numCourses;
+    for (let i = numMajorCoursesStart; i >= 1; i--) {
       temp = await generateCoursesForQuarter(queue, i);
       const date = await getQuarterName(startDate);
       const fillCourses = [...addToCourses];
       const newNextSnapshot = structuredClone(nextSnapshot);
-      for (let j = 0; j < numCourses - i; i++) {
-        if (writingPlacement === '2' && (startQuarter === 'F' || startQuarter === 'S') && student !== 'U') {
+      for (let j = 0; j < numCourses - i; j++) {
+        if (newNextSnapshot.writingPlacement === '2' && (startQuarter === 'F' || startQuarter === 'S') && student !== 'U') {
           fillCourses.push('Writing 2/Writing 2H');
           newNextSnapshot.writingPlacement = 'C';
           newNextSnapshot.neededGeneralEdCourses = newNextSnapshot.neededGeneralEdCourses.filter(ge => ge !== 'C');
@@ -249,9 +276,18 @@ export default async function getPlanners(formContext: FormContextType) {
             finalSnapshotInstance.neededElectives.splice(indexToRemove, 1);
           } else {
             finalSnapshotInstance.neededMajorCourses = finalSnapshotInstance.neededMajorCourses.filter(c => c !== course)
+            const equivList = Number(catalog) > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
+            if (equivList[course] !== undefined) {
+              for (const equivCourse of equivList[course]) {
+                finalSnapshotInstance.neededMajorCourses = finalSnapshotInstance.neededMajorCourses.filter(c => c !== equivCourse)
+              }
+            }
           }
         }
-        snapshots.push([{quarter: date, snapshot: finalSnapshotInstance}]);
+        if (finalSnapshotInstance.writingPlacement === '2T') {
+          finalSnapshotInstance.writingPlacement = '2';
+        }
+        snapshots.push([{ quarter: date, snapshot: finalSnapshotInstance }]);
       }
     }
   }
@@ -264,14 +300,23 @@ export default async function getPlanners(formContext: FormContextType) {
 
     await generateFirstQuarter();
 
+    return planners;
+
   } else if (numQuartersToGenerate <= 3) {
 
     // Call Function to Fill Next Quarter Schedule: await generateNextQuarter();
+    await generateFirstQuarter();
+
+    return planners;
     // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
 
   } else {
 
     // Call Function to Fill Next Quarter Schedule: generateNextQuarter(planners);
+    await generateFirstQuarter();
+
+    return planners;
+
     // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
 
   }
@@ -318,4 +363,5 @@ NumCoursesPreference (Required for Form, in Advanced Settings in Visual Planner 
     Array Length > 1: specific number of courses/quarter
 
 MajorChoices (Required for Form, in Advanced Settings in Visual Planner Site)
+// Considering deprecation in lieu of filtering capabilities after schedule generation
 */

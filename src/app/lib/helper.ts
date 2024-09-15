@@ -59,6 +59,32 @@ export const CSAdjList: Record<string, string[]> = {
   CSE195: [],
 }
 
+export const EquivalentCSCourses: Record<string, string[]> = {
+  AM10: ['MATH21'],
+  MATH21: ['AM10'],
+  AM30: ['MATH23A'],
+  MATH23A: ['AM30'],
+  CSE107: ['STAT131'],
+  STAT131: ['CSE107'],
+  CSE115A: ['CSE185S', 'CSE195'],
+  CSE185S: ['CSE115A', 'CSE195'],
+  CSE195: ['CSE115A', 'CSE185S'],
+}
+
+export const newEquivalentCSCourses: Record<string, string[]> = {
+  AM10: ['MATH21'],
+  MATH21: ['AM10'],
+  AM30: ['MATH23A'],
+  MATH23A: ['AM30'],
+  CSE107: ['STAT131'],
+  STAT131: ['CSE107'],
+  CSE115A: ['CSE185S', 'CSE195'],
+  CSE185S: ['CSE115A', 'CSE195'],
+  CSE195: ['CSE115A', 'CSE185S'],
+  CSE102: ['CSE103'],
+  CSE103: ['CSE102'],
+}
+
 export const CSCoursesOffered = {
   CSE101M: { F: true, W: true, S: false },
   CSE103: { F: false, W: true, S: true },
@@ -253,7 +279,9 @@ export async function getElectivesToAdd(neededMajorCourses: string[], neededElec
   }
   const req = ['CSE40', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE120', 'CSE130'];
   let count = completedMajorCourses.filter(course => req.includes(course)).length;
-  if (count < 4) {
+  if (count < 2) {
+    return numNeeded < 1 ? numNeeded : 1
+  } else if (count < 4) {
     return numNeeded < 2 ? numNeeded : 2;
   } else if (count < 6) {
     return numNeeded < 3 ? numNeeded : 3;
