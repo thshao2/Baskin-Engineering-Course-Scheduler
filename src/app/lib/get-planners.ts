@@ -7,7 +7,7 @@ import {
   getPriorityList, getInDegreeList,
   GE, CS_MajorCourses, checkCSElectiveRequirements,
   getQuarterName,
-  getElectivesToAdd, 
+  getElectivesToAdd,
   EquivalentCSCourses, newEquivalentCSCourses,
   getCoreUpperCoursesCount
 } from './helper'
@@ -17,6 +17,19 @@ export type quarterSchedule = {
   courses: string[],
 }
 
+export type DisplayElement = {
+  catalog: string,
+  EGT: string,
+  allowedMajorCourses: string[]
+  lockedMajorCourses: string[],
+  GE: string[],
+  univReq: { ahr: boolean, entry: boolean, core: boolean },
+  writing: string[],
+  electives: {electiveArr: string[]; [key: string]: boolean | string[] },
+}
+
+type Planners = [DisplayElement, ...quarterSchedule[][][]];
+
 type currentSnapshot = {
   currentTerm: string,
   quarterNum: number,
@@ -25,6 +38,11 @@ type currentSnapshot = {
   neededGeneralEdCourses: string[],
   neededMajorCourses: string[],
   neededElectives: string[],
+}
+
+type Snapshot = {
+  quarter: string,
+  snapshot: currentSnapshot
 }
 
 export async function generateCoursesForQuarter(courses: string[], x: number, catalog: number): Promise<string[][]> {
@@ -67,7 +85,7 @@ export async function generateCoursesForQuarter(courses: string[], x: number, ca
 export default async function getPlanners(formContext: FormContextType) {
   // InfoData: Catalog, Graduation Date, Start Term, Planner Type, Number of Quarters to Generate
   const catalog = parseInt(formContext.infoData.catalogYear, 10);
-  const gradDate = parseInt(formContext.infoData.gradDate, 10);
+  const gradDate = formContext.infoData.gradDate;
   const startDate = formContext.infoData.startPlanner;
   const plannerType = formContext.infoData.planner;
   let numQuartersToGenerate = await getNumQuartersBetweenStartAndEndDate(formContext.infoData.startPlanner, formContext.infoData.gradDate);
@@ -94,6 +112,10 @@ export default async function getPlanners(formContext: FormContextType) {
   // Needed General Education Requirements
   let neededGeneralEdCourses = await getDifference(GE, formContext.backgroundCourseData.completedGeneralEdCourses);
 
+  // Copy Array for Display GE Courses
+  const displayNeededGECourses = [...neededGeneralEdCourses];
+
+  // Completed Major Courses
   const completedMajorCourses = formContext.backgroundCourseData.completedMajorCourses;
 
   // Update Completed Major Courses array to include courses satisfied through math placement (only if undergrad)
@@ -122,18 +144,18 @@ export default async function getPlanners(formContext: FormContextType) {
       for (const equivCourse of equivList[course]) {
         equivalency.push(equivCourse);
       }
-    }  
+    }
   }
 
   // CSE 101M not required in 2022-2023 catalog
   if (catalog === 22 && !completedMajorCourses.includes('CSE101M')) {
     equivalency.push('CSE101M');
-  } 
+  }
 
   // CSE 40 not required in 2022-2023 catalog
   if (catalog === 22 && !completedMajorCourses.includes('CSE40')) {
     equivalency.push('CSE40');
-  } 
+  }
 
   completedMajorCourses.push(...equivalency);
 
@@ -146,6 +168,8 @@ export default async function getPlanners(formContext: FormContextType) {
   const completedAlternativeElectives = formContext.backgroundCourseData.completedAlternativeElectives;
   let allCompletedElectives = [...completedCapstoneElectives, ...completedMajorElectives, ...completedAlternativeElectives];
 
+  const displayWritingCoursesNeeded = [];
+
   // Update General Education Requirements array to include ALL writing courses needed 
   /* Example: if placed in Writing 1, include '1' as well as 'C', representing Writing 1 AND Writing 2
               are both needed to meet General Education requirements */
@@ -154,7 +178,12 @@ export default async function getPlanners(formContext: FormContextType) {
     const index = writingLevels.indexOf(writingPlacement);
     for (let i = index; i < writingLevels.length; i++) {
       neededGeneralEdCourses.push(writingLevels[i]);
+      displayWritingCoursesNeeded.push(`WRIT ${writingLevels[i]}`)
     }
+  }
+
+  if (neededGeneralEdCourses.includes('C')) {
+    displayWritingCoursesNeeded.push(`WRIT 2`)
   }
 
   // For 2023-2024 Catalog set elective 2 to true as default
@@ -178,6 +207,24 @@ export default async function getPlanners(formContext: FormContextType) {
 
   // Each element will be an array (schedule), where each element in each array will be an object with quarter and courses attributes
   // Example: {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}
+
+  /*
+  New Planners Array:
+    Each element will be an array:
+      The first array will represent the display that will be shown to the user, with information such as:
+        [{Catalog, Expected Graduation Term
+        Major Courses that can be taken (take account of equivlency courses), 
+        Major courses that can not be taken until prereq. are completed (take account of equivalency courses),
+        Unfulfilled GE's
+        University Requirements: AHR, College Core
+        Writing Placement, Writing Courses to take, Entry Requirement
+        How many electives are still needed (and what types of elective)
+        }]
+      The corresponding arrays will have quarterSchedule[][] type arrays, each representing different # of major courses taken (by the index) 
+      in the first quarter, generated by planner). Each element in the arraay will be an object with quarter and courses
+      attributes:
+        Example: {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}
+  */
   const planners: quarterSchedule[][] = [];
 
   // Each element will be an array (snapshots for a specific schedule),
@@ -192,6 +239,48 @@ export default async function getPlanners(formContext: FormContextType) {
 
   // Get In-Degree Object of current user state in major courses
   let inDegreeObject = await getInDegreeList(neededMajorCourses);
+
+  const displayExpectedGradDate = await getQuarterName(gradDate);
+  const equivalencyObj = catalog > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
+
+  /*
+  Example:
+     [
+      detailedPlanners[0],
+      [
+        [
+          {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}, 
+          {quarter: 'Winter 2025', courses: ['CSE 138', 'CSE 242', 'CSE 244']}
+        ], 
+        [
+          {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 150']}, 
+          {quarter: 'Winter 2025', courses: ['CSE 138', 'CSE 242', 'CSE 144']}
+        ], 
+        ...
+      ]
+      ...
+
+     ]
+  */
+
+  const detailedPlanners: Planners = [
+    {
+      catalog: `${catalog + 2000}-${catalog + 2001}`,
+      EGT: displayExpectedGradDate,
+      allowedMajorCourses: [],
+      lockedMajorCourses: [],
+      GE: displayNeededGECourses,
+      univReq: {
+        ahr: universityReq.ahr, 
+        entry: universityReq.entry, 
+        core: (student === 'T' || (student === 'C' && universityReq.core === '1'))
+      },
+      writing: displayWritingCoursesNeeded,
+      electives: {...electiveReq, electiveArr: neededElectives},
+    }
+  ];
+
+  const snapshots2: Snapshot[][][] = [];
 
   /* 
   Consider: 
@@ -226,7 +315,6 @@ export default async function getPlanners(formContext: FormContextType) {
       Let user filter out major courses
   */
   async function generateFirstQuarter() {
-    // console.log(neededMajorCourses)
     const nextSnapshot: currentSnapshot = {
       currentTerm: startDate, // increment this
       quarterNum: 1,
@@ -286,8 +374,14 @@ export default async function getPlanners(formContext: FormContextType) {
       queue.splice(indexToRemove, 1);
     }
 
+    detailedPlanners[0].allowedMajorCourses = [...queue];
+    const displayLockedMajorCourses = await getDifference(CS_MajorCourses, detailedPlanners[0].allowedMajorCourses)
+    detailedPlanners[0].lockedMajorCourses = displayLockedMajorCourses;
+
     const numMajorCoursesStart = numCourses > 4 ? 4 : numCourses;
     for (let i = numMajorCoursesStart; i >= 1; i--) {
+      detailedPlanners[i] = [];
+      snapshots2[i] = [];
       temp = await generateCoursesForQuarter(queue, i, catalog);
       const date = await getQuarterName(startDate);
       const fillCourses = [...addToCourses];
@@ -311,6 +405,7 @@ export default async function getPlanners(formContext: FormContextType) {
       for (const courses of temp) {
         const newCourses = [...courses, ...fillCourses];
         planners.push([{ quarter: date, courses: newCourses }]);
+        (detailedPlanners[i] as quarterSchedule[][]).push([{ quarter: date, courses: newCourses }]);
         const finalSnapshotInstance = structuredClone(newNextSnapshot);
         for (const course of courses) {
           if (course.includes('Elective')) {
@@ -330,6 +425,7 @@ export default async function getPlanners(formContext: FormContextType) {
           finalSnapshotInstance.writingPlacement = '2';
         }
         snapshots.push([{ quarter: date, snapshot: finalSnapshotInstance }]);
+        snapshots2[i].push([{ quarter: date, snapshot: finalSnapshotInstance }]);
       }
     }
   }
@@ -342,14 +438,14 @@ export default async function getPlanners(formContext: FormContextType) {
 
     await generateFirstQuarter();
 
-    return planners;
+    return detailedPlanners;
 
   } else if (numQuartersToGenerate <= 3) {
 
     // Call Function to Fill Next Quarter Schedule: await generateNextQuarter();
     await generateFirstQuarter();
 
-    return planners;
+    return detailedPlanners;
     // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
 
   } else {
@@ -357,7 +453,7 @@ export default async function getPlanners(formContext: FormContextType) {
     // Call Function to Fill Next Quarter Schedule: generateNextQuarter(planners);
     await generateFirstQuarter();
 
-    return planners;
+    return detailedPlanners;
 
     // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
 

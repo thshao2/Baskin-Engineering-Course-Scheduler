@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 import { red, orange, blue, green, cyan, teal, pink, purple } from '@mui/material/colors'
 import { validateAndGeneratePlanners } from "../formActions";
-import { quarterSchedule } from "@/app/lib/get-planners";
+import { quarterSchedule, DisplayElement } from "@/app/lib/get-planners";
 
 import { Table, TableHead, TableContainer, TableCell, TableBody, TableRow, Paper } from "@mui/material"
 
@@ -75,7 +75,7 @@ const getColor = (course: string) => {
 const QuarterSkeleton = () => {
   return (
     <Box sx={{ width: '100%', mb: 2 }}>
-      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent'}}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -125,7 +125,7 @@ const Quarter = ({ quarter, courses }: { quarter: string, courses: string[] }) =
   return (
     <Box sx={{ width: '100%', mb: 2 }}>
       {/* Table Structure */}
-      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', border: '1px solid white' }}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', border: '1px solid #78909c' }}>
         <Table aria-label="quarter schedule">
 
           {/* Table Head for Quarter Title */}
@@ -139,7 +139,7 @@ const Quarter = ({ quarter, courses }: { quarter: string, courses: string[] }) =
                   fontSize: { xs: '1rem', sm: '1.25rem' },  // Responsive font size
                   backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slight background for the header
                   color: orange['A400'],
-                  borderBottom: '1px solid white',
+                  // borderBottom: '1px solid white',
                   padding: '1rem'
                 }}
               >
@@ -156,7 +156,7 @@ const Quarter = ({ quarter, courses }: { quarter: string, courses: string[] }) =
                   sx={{
                     fontSize: { xs: '0.75rem', sm: '0.85rem' },
                     textAlign: 'center',
-                    borderBottom: '1px solid white',
+                    // borderBottom: '1px solid white',
                     color: getColor(course),  // Assuming a dark background
                     padding: '0.5rem'
                   }}
@@ -185,7 +185,9 @@ export default function Planner() {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [schedules, setSchedules] = useState<quarterSchedule[][] | undefined>([]);
+  const [displayInfo, setDisplayInfo] = useState<DisplayElement | undefined>(undefined);
+
+  const [schedules, setSchedules] = useState<quarterSchedule[][][] | undefined>([]);
 
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -202,7 +204,14 @@ export default function Planner() {
       if (result.success) {
         console.log(result);
         setErrors([]);
-        setSchedules(result.data);  // Set the schedules received from the server
+        setDisplayInfo(result.data[0]);
+        const reorderedSchedules: quarterSchedule[][][] = [
+          result.data[3] as quarterSchedule[][],  // Index 3 first
+          result.data[2] as quarterSchedule[][],  // Index 2 second
+          result.data[4] as quarterSchedule[][],  // Index 4 third (if it exists)
+          result.data[1] as quarterSchedule[][],  // Index 1 last
+        ].filter(Boolean); // Filters out any undefined elements if an index is out of bounds
+        setSchedules(reorderedSchedules as quarterSchedule[][][]);  // Set the schedules received from the server
       } else {
         console.log(result);
         setErrors(result.errors);    // Set the error message if validation fails
@@ -283,7 +292,7 @@ export default function Planner() {
               ))}
             </Box>
           }
-          {schedules &&
+          {/* {schedules &&
             <Box sx={{ width: '100%', mt: 4, mb: 1 }}>
               <Grid container spacing={1}>
                 {schedules.map((schedule, scheduleIndex) => (
@@ -296,7 +305,33 @@ export default function Planner() {
                 ))}
               </Grid>
             </Box>
-          }
+          } */}
+          {schedules && (
+            <Box sx={{ width: '100%', mt: 4, mb: 1 }}>
+              {schedules.map((scheduleGroup, groupIndex) => (
+                <Grid key={groupIndex} container spacing={1}>
+                  {/* Loop through each quarterSchedule[] within quarterSchedule[][] */}
+                  {scheduleGroup.map((schedule, scheduleIndex) => (
+                    <Grid
+                      size={{ xs: 12, sm: 6, md: 4 }}
+                      key={scheduleIndex}
+                      sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+                    >
+                      {/* Loop through each quarter in quarterSchedule[] */}
+                      {schedule.map((quarter, index) => (
+                        <Quarter
+                          key={index}
+                          quarter={quarter.quarter}
+                          courses={quarter.courses}
+                        />
+                      ))}
+                    </Grid>
+                  ))}
+                </Grid>
+
+              ))}
+            </Box>
+          )}
         </Box>
       </>
     );

@@ -92,7 +92,7 @@ export async function validateInfoForm(infoForm: InfoData) {
         return year >= startGradDate && year <= endGradDate;
       }, { message: 'Invalid Input. Error: Expected Graduation Date' }),
     Planner: z.string()
-      .refine(val => val === '1' || val === '2', {
+      .refine(val => val === '1' || val === '2' || val === '3', {
         message: 'Invalid Input. Error: Type of Planner',
       }),
     StartPlanner: z.string()

@@ -134,14 +134,15 @@ export default function InfoForm() {
           mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, gradDate: value }))}
         />
         <Select
-          auto="1"
-          title="I want to generate..."
-          subtitle=''
+          auto="3"
+          title="Planner Type"
+          subtitle='I want to generate a planner for...'
           inputLabel="Planner"
           options={
             [
-              { option: 'Planners for the Next 3 Quarters', value: '1' },
-              { option: 'Full Academic Planners', value: '2'}
+              { option: 'Next Quarter', value: '3' },
+              { option: 'Upcoming 3 Quarters', value: '1' },
+              { option: 'Full Academic Planner (to graduation date)', value: '2'}
             ]
           }
           state = {formContext.infoData.planner}
