@@ -375,7 +375,7 @@ export default async function getPlanners(formContext: FormContextType) {
     }
 
     detailedPlanners[0].allowedMajorCourses = [...queue];
-    const displayLockedMajorCourses = await getDifference(CS_MajorCourses, detailedPlanners[0].allowedMajorCourses)
+    const displayLockedMajorCourses = await getDifference(CS_MajorCourses, [...completedMajorCourses, ...detailedPlanners[0].allowedMajorCourses])
     detailedPlanners[0].lockedMajorCourses = displayLockedMajorCourses;
 
     const numMajorCoursesStart = numCourses > 4 ? 4 : numCourses;

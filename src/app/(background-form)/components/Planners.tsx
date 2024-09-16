@@ -205,12 +205,34 @@ export default function Planner() {
         console.log(result);
         setErrors([]);
         setDisplayInfo(result.data[0]);
+        const data2 = (result.data[2] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
+        const data3 = (result.data[3] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
+        const data4 = (result.data[4] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
+        
+        const maxLength = Math.max(data2.length, data3.length, data4.length);
+        const combinedSchedule: quarterSchedule[][] = [];
+        
+        for (let i = 0; i < maxLength; i++) {
+          if (i < data3.length) {
+            combinedSchedule.push(data3[i]); // Add from result.data[3] if available
+          }
+          if (i < data2.length) {
+            combinedSchedule.push(data2[i]); // Add from result.data[2] if available
+          }
+          if (i < data4.length) {
+            combinedSchedule.push(data4[i]); // Add from result.data[4] if available
+          }
+        }        
+        // const reorderedSchedules: quarterSchedule[][][] = [
+        //   result.data[3] as quarterSchedule[][],  // Index 3 first
+        //   result.data[2] as quarterSchedule[][],  // Index 2 second
+        //   result.data[4] as quarterSchedule[][],  // Index 4 third (if it exists)
+        //   result.data[1] as quarterSchedule[][],  // Index 1 last
+        // ].filter(Boolean); // Filters out any undefined elements if an index is out of bounds
         const reorderedSchedules: quarterSchedule[][][] = [
-          result.data[3] as quarterSchedule[][],  // Index 3 first
-          result.data[2] as quarterSchedule[][],  // Index 2 second
-          result.data[4] as quarterSchedule[][],  // Index 4 third (if it exists)
+          combinedSchedule,
           result.data[1] as quarterSchedule[][],  // Index 1 last
-        ].filter(Boolean); // Filters out any undefined elements if an index is out of bounds
+        ];
         setSchedules(reorderedSchedules as quarterSchedule[][][]);  // Set the schedules received from the server
       } else {
         console.log(result);
