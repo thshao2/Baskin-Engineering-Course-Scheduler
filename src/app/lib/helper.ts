@@ -289,3 +289,13 @@ export async function getElectivesToAdd(neededMajorCourses: string[], neededElec
     return numNeeded < 4 ? numNeeded : 4;
   }
 }
+
+export async function getCoreUpperCoursesCount(neededMajorCourses: string[]) {
+  const completedMajorCourses = await getDifference(CS_MajorCourses, neededMajorCourses);
+  if (!completedMajorCourses.includes('CSE101')) {
+    return 0;
+  }
+  const req = ['CSE40', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE120', 'CSE130'];
+  let count = completedMajorCourses.filter(course => req.includes(course)).length;
+  return count;
+}

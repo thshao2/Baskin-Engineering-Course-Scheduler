@@ -7,7 +7,9 @@ import {
   getPriorityList, getInDegreeList,
   GE, CS_MajorCourses, checkCSElectiveRequirements,
   getQuarterName,
-  getElectivesToAdd, EquivalentCSCourses, newEquivalentCSCourses
+  getElectivesToAdd, 
+  EquivalentCSCourses, newEquivalentCSCourses,
+  getCoreUpperCoursesCount
 } from './helper'
 
 export type quarterSchedule = {
@@ -25,10 +27,17 @@ type currentSnapshot = {
   neededElectives: string[],
 }
 
-export async function generateCoursesForQuarter(courses: string[], x: number): Promise<string[][]> {
-  // const result: string[][] = [];
-
+export async function generateCoursesForQuarter(courses: string[], x: number, catalog: number): Promise<string[][]> {
   const result: Set<string> = new Set();
+
+  function equivalentCourse(currentCombo: string[], course: string): boolean {
+    // Get Equivalency Courses for Catalog Year
+    const equivalencyObj = catalog > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
+
+    // Check if any equivalent course is already in currentCombo
+    const equivalents = equivalencyObj[course] || []; // Get equivalent courses for the current course
+    return currentCombo.some(c => equivalents.includes(c));
+  }
 
   async function generateCombination(start: number, currentCombo: string[]) {
     // If the combination is of size x, add it to the result
@@ -40,9 +49,13 @@ export async function generateCoursesForQuarter(courses: string[], x: number): P
 
     // Generate combinations
     for (let i = start; i < courses.length; i++) {
-      currentCombo.push(courses[i]);
-      await generateCombination(i + 1, currentCombo);
-      currentCombo.pop(); // Backtrack to try another combination
+      const course = courses[i];
+
+      if (!equivalentCourse(currentCombo, course)) {
+        currentCombo.push(courses[i]);
+        await generateCombination(i + 1, currentCombo);
+        currentCombo.pop(); // Backtrack to try another combination
+      }
     }
   }
 
@@ -53,7 +66,7 @@ export async function generateCoursesForQuarter(courses: string[], x: number): P
 
 export default async function getPlanners(formContext: FormContextType) {
   // InfoData: Catalog, Graduation Date, Start Term, Planner Type, Number of Quarters to Generate
-  const catalog = formContext.infoData.catalogYear;
+  const catalog = parseInt(formContext.infoData.catalogYear, 10);
   const gradDate = parseInt(formContext.infoData.gradDate, 10);
   const startDate = formContext.infoData.startPlanner;
   const plannerType = formContext.infoData.planner;
@@ -103,7 +116,7 @@ export default async function getPlanners(formContext: FormContextType) {
 
   // Add Equivalency Major Courses
   const equivalency = [];
-  const equivList = parseInt(catalog, 10) > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
+  const equivList = catalog > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
   for (const course of completedMajorCourses) {
     if (equivList[course] !== undefined) {
       for (const equivCourse of equivList[course]) {
@@ -111,6 +124,16 @@ export default async function getPlanners(formContext: FormContextType) {
       }
     }  
   }
+
+  // CSE 101M not required in 2022-2023 catalog
+  if (catalog === 22 && !completedMajorCourses.includes('CSE101M')) {
+    equivalency.push('CSE101M');
+  } 
+
+  // CSE 40 not required in 2022-2023 catalog
+  if (catalog === 22 && !completedMajorCourses.includes('CSE40')) {
+    equivalency.push('CSE40');
+  } 
 
   completedMajorCourses.push(...equivalency);
 
@@ -135,7 +158,7 @@ export default async function getPlanners(formContext: FormContextType) {
   }
 
   // For 2023-2024 Catalog set elective 2 to true as default
-  let electiveReq = { elective1: false, elective2: catalog === '23' ? true : false, elective3: false, elective4: false, capstone: false }
+  let electiveReq = { elective1: false, elective2: catalog === 23 ? true : false, elective3: false, elective4: false, capstone: false }
 
   // Update actual completed major electives in electiveReq based on the major elective requirements 
   await checkCSElectiveRequirements(allCompletedElectives, electiveReq);
@@ -186,12 +209,24 @@ export default async function getPlanners(formContext: FormContextType) {
     DC Requirement => Senior Thesis shouldn't show until 4 or more core completed
                       185S shouldn't show unless 2 or more core completed
                       115A => Prereq.
-    Major Choices
-    Eqivalency courses should NOT collide
-    Let user pick # of major courses after generation?
-    Remember 101M not required in 22 catalog
+    Equivalency courses should NOT collide
+    AM 10/MATH 21
+    AM 30/MATH 23A
+    CSE 107/STAT 131
+
+    Not Equivalent Courses, but preferred not to collide
+    CSE 102/CSE 103 (2024-2025 catalog)
+    CSE 115A/CSE 185S/CSE 195 (DC)
+
+    Remember 40, 101M not required in 22 catalog (different catalog years)
+
+    Filter:
+      Let user pick # of major courses after generation, search of specific courses in schedule (for 1-3 quarter schedule)
+      Let user filter by major courses
+      Let user filter out major courses
   */
   async function generateFirstQuarter() {
+    // console.log(neededMajorCourses)
     const nextSnapshot: currentSnapshot = {
       currentTerm: startDate, // increment this
       quarterNum: 1,
@@ -241,9 +276,19 @@ export default async function getPlanners(formContext: FormContextType) {
     let temp = [];
     const electiveIndex = await getElectivesToAdd(nextSnapshot.neededMajorCourses, nextSnapshot.neededElectives);
     queue.push(...nextSnapshot.neededElectives.slice(0, electiveIndex));
+    const coreCount = await getCoreUpperCoursesCount(nextSnapshot.neededMajorCourses);
+    if (coreCount < 5 && queue.includes('CSE195')) {
+      const indexToRemove = queue.findIndex(course => course === 'CSE195');
+      queue.splice(indexToRemove, 1);
+    }
+    if (coreCount < 2 && queue.includes('CSE185S')) {
+      const indexToRemove = queue.findIndex(course => course === 'CSE185S');
+      queue.splice(indexToRemove, 1);
+    }
+
     const numMajorCoursesStart = numCourses > 4 ? 4 : numCourses;
     for (let i = numMajorCoursesStart; i >= 1; i--) {
-      temp = await generateCoursesForQuarter(queue, i);
+      temp = await generateCoursesForQuarter(queue, i, catalog);
       const date = await getQuarterName(startDate);
       const fillCourses = [...addToCourses];
       const newNextSnapshot = structuredClone(nextSnapshot);
@@ -273,7 +318,7 @@ export default async function getPlanners(formContext: FormContextType) {
             finalSnapshotInstance.neededElectives.splice(indexToRemove, 1);
           } else {
             finalSnapshotInstance.neededMajorCourses = finalSnapshotInstance.neededMajorCourses.filter(c => c !== course)
-            const equivList = Number(catalog) > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
+            const equivList = catalog > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
             if (equivList[course] !== undefined) {
               for (const equivCourse of equivList[course]) {
                 finalSnapshotInstance.neededMajorCourses = finalSnapshotInstance.neededMajorCourses.filter(c => c !== equivCourse)

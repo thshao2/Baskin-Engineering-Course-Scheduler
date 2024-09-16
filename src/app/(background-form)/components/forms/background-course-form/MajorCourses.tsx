@@ -33,7 +33,8 @@ const majorLabels = [
   'CSE 107: Probability and Statistics for Engineers', 
   'CSE 114A: Foundations of Programming Languages', 
   'CSE 115A: Introduction to Software Engineering (DC Requirement)', 
-  'CSE 120: Computer Architecture', 'CSE 130: Principles of Computer Systems Design', 
+  'CSE 120: Computer Architecture', 
+  'CSE 130: Principles of Computer Systems Design', 
   'CSE 185S: Technical Writing for Computer Science and Engineering (DC Requirement)',
   'CSE 195: Senior Thesis Research (if used for DC Requirement)'
 ] as const;

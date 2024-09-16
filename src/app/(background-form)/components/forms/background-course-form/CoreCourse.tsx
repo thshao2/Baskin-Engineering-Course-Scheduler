@@ -43,11 +43,12 @@ export function ContinuingCoreCourse() {
     <TwoSelect
         title = "Have you completed your College Core Course?"
         subtitle = {`For most continuing students, you have already completed your core course. 
-          This option is for undergraduates affiliated with Stevenson (with a two-quarter core course) who are planning for their second quarter at UCSC.`}
+          This option is for undergraduates affiliated with Stevenson (with a two-quarter core course) who are planning for their second quarter at UCSC.
+          Transfer students are waived from this requirement.`}
         options = {
           [
             { option: "No. I am taking a two-quarter core course and will be taking the second part next quarter.", value: '2'},
-            { option: "Yes, I have completed my college core course.", value: '1'},
+            { option: "Yes, I have completed my college core course, or I am a transfer student.", value: '1'},
           ]
         }
         state = {backgroundCourseData.universityReq.coreCourse}
