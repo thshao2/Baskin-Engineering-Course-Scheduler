@@ -136,7 +136,7 @@ export default function Planner() {
   const { stepLastCompleted } = useFormContext();
 
   const handleBack = () => {
-    formContext.setStepLastCompleted(3);
+    formContext.setStepLastCompleted(2);
   }
 
   const [schedules, setSchedules] = useState<quarterSchedule[][] | undefined>([]);
@@ -151,7 +151,6 @@ export default function Planner() {
         formContext.undergradData,
         formContext.backgroundCourseData,
         formContext.numCoursesPreference,
-        formContext.majorChoices
       );
       if (result.success) {
         console.log(result);
@@ -162,18 +161,18 @@ export default function Planner() {
       }
     }
 
-    if (stepLastCompleted === 4) {
+    if (stepLastCompleted === 3) {
       // Call server action to validate the form and generate schedules
       validateAndGenerateSchedules();
-    } else if (stepLastCompleted === 3) {
-      router.replace('/major-course-preferences');
-    } else if (stepLastCompleted < 3) {
+    } else if (stepLastCompleted === 2) {
+      router.replace('/student-preferences');
+    } else if (stepLastCompleted < 2) {
       router.replace('/info')
     }
   }, [stepLastCompleted, formContext, router]);
 
 
-  if (formContext.stepLastCompleted === 4) {
+  if (formContext.stepLastCompleted === 3) {
     return (
       <>
         <Box

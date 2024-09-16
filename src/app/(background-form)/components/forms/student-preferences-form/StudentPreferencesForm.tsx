@@ -49,9 +49,8 @@ export default function StduentPreferencesForm() {
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
         return;
       }
-      formContext.setStepError('');
       formContext.setStepLastCompleted(3);
-      router.push('/major-course-preferences');
+      router.push('/planners');
     })
   }
 

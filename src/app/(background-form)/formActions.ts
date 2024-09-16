@@ -292,24 +292,6 @@ export async function validateStudentPreferencesForm(infoData: InfoData, arrNumC
   return { success: true };
 }
 
-async function validateMajorChoices(majorChoices: string[]) {
-  const schema = z.object({
-    majorChoices: z.array(z.string()).length(10, { message: 'Invalid Input. Error: Major Course Preferences' }),
-  })
-
-  const result = schema.safeParse({
-    majorChoices: majorChoices
-  });
-
-  if (!result.success) {
-    const errorMessages = result.error.errors.map(error => error.message);
-    return { success: false, errors: errorMessages }
-  }
-
-  return { success: true }
-
-}
-
 async function validateEntireForm(formContext: FormContextType) {
   let errors = [];
   let result;
@@ -333,11 +315,6 @@ async function validateEntireForm(formContext: FormContextType) {
   if (errors.length > 0) {
     return { success: false, errors: errors }
   }
-  const majorChoices: string[] = formContext.majorChoices;
-  result = await validateMajorChoices(majorChoices);
-  if (!result.success) {
-    return { success: false, errors: result.errors ? result.errors : [] };
-  }
 
   return {success: true, errors: []};
 
@@ -346,7 +323,7 @@ async function validateEntireForm(formContext: FormContextType) {
 export async function validateAndGeneratePlanners(
   infoData: InfoData, studentStatus: string,
   undergradData: UndergradData, backgroundCourseData: BackgroundCourseData,
-  numCoursesPreference: string[], majorChoices: string[]) {
+  numCoursesPreference: string[]) {
 
   const formContext = {
     infoData: infoData,
@@ -354,7 +331,6 @@ export async function validateAndGeneratePlanners(
     undergradData: undergradData,
     backgroundCourseData: backgroundCourseData,
     numCoursesPreference: numCoursesPreference,
-    majorChoices: majorChoices,
   }
 
   const result = await validateEntireForm(formContext);

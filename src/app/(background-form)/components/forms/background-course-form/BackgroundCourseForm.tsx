@@ -64,7 +64,6 @@ export default function BackGroundCoursesForm() {
         return;
       }
       formContext.setStepError('');
-      formContext.setMajorChoices(Array(10).fill(''));
       formContext.setStepLastCompleted(2);
       router.push('/student-preferences');
     })

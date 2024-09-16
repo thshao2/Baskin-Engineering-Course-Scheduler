@@ -123,9 +123,6 @@ export default async function getPlanners(formContext: FormContextType) {
   const completedAlternativeElectives = formContext.backgroundCourseData.completedAlternativeElectives;
   let allCompletedElectives = [...completedCapstoneElectives, ...completedMajorElectives, ...completedAlternativeElectives];
 
-  // Major Course Choices Preference
-  const majorChoices = formContext.majorChoices;
-
   // Update General Education Requirements array to include ALL writing courses needed 
   /* Example: if placed in Writing 1, include '1' as well as 'C', representing Writing 1 AND Writing 2
               are both needed to meet General Education requirements */
@@ -361,7 +358,4 @@ UndergradData:
 NumCoursesPreference (Required for Form, in Advanced Settings in Visual Planner Site):
     Array Length of 1: number applied to all quarters
     Array Length > 1: specific number of courses/quarter
-
-MajorChoices (Required for Form, in Advanced Settings in Visual Planner Site)
-// Considering deprecation in lieu of filtering capabilities after schedule generation
 */

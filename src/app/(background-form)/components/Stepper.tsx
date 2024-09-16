@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useFormContext } from '../context/FormContext';
 
-const steps = ['Select Year and Catalog', 'Background Course Information', 'Student Preferences', 'Major Course Preferences'];
+const steps = ['Select Year and Catalog', 'Background Course Information', 'Student Preferences'];
 
 export default function HorizontalLinearStepper() {
 
