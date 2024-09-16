@@ -2,7 +2,7 @@
 
 
 import { useFormContext } from "../context/FormContext";
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Typography, Skeleton } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { useRouter } from "next/navigation";
 
@@ -47,10 +47,6 @@ const format = (course: string) => {
   return CSFormat[course] ? CSFormat[course] : course;
 }
 
-const majorCourse = (course: string) => {
-  return CSFormat[course] !== undefined
-}
-
 const getColor = (course: string) => {
   if (CSFormat[course] !== undefined) {
     return blue[500];
@@ -75,6 +71,54 @@ const getColor = (course: string) => {
   }
   return 'white';
 }
+
+const QuarterSkeleton = () => {
+  return (
+    <Box sx={{ width: '100%', mb: 2 }}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent'}}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                colSpan={1}
+                sx={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: { xs: '1rem', sm: '1.25rem' },
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  // borderBottom: '1px solid white',
+                  padding: '1rem'
+                }}
+              >
+                {/* Skeleton for the Quarter Title */}
+                <Skeleton variant="text" width="60%" height={32} sx={{ margin: '0 auto' }} />
+              </TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {/* Loop to create Skeleton rows for each course */}
+            {[...Array(4)].map((_, index) => (
+              <TableRow key={index}>
+                <TableCell
+                  sx={{
+                    fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                    textAlign: 'center',
+                    // borderBottom: '1px solid white',
+                    padding: '0.5rem'
+                  }}
+                >
+                  {/* Skeleton for course rows */}
+                  <Skeleton variant="rectangular" width="80%" height={20} sx={{ margin: '0 auto' }} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+};
 
 // Pagination, Loading Fallback
 const Quarter = ({ quarter, courses }: { quarter: string, courses: string[] }) => {
@@ -139,12 +183,15 @@ export default function Planner() {
     formContext.setStepLastCompleted(2);
   }
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [schedules, setSchedules] = useState<quarterSchedule[][] | undefined>([]);
 
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const validateAndGenerateSchedules = async () => {
+      setIsLoading(true);
       const result = await validateAndGeneratePlanners(
         formContext.infoData,
         formContext.studentStatus,
@@ -154,11 +201,14 @@ export default function Planner() {
       );
       if (result.success) {
         console.log(result);
+        setErrors([]);
         setSchedules(result.data);  // Set the schedules received from the server
       } else {
         console.log(result);
         setErrors(result.errors);    // Set the error message if validation fails
       }
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setIsLoading(false);
     }
 
     if (stepLastCompleted === 3) {
@@ -170,6 +220,39 @@ export default function Planner() {
       router.replace('/info')
     }
   }, [stepLastCompleted, formContext, router]);
+
+  if (isLoading) {
+    return (
+      <>
+        <Box
+          sx={{
+            width: '85%',
+          }}
+        >
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
+            <Button variant="contained" color='primary' onClick={handleBack}>
+              Back
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              width: '100%',
+              mt: 4,
+            }}
+          >
+            <Grid container spacing={1}>
+              {/* Create 3 skeleton planners as a placeholder */}
+              {[...Array(24)].map((_, index) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+                  <QuarterSkeleton />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Box>
+      </>
+    )
+  }
 
 
   if (formContext.stepLastCompleted === 3) {
@@ -195,7 +278,7 @@ export default function Planner() {
               <Typography sx={{ fontSize: '1.25rem' }} color={red[300]}>{`Something went wrong. Please read the error messages below for more information:`}</Typography>
               {errors.map((error, index) => (
                 <Box key={index} sx={{ mt: 3 }}> {/* Adds margin-bottom to each error */}
-                  <Typography color="error" sx={{ fontSize: '0.85rem' }}>{error}</Typography>
+                  <Typography color="error" sx={{ fontSize: '1.00rem' }}>{error}</Typography>
                 </Box>
               ))}
             </Box>
