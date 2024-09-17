@@ -11,7 +11,7 @@ export default async function Test() {
 
   const temp = await getPriorityList();
   const temp2 = await getInDegreeList(neededMajorCourses);
-  const temp3 = await generateCoursesForQuarter(courses, 3);
+  const temp3 = await generateCoursesForQuarter(courses, 3, 24);
   // console.log(temp)
   return (
     <>

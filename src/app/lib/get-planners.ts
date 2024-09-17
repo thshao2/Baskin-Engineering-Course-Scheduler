@@ -25,7 +25,7 @@ export type DisplayElement = {
   GE: string[],
   univReq: { ahr: boolean, entry: boolean, core: boolean },
   writing: string[],
-  electives: {electiveArr: string[]; [key: string]: boolean | string[] },
+  electives: {[key: string]: boolean | string[] },
 }
 
 type Planners = [DisplayElement, ...quarterSchedule[][][]];
@@ -276,7 +276,7 @@ export default async function getPlanners(formContext: FormContextType) {
         core: (student === 'T' || (student === 'C' && universityReq.core === '1'))
       },
       writing: displayWritingCoursesNeeded,
-      electives: {...electiveReq, electiveArr: neededElectives},
+      electives: {...electiveReq},
     }
   ];
 
