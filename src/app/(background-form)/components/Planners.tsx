@@ -14,7 +14,7 @@ import { quarterSchedule, DisplayElement } from "@/app/lib/get-planners";
 
 import { Table, TableHead, TableContainer, TableCell, TableBody, TableRow, Paper } from "@mui/material"
 
-import DisplayInfo from "./DisplayInfo"
+import DisplayInfo, {PlannerInfoDisplaySkeleton} from "./DisplayInfo"
 
 export const CSFormat: Record<string, string> = {
   MATH3: 'MATH 3: Precalculus',
@@ -270,6 +270,7 @@ export default function Planner() {
               mt: 4,
             }}
           >
+            <PlannerInfoDisplaySkeleton />
             <Grid container spacing={1}>
               {/* Create 3 skeleton planners as a placeholder */}
               {[...Array(24)].map((_, index) => (

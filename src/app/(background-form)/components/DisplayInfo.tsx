@@ -1,5 +1,5 @@
 
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { orange, blue, pink, red, green, purple, cyan, teal } from '@mui/material/colors';
 import { DisplayElement } from '@/app/lib/get-planners';
@@ -35,6 +35,69 @@ export const DisplayCSFormat: Record<string, string> = {
 
 const format = (course: string) => {
   return DisplayCSFormat[course] ? DisplayCSFormat[course] : course;
+}
+
+export function PlannerInfoDisplaySkeleton() {
+  return (
+    <>
+      <Box sx={{ width: '100%', mt: 4, padding: 2, border: '1px solid #78909c' }}>
+        <Typography sx={{ mb: 2 }} variant="h5" color={orange[500]} gutterBottom fontWeight='bold'>
+          Planner Information
+        </Typography>
+        {/* Data Skeleton */}
+        <Grid container spacing={2}>
+          {[...Array(9)].map((_, index) => (
+            <Grid key={index} size={{ xs: 12 }}>
+              <Skeleton variant="text" width="100%" height={20} />
+              <Skeleton variant="text" width="100%" height={20} sx={{ mt: 0.85 }} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+      <Box sx={{ width: '100%', mb: 4, padding: 2, border: '1px solid #78909c' }}>
+        <Typography sx={{ mb: 2 }} variant="h5" color={cyan[600]} gutterBottom fontWeight='bold'>
+          Key
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12 }}>
+            <InfoRow label={`GE Course:`}
+              value={`Choose a GE course from one of your unsatisfied GE Requirements.`}
+              color1={green[400]}
+              color2="textPrimary" />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <InfoRow label={`Major Course:`}
+              value={`Required Core Major Courses.`}
+              color1={blue[500]}
+              color2="textPrimary" />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <InfoRow label={`Major Elective:`}
+              value={`Choose a Major Elective from the valid electives list from your major, 
+                while adhering to major elective constraints/requirements (shown in Planner Information).`}
+              color1={purple['A100']}
+              color2="textPrimary" />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <InfoRow label={`Capstone Elective:`}
+              value={`Choose a Capstone Elective from the valid capstone electives list from your major.`}
+              color1={teal['A700']}
+              color2="textPrimary" />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <InfoRow label={`Elective:`}
+              value={`This course is entirely at your discretion. 
+                You can use it to fulfill university requirements, pursue courses for your minor, 
+                or explore any other subjects of interest. 
+                Electives provide flexibility to tailor your education 
+                to your personal and academic goals.`}
+              color1={cyan[500]}
+              color2="textPrimary" />
+          </Grid>
+        </Grid>
+      </Box>
+    </>
+  );
 }
 
 export default function PlannerInfoDisplay({ displayInfo }: { displayInfo: DisplayElement }) {
@@ -87,13 +150,13 @@ export default function PlannerInfoDisplay({ displayInfo }: { displayInfo: Displ
 
   return (
     <>
-      <Box sx={{ width: '100%', mt: 4, padding: 2, border: '1px solid #78909c'}}>
+      <Box sx={{ width: '100%', mt: 4, padding: 2, border: '1px solid #78909c' }}>
         <Typography sx={{ mb: 2 }} variant="h5" color={orange[500]} gutterBottom fontWeight='bold'>
           Planner Information
         </Typography>
         <Grid container spacing={2}>
           {/* Catalog Year */}
-          <Grid size={{ xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <InfoRow label={`Catalog Year:`}
               value={displayInfo.catalog}
               color1="textPrimary"
@@ -101,7 +164,7 @@ export default function PlannerInfoDisplay({ displayInfo }: { displayInfo: Displ
           </Grid>
 
           {/* Expected Graduation Date */}
-          <Grid size={{ xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <InfoRow label={`Expected Graduation Date:`}
               value={displayInfo.EGT}
               color1="textPrimary"
@@ -109,19 +172,19 @@ export default function PlannerInfoDisplay({ displayInfo }: { displayInfo: Displ
           </Grid>
 
           {/* University Requirements */}
-          <Grid size={{ xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <InfoRow label={`College Core Course:`}
               value={displayInfo.univReq.core ? 'Fulfilled' : 'Required'}
               color1="textPrimary"
               color2={displayInfo.univReq.core ? green['A700'] : red['A200']} />
           </Grid>
-          <Grid size={{ xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <InfoRow label={`American History & Institutions Requirement:`}
               value={displayInfo.univReq.ahr ? 'Fulfilled' : 'Required'}
               color1="textPrimary"
               color2={displayInfo.univReq.ahr ? green['A700'] : red['A200']} />
           </Grid>
-          <Grid size={{ xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <InfoRow label={`Entry Level Writing Requirement:`}
               value={displayInfo.univReq.entry ? 'Fullfilled' : 'Required'}
               color1="textPrimary"
@@ -194,7 +257,7 @@ export default function PlannerInfoDisplay({ displayInfo }: { displayInfo: Displ
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ width: '100%', mb: 4, padding: 2, border: '1px solid #78909c'}}>
+      <Box sx={{ width: '100%', mb: 4, padding: 2, border: '1px solid #78909c' }}>
         <Typography sx={{ mb: 2 }} variant="h5" color={cyan[600]} gutterBottom fontWeight='bold'>
           Key
         </Typography>
