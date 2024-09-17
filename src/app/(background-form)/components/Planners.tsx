@@ -14,7 +14,9 @@ import { quarterSchedule, DisplayElement } from "@/app/lib/get-planners";
 
 import { Table, TableHead, TableContainer, TableCell, TableBody, TableRow, Paper } from "@mui/material"
 
-const CSFormat: Record<string, string> = {
+import DisplayInfo from "./DisplayInfo"
+
+export const CSFormat: Record<string, string> = {
   MATH3: 'MATH 3: Precalculus',
   MATH19A: 'MATH 19A: Calculus I',
   MATH19B: 'MATH 19B: Calculus II',
@@ -187,7 +189,9 @@ export default function Planner() {
 
   const [displayInfo, setDisplayInfo] = useState<DisplayElement | undefined>(undefined);
 
-  const [schedules, setSchedules] = useState<quarterSchedule[][][] | undefined>([]);
+  const [schedules, setSchedules] = useState<quarterSchedule[][] | undefined>([]);
+
+  const [filteredSchedules, setFilteredSchedules] = useState<quarterSchedule[][][] | undefined>([]);
 
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -205,6 +209,8 @@ export default function Planner() {
         console.log(result);
         setErrors([]);
         setDisplayInfo(result.data[0]);
+        setFilteredSchedules(result.data.slice(1) as quarterSchedule[][][]);
+        const data1 = (result.data[1] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
         const data2 = (result.data[2] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
         const data3 = (result.data[3] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
         const data4 = (result.data[4] || []) as quarterSchedule[][]; // Ensure this is at least an empty array
@@ -222,18 +228,11 @@ export default function Planner() {
           if (i < data4.length) {
             combinedSchedule.push(data4[i]); // Add from result.data[4] if available
           }
-        }        
-        // const reorderedSchedules: quarterSchedule[][][] = [
-        //   result.data[3] as quarterSchedule[][],  // Index 3 first
-        //   result.data[2] as quarterSchedule[][],  // Index 2 second
-        //   result.data[4] as quarterSchedule[][],  // Index 4 third (if it exists)
-        //   result.data[1] as quarterSchedule[][],  // Index 1 last
-        // ].filter(Boolean); // Filters out any undefined elements if an index is out of bounds
-        const reorderedSchedules: quarterSchedule[][][] = [
-          combinedSchedule,
-          result.data[1] as quarterSchedule[][],  // Index 1 last
-        ];
-        setSchedules(reorderedSchedules as quarterSchedule[][][]);  // Set the schedules received from the server
+        }
+        for (let i = 0; i < data1.length; i++) {
+          combinedSchedule.push(data1[i]);
+        } 
+        setSchedules(combinedSchedule as quarterSchedule[][]);  // Set the schedules received from the server
       } else {
         console.log(result);
         setErrors(result.errors);    // Set the error message if validation fails
@@ -314,7 +313,8 @@ export default function Planner() {
               ))}
             </Box>
           }
-          {/* {schedules &&
+          {displayInfo && <DisplayInfo displayInfo = {displayInfo}/>}
+          {schedules &&
             <Box sx={{ width: '100%', mt: 4, mb: 1 }}>
               <Grid container spacing={1}>
                 {schedules.map((schedule, scheduleIndex) => (
@@ -327,19 +327,19 @@ export default function Planner() {
                 ))}
               </Grid>
             </Box>
-          } */}
-          {schedules && (
+          }
+          {/* {schedules && (
             <Box sx={{ width: '100%', mt: 4, mb: 1 }}>
               {schedules.map((scheduleGroup, groupIndex) => (
                 <Grid key={groupIndex} container spacing={1}>
-                  {/* Loop through each quarterSchedule[] within quarterSchedule[][] */}
+                  { Loop through each quarterSchedule[] within quarterSchedule[][] }
                   {scheduleGroup.map((schedule, scheduleIndex) => (
                     <Grid
                       size={{ xs: 12, sm: 6, md: 4 }}
                       key={scheduleIndex}
                       sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
                     >
-                      {/* Loop through each quarter in quarterSchedule[] */}
+                      { Loop through each quarter in quarterSchedule[] }
                       {schedule.map((quarter, index) => (
                         <Quarter
                           key={index}
@@ -353,7 +353,7 @@ export default function Planner() {
 
               ))}
             </Box>
-          )}
+          )} */}
         </Box>
       </>
     );
