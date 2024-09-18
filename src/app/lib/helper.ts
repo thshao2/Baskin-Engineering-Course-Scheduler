@@ -85,11 +85,6 @@ export const newEquivalentCSCourses: Record<string, string[]> = {
   CSE103: ['CSE102'],
 }
 
-export const CSCoursesOffered = {
-  CSE101M: { F: true, W: true, S: false },
-  CSE103: { F: false, W: true, S: true },
-}
-
 // export type elective = {
 //   option: string,
 //   value: string,
@@ -112,6 +107,18 @@ export async function getQuarterName(key: string) {
     return `Spring ${year}`
   }
   return `Summer ${year}`
+}
+
+export async function incrementQuarter(key: string) {
+  const quarter = key.charAt(0);
+  const year = parseInt(key.slice(1), 10);
+  if (quarter === 'F') {
+    return `W${year + 1}`
+  } else if (quarter === 'W') {
+    return `S${year}`
+  } else {
+    return `F${year}`
+  }
 }
 
 export async function getPriorityList() {

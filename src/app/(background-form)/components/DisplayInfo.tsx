@@ -46,7 +46,7 @@ export function PlannerInfoDisplaySkeleton() {
         </Typography>
         {/* Data Skeleton */}
         <Grid container spacing={2}>
-          {[...Array(9)].map((_, index) => (
+          {[...Array(8)].map((_, index) => (
             <Grid key={index} size={{ xs: 12 }}>
               <Skeleton variant="text" width="80%" height={20} />
               <Skeleton variant="text" width="80%" height={20} sx={{ mt: 0.85 }} />

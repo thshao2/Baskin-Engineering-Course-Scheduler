@@ -9,7 +9,8 @@ import {
   getQuarterName,
   getElectivesToAdd,
   EquivalentCSCourses, newEquivalentCSCourses,
-  getCoreUpperCoursesCount
+  getCoreUpperCoursesCount,
+  incrementQuarter
 } from './helper'
 
 export type quarterSchedule = {
@@ -25,14 +26,13 @@ export type DisplayElement = {
   GE: string[],
   univReq: { ahr: boolean, entry: boolean, core: boolean },
   writing: string[],
-  electives: {[key: string]: boolean | string[] },
+  electives: { [key: string]: boolean | string[] },
 }
 
 type Planners = [DisplayElement, ...quarterSchedule[][][]];
 
-type currentSnapshot = {
-  currentTerm: string,
-  quarterNum: number,
+type Snapshot = {
+  nextTerm: string,
   writingPlacement: string,
   coreCourse: string,
   neededGeneralEdCourses: string[],
@@ -40,10 +40,6 @@ type currentSnapshot = {
   neededElectives: string[],
 }
 
-type Snapshot = {
-  quarter: string,
-  snapshot: currentSnapshot
-}
 
 export async function generateCoursesForQuarter(courses: string[], x: number, catalog: number): Promise<string[][]> {
   const result: Set<string> = new Set();
@@ -225,14 +221,14 @@ export default async function getPlanners(formContext: FormContextType) {
       attributes:
         Example: {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}
   */
-  const planners: quarterSchedule[][] = [];
+  // const planners: quarterSchedule[][] = [];
 
   // Each element will be an array (snapshots for a specific schedule),
   // where each element in each array will be an object with quarter and snapshot attributes
   // The snapshot attribute will carry the updated attributes (GE requirements, needed major courses, etc.)
   // after completion of this quarter
   // Example: {quarter: 'Fall 2024', snapshot: currentSnapshot}
-  const snapshots = [];
+  // const snapshots = [];
 
   // Get Priority Object of each Major Course, determined by satisfaction count of course (to be able to take future major courses)
   const priorityObject = await getPriorityList();
@@ -271,16 +267,16 @@ export default async function getPlanners(formContext: FormContextType) {
       lockedMajorCourses: [],
       GE: displayNeededGECourses,
       univReq: {
-        ahr: universityReq.ahr, 
-        entry: universityReq.entry, 
+        ahr: universityReq.ahr,
+        entry: universityReq.entry,
         core: (student === 'T' || (student === 'C' && universityReq.core === '1'))
       },
       writing: displayWritingCoursesNeeded,
-      electives: {...electiveReq},
+      electives: { ...electiveReq },
     }
   ];
 
-  const snapshots2: Snapshot[][][] = [];
+  const detailedSnapshots: Snapshot[][][] = [];
 
   /* 
   Consider: 
@@ -310,14 +306,12 @@ export default async function getPlanners(formContext: FormContextType) {
     Remember 40, 101M not required in 22 catalog (different catalog years)
 
     Filter:
-      Let user pick # of major courses after generation, search of specific courses in schedule (for 1-3 quarter schedule)
+      Let user pick # of major courses after generation (only for 1 quarter schedule)
       Let user filter by major courses
-      Let user filter out major courses
   */
   async function generateFirstQuarter() {
-    const nextSnapshot: currentSnapshot = {
-      currentTerm: startDate, // increment this
-      quarterNum: 1,
+    const nextSnapshot: Snapshot = {
+      nextTerm: await incrementQuarter(startDate),
       writingPlacement: writingPlacement,
       coreCourse: universityReq.core,
       neededGeneralEdCourses: neededGeneralEdCourses,
@@ -381,7 +375,7 @@ export default async function getPlanners(formContext: FormContextType) {
     const numMajorCoursesStart = numCourses > 4 ? 4 : numCourses;
     for (let i = numMajorCoursesStart; i >= 1; i--) {
       detailedPlanners[i] = [];
-      snapshots2[i] = [];
+      detailedSnapshots[i] = [];
       temp = await generateCoursesForQuarter(queue, i, catalog);
       const date = await getQuarterName(startDate);
       const fillCourses = [...addToCourses];
@@ -404,7 +398,6 @@ export default async function getPlanners(formContext: FormContextType) {
       }
       for (const courses of temp) {
         const newCourses = [...courses, ...fillCourses];
-        planners.push([{ quarter: date, courses: newCourses }]);
         (detailedPlanners[i] as quarterSchedule[][]).push([{ quarter: date, courses: newCourses }]);
         const finalSnapshotInstance = structuredClone(newNextSnapshot);
         for (const course of courses) {
@@ -424,14 +417,108 @@ export default async function getPlanners(formContext: FormContextType) {
         if (finalSnapshotInstance.writingPlacement === '2T') {
           finalSnapshotInstance.writingPlacement = '2';
         }
-        snapshots.push([{ quarter: date, snapshot: finalSnapshotInstance }]);
-        snapshots2[i].push([{ quarter: date, snapshot: finalSnapshotInstance }]);
+        detailedSnapshots[i].push([{ ...finalSnapshotInstance }]);
       }
     }
   }
 
-  async function generatePlanners() {
+  async function generatePlanners(numQuarters: number) {
+    for (let i = 1; i < numQuarters; i++) {
+      for (let schedulesIndex = 1; schedulesIndex < detailedPlanners.length; schedulesIndex++) {
+        const schedules = detailedPlanners[i] as quarterSchedule[][];
+        const allSnapshots = detailedSnapshots[i] as Snapshot[][];
+        for (let plannerIndex = 0; plannerIndex < schedules.length; plannerIndex++) {
+          const schedule = schedules[plannerIndex] as quarterSchedule[];
+          const scheduleSnapshots = allSnapshots[plannerIndex] as Snapshot[];
+          const nextSnapshot = structuredClone(scheduleSnapshots[i - 1]);
+          const currentTerm = nextSnapshot.nextTerm;
+          nextSnapshot.nextTerm = await incrementQuarter(currentTerm);
+          let numCourses = numCoursesPerQuarter[i];
+          const addToCourses = [];
 
+          const currQuarter = currentTerm.charAt(0);
+
+          // Logic for Core Course, Writing Courses
+          if (currQuarter === 'W' && nextSnapshot.coreCourse === '2') {
+            numCourses--;
+            addToCourses.push('College Core Course (Part 2)');
+            nextSnapshot.coreCourse = '1';
+          }
+          if (nextSnapshot.writingPlacement === '25' && currQuarter === 'F') {
+            numCourses--;
+            addToCourses.push('Writing 25');
+            nextSnapshot.writingPlacement = '26';
+          } else if (nextSnapshot.writingPlacement === '26' && (currQuarter === 'F' || currQuarter === 'W')) {
+            numCourses--;
+            addToCourses.push('Writing 26');
+            nextSnapshot.writingPlacement = '1';
+          } else if (nextSnapshot.writingPlacement === '1' && (currQuarter === 'W' || currQuarter === 'S')) {
+            numCourses--;
+            addToCourses.push('Writing 1/Writing 1E');
+            nextSnapshot.writingPlacement = '2';
+          } else if (nextSnapshot.writingPlacement === '2' && (currQuarter === 'F' || currQuarter === 'S')) {
+            numCourses--;
+            addToCourses.push('Writing 2/Writing 2H');
+            nextSnapshot.writingPlacement = 'C';
+            nextSnapshot.neededGeneralEdCourses = nextSnapshot.neededGeneralEdCourses.filter(ge => ge !== 'C');
+          }
+
+          const currentInDegreeObject = await getInDegreeList(nextSnapshot.neededMajorCourses);
+          const queue = [];
+          for (const course in currentInDegreeObject) {
+            if (currentInDegreeObject[course] === 0) {
+              queue.push(course);
+            }
+          }
+
+          const electiveIndex = await getElectivesToAdd(nextSnapshot.neededMajorCourses, nextSnapshot.neededElectives);
+          queue.push(...nextSnapshot.neededElectives.slice(0, electiveIndex));
+
+          const coreCount = await getCoreUpperCoursesCount(nextSnapshot.neededMajorCourses);
+          if (coreCount < 5 && queue.includes('CSE195')) {
+            const indexToRemove = queue.findIndex(course => course === 'CSE195');
+            queue.splice(indexToRemove, 1);
+          }
+          if (coreCount < 2 && queue.includes('CSE185S')) {
+            const indexToRemove = queue.findIndex(course => course === 'CSE185S');
+            queue.splice(indexToRemove, 1);
+          }
+
+          // Generate the best next quarter schedule
+          const date = await getQuarterName(currentTerm);
+          const numQuartersLeft = await getNumQuartersBetweenStartAndEndDate(currentTerm, gradDate);
+          let numMajorCoursesNeeded = nextSnapshot.neededMajorCourses.length;
+          const equivSet: Set<string> = new Set();
+          for (const course in equivalencyObj) {
+            if (equivSet.has(course)) {
+              continue;
+            }
+            if (nextSnapshot.neededMajorCourses.includes(course)) {
+              numMajorCoursesNeeded--;
+              for (const equivCourse of equivalencyObj[course]) {
+                equivSet.add(equivCourse);
+              }
+            }
+          }
+
+          let numMajorCourses = Math.ceil(numMajorCoursesNeeded / numQuartersLeft);
+          numMajorCourses = numMajorCourses > numCourses ? numCourses : numMajorCourses;
+
+          const finalCourses = [];
+
+          for (let j = 0; j < numMajorCourses; j++) {
+            
+          }
+
+
+
+
+
+
+
+        }
+      }
+    }
   }
 
   if (numQuartersToGenerate === 1) {
@@ -446,7 +533,7 @@ export default async function getPlanners(formContext: FormContextType) {
     await generateFirstQuarter();
 
     return detailedPlanners;
-    // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
+    // Call Recursive Function:  generatePlanners(numQuartersToGenerate)
 
   } else {
 
@@ -455,7 +542,7 @@ export default async function getPlanners(formContext: FormContextType) {
 
     return detailedPlanners;
 
-    // Call Recursive Function:  generatePlanners(, numQuartersToGenerate)
+    // Call Recursive Function:  generatePlanners(numQuartersToGenerate)
 
   }
 

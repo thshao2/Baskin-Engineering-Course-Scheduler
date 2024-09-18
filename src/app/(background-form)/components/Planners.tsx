@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormContext } from "../context/FormContext";
-import { Box, Button, Typography, SelectChangeEvent, Select, MenuItem, Autocomplete, Checkbox, TextField } from '@mui/material'
+import { Box, Button, Typography, SelectChangeEvent, Select, MenuItem, Autocomplete, Checkbox, TextField, Skeleton } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { useRouter } from "next/navigation";
 
@@ -199,6 +199,29 @@ export default function Planner() {
             }}
           >
             <PlannerInfoDisplaySkeleton />
+            {/* Filtering capabilities loading skeleton */}
+            <Box sx={{ width: '100%', mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Skeleton variant="circular" sx={{
+                  width: { xs: 0, sm: 24 },  // 0px on extra small screens, 24px on small screens and above
+                  height: { xs: 0, sm: 24 }, // 0px on extra small screens, 24px on small screens and above
+                  mr: 1
+                }} />
+                <Skeleton variant="text" width={350} height={30} sx={{ mr: 2 }} />
+                <Skeleton variant="rectangular" width={120} height={40} />
+              </Box>
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Skeleton variant="circular" sx={{
+                    width: { xs: 0, sm: 24 },  // 0px on extra small screens, 24px on small screens and above
+                    height: { xs: 0, sm: 24 }, // 0px on extra small screens, 24px on small screens and above
+                    mr: 1
+                  }} />                  
+                  <Skeleton variant="text" width={475} height={30} />
+                </Box>
+                <Skeleton variant="rectangular" sx={{ mb: 4 }} width='100%' height={56} />
+              </Box>
+            </Box>
             <Grid container spacing={1}>
               {/* Create 3 skeleton planners as a placeholder */}
               {[...Array(24)].map((_, index) => (
@@ -246,7 +269,7 @@ export default function Planner() {
           {(schedules && filteredSchedules) &&
             <>
               {/* Filtering Select for Number of major courses */}
-              <Box sx={{ width: '100%', mt: 1, mb: 1, display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ width: '100%', mb: 1, display: 'flex', alignItems: 'center' }}>
                 {/* Filter Icon */}
                 <FilterList sx={{ color: blue[500], mr: 1 }} />
 
@@ -277,14 +300,14 @@ export default function Planner() {
                 </Select>
               </Box>
               {/* Filtering Autocomplete for major courses */}
-              <Box sx={{ width: '100%', mt: 4, mb: 1 }}>
+              <Box sx={{ width: '100%', mt: 1, mb: 1 }}>
                 {/* First row: Filter icon and Typography */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   {/* Filter Icon */}
                   <SearchIcon sx={{ color: blue[500], mr: 1 }} />
 
                   {/* Typography for filter label */}
-                  <Typography variant="body1" sx={{ fontWeight: 'bold', mr: 2, fontSize: 16}}>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', mr: 2, fontSize: 16 }}>
                     Generated Schedules Should Include the Following Courses:
                   </Typography>
                 </Box>
