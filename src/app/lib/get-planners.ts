@@ -2,16 +2,12 @@ import 'server-only';
 
 import { FormContextType } from '../(background-form)/context/FormContext';
 import {
-  getNumQuartersBetweenStartAndEndDate,
-  getDifference, getNeededCSElectives,
-  getPriorityList, getInDegreeList,
-  GE, CS_MajorCourses, checkCSElectiveRequirements,
-  getQuarterName,
-  getElectivesToAdd,
-  EquivalentCSCourses, newEquivalentCSCourses,
-  getCoreUpperCoursesCount,
-  incrementQuarter
+  getNumQuartersBetweenStartAndEndDate, getDifference, incrementQuarter, getQuarterName,
+  getNeededCSElectives, getPriorityList, getInDegreeList, getCoreUpperCoursesCount, getElectivesToAdd, checkCSElectiveRequirements,
+  GE, CS_MajorCourses, EquivalentCSCourses, newEquivalentCSCourses,
 } from './helper'
+
+import { generateCoursesForQuarter, getTopPriorityCourses } from './get-planners-algs';
 
 export type quarterSchedule = {
   quarter: string,
@@ -27,6 +23,7 @@ export type DisplayElement = {
   univReq: { ahr: boolean, entry: boolean, core: boolean },
   writing: string[],
   electives: { [key: string]: boolean | string[] },
+  quarters: number,
 }
 
 type Planners = [DisplayElement, ...quarterSchedule[][][]];
@@ -38,44 +35,6 @@ type Snapshot = {
   neededGeneralEdCourses: string[],
   neededMajorCourses: string[],
   neededElectives: string[],
-}
-
-
-export async function generateCoursesForQuarter(courses: string[], x: number, catalog: number): Promise<string[][]> {
-  const result: Set<string> = new Set();
-
-  function equivalentCourse(currentCombo: string[], course: string): boolean {
-    // Get Equivalency Courses for Catalog Year
-    const equivalencyObj = catalog > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
-
-    // Check if any equivalent course is already in currentCombo
-    const equivalents = equivalencyObj[course] || []; // Get equivalent courses for the current course
-    return currentCombo.some(c => equivalents.includes(c));
-  }
-
-  async function generateCombination(start: number, currentCombo: string[]) {
-    // If the combination is of size x, add it to the result
-    if (currentCombo.length === x) {
-      const sortedCombo: string[] = [...currentCombo].sort()
-      result.add(JSON.stringify(sortedCombo));
-      return;
-    }
-
-    // Generate combinations
-    for (let i = start; i < courses.length; i++) {
-      const course = courses[i];
-
-      if (!equivalentCourse(currentCombo, course)) {
-        currentCombo.push(courses[i]);
-        await generateCombination(i + 1, currentCombo);
-        currentCombo.pop(); // Backtrack to try another combination
-      }
-    }
-  }
-
-  await generateCombination(0, []);
-  // Convert the set of strings back to an array of arrays
-  return Array.from(result).map(item => JSON.parse(item));
 }
 
 export default async function getPlanners(formContext: FormContextType) {
@@ -273,6 +232,7 @@ export default async function getPlanners(formContext: FormContextType) {
       },
       writing: displayWritingCoursesNeeded,
       electives: { ...electiveReq },
+      quarters: numQuartersToGenerate,
     }
   ];
 
@@ -310,8 +270,9 @@ export default async function getPlanners(formContext: FormContextType) {
       Let user filter by major courses
   */
   async function generateFirstQuarter() {
+    const nextQuarter = await incrementQuarter(startDate);
     const nextSnapshot: Snapshot = {
-      nextTerm: await incrementQuarter(startDate),
+      nextTerm: nextQuarter,
       writingPlacement: writingPlacement,
       coreCourse: universityReq.core,
       neededGeneralEdCourses: neededGeneralEdCourses,
@@ -422,16 +383,57 @@ export default async function getPlanners(formContext: FormContextType) {
     }
   }
 
+  /*
+    Things to consider in algorithm: 
+      GE Courses: 'C' gets duplicated with Writing, should keep it separate
+      Undergraduate (CSE 20 doesn't get priority first quarter b/c first quarter is brute-force)
+      Glitch when going back to transfer after generated schedules (Reset major courses)
+      Writing PLacement glitch in firstQuarter
+
+
+
+  */
+
   async function generatePlanners(numQuarters: number) {
+    // Iterate through all existing schedules for each quarter
     for (let i = 1; i < numQuarters; i++) {
+      // Iterate through groups of schedules (by filtered number of major courses in the first quarter)
       for (let schedulesIndex = 1; schedulesIndex < detailedPlanners.length; schedulesIndex++) {
-        const schedules = detailedPlanners[i] as quarterSchedule[][];
-        const allSnapshots = detailedSnapshots[i] as Snapshot[][];
+        /* 
+        Example of Schedules Format: 
+        [
+          [
+            {quarter: 'Fall 2024', courses: ['CSE 101', 'CSE 107', 'CSE 120']}, 
+            {quarter: 'Winter 2025', courses: ['CSE 102', 'CSE 103', 'CSE 186']},
+          ],
+          [
+            {quarter: 'Fall 2024', courses: ['CSE 187', 'CSE 114A', 'CSE 115A']}, 
+            {quarter: 'Winter 2025', courses: ['CSE 242', 'CSE 144', 'CSE 150']}, 
+          ],
+          ...
+        ]
+        */
+
+        // all schedules for paticular index are obtained from detailedPlanners[scheduleIndex]
+        const schedules = detailedPlanners[schedulesIndex] as quarterSchedule[][];
+
+        // All snapshots for each quarter of each schedule obtained from detailedSnapshots[scheduleIndex]
+        const allSnapshots = detailedSnapshots[schedulesIndex] as Snapshot[][];
+
+        // Loop through each schedule of all schedules
         for (let plannerIndex = 0; plannerIndex < schedules.length; plannerIndex++) {
+          // schedule is a quarterSchedule[] type, one array
           const schedule = schedules[plannerIndex] as quarterSchedule[];
+
+          //scheduleSnapshots is an array of snapshots for this schedule
           const scheduleSnapshots = allSnapshots[plannerIndex] as Snapshot[];
+
+          // Get the progress report (snapshot) left off last time
+          // i = 1 (2nd quarter in schedule), get scheduleSnapshots[0] (left by 1st quarter in schedule)
           const nextSnapshot = structuredClone(scheduleSnapshots[i - 1]);
+
           const currentTerm = nextSnapshot.nextTerm;
+
           nextSnapshot.nextTerm = await incrementQuarter(currentTerm);
           let numCourses = numCoursesPerQuarter[i];
           const addToCourses = [];
@@ -471,11 +473,8 @@ export default async function getPlanners(formContext: FormContextType) {
             }
           }
 
-          const electiveIndex = await getElectivesToAdd(nextSnapshot.neededMajorCourses, nextSnapshot.neededElectives);
-          queue.push(...nextSnapshot.neededElectives.slice(0, electiveIndex));
-
           const coreCount = await getCoreUpperCoursesCount(nextSnapshot.neededMajorCourses);
-          if (coreCount < 5 && queue.includes('CSE195')) {
+          if (queue.includes('CSE195')) {
             const indexToRemove = queue.findIndex(course => course === 'CSE195');
             queue.splice(indexToRemove, 1);
           }
@@ -485,9 +484,14 @@ export default async function getPlanners(formContext: FormContextType) {
           }
 
           // Generate the best next quarter schedule
+
           const date = await getQuarterName(currentTerm);
           const numQuartersLeft = await getNumQuartersBetweenStartAndEndDate(currentTerm, gradDate);
+
+          // Get number of reamining required major courses
           let numMajorCoursesNeeded = nextSnapshot.neededMajorCourses.length;
+
+          // Subtract equivalent courses in the count
           const equivSet: Set<string> = new Set();
           for (const course in equivalencyObj) {
             if (equivSet.has(course)) {
@@ -501,21 +505,82 @@ export default async function getPlanners(formContext: FormContextType) {
             }
           }
 
+          let numMajorElectivesNeeded = nextSnapshot.neededElectives.length;
+
+          // Add Number of Major Electives/Capstone Electives needed
+          numMajorCoursesNeeded += numMajorElectivesNeeded;
+
+          // Get recommended number of major courses to take this quarter based on quarters left in 
+          // student's undergrad and number of remaining required major courses
           let numMajorCourses = Math.ceil(numMajorCoursesNeeded / numQuartersLeft);
+
+          // If recommended number of major courses is greater than overall number of course slots open in quarter schedule
+          // level the number of major courses to be the same as the number of open course slots left
           numMajorCourses = numMajorCourses > numCourses ? numCourses : numMajorCourses;
 
+          // Final Courses Array to be pushed onto this generated schedule
           const finalCourses = [];
 
-          for (let j = 0; j < numMajorCourses; j++) {
-            
+          // Get Next Priority Major Courses
+          const getNextPriorityCourses =
+            await getTopPriorityCourses(queue, numMajorCourses, priorityObject, catalog);
+
+          let moreCoursesToAdd =
+            getNextPriorityCourses.length < numMajorCourses ? numMajorCourses - getNextPriorityCourses.length : 0;
+
+          const numAddPossibleElectives = moreCoursesToAdd;
+
+          for (let j = 0; j < numAddPossibleElectives; j++) {
+            if (numMajorElectivesNeeded > 0 && !nextSnapshot.neededMajorCourses.includes('CSE101')) {
+              numMajorElectivesNeeded--;
+              numMajorCoursesNeeded--;
+              moreCoursesToAdd--;
+              getNextPriorityCourses.push(nextSnapshot.neededElectives[0]);
+              nextSnapshot.neededElectives = nextSnapshot.neededElectives.slice(1);
+            }
           }
 
+          // Consider recommending an major elective instead if major requirements (excluding electives) 
+          // is less than or equal to major electives needed
 
+          // Example: Student has 7 major courses left, 4 of them are major electives
+          // Example: Student has 6 major courses left, 3 of which are major electives
+          if (!numAddPossibleElectives &&
+            numMajorCoursesNeeded - numMajorElectivesNeeded <= numMajorElectivesNeeded &&
+            !nextSnapshot.neededMajorCourses.includes('CSE101') && numMajorElectivesNeeded > 1) {
+            getNextPriorityCourses[getNextPriorityCourses.length - 1] = nextSnapshot.neededElectives[0];
+            nextSnapshot.neededElectives = nextSnapshot.neededElectives.slice(1);
+          }
 
+          finalCourses.push(...getNextPriorityCourses);
+          for (let j = 0; j < numCourses - numMajorCourses + (moreCoursesToAdd); j++) {
+            if (nextSnapshot.neededGeneralEdCourses.length > 1 ||
+              (nextSnapshot.neededGeneralEdCourses.length === 1 && nextSnapshot.neededGeneralEdCourses[0] !== 'C')) {
+              finalCourses.push('GE Course')
+              const indexToRemove = nextSnapshot.neededGeneralEdCourses.findIndex(ge => ge !== 'C');
+              nextSnapshot.neededGeneralEdCourses.splice(indexToRemove, 1)
+              continue;
+            }
+            finalCourses.push('Elective');
+          }
 
-
-
-
+          finalCourses.push(...addToCourses);
+          schedule.push({ quarter: date, courses: finalCourses });
+          for (const course of getNextPriorityCourses) {
+            if (course.includes('Elective')) {
+              continue;
+              // const indexToRemove = nextSnapshot.neededElectives.findIndex(e => e === course);
+              // nextSnapshot.neededElectives.splice(indexToRemove, 1);
+            } else {
+              nextSnapshot.neededMajorCourses = nextSnapshot.neededMajorCourses.filter(c => c !== course)
+              if (equivalencyObj[course] !== undefined) {
+                for (const equivCourse of equivalencyObj[course]) {
+                  nextSnapshot.neededMajorCourses = nextSnapshot.neededMajorCourses.filter(c => c !== equivCourse)
+                }
+              }
+            }
+          }
+          scheduleSnapshots.push({ ...nextSnapshot });
         }
       }
     }
@@ -532,17 +597,21 @@ export default async function getPlanners(formContext: FormContextType) {
     // Call Function to Fill Next Quarter Schedule: await generateNextQuarter();
     await generateFirstQuarter();
 
+    // Call Function to Fill Out Rest of Planner:  await gaeneratePlanners(numQuartersToGenerate)
+    await generatePlanners(numQuartersToGenerate);
+
     return detailedPlanners;
-    // Call Recursive Function:  generatePlanners(numQuartersToGenerate)
 
   } else {
 
     // Call Function to Fill Next Quarter Schedule: generateNextQuarter(planners);
     await generateFirstQuarter();
 
+    // Call Function to Fill Out Rest of Planner:  await gaeneratePlanners(numQuartersToGenerate)
+    await generatePlanners(numQuartersToGenerate);
+
     return detailedPlanners;
 
-    // Call Recursive Function:  generatePlanners(numQuartersToGenerate)
 
   }
 

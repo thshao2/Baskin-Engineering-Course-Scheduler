@@ -216,7 +216,7 @@ export default function Planner() {
                     width: { xs: 0, sm: 24 },  // 0px on extra small screens, 24px on small screens and above
                     height: { xs: 0, sm: 24 }, // 0px on extra small screens, 24px on small screens and above
                     mr: 1
-                  }} />                  
+                  }} />
                   <Skeleton variant="text" width={475} height={30} />
                 </Box>
                 <Skeleton variant="rectangular" sx={{ mb: 4 }} width='100%' height={56} />
@@ -266,39 +266,41 @@ export default function Planner() {
             </Box>
           }
           {displayInfo && <DisplayInfo displayInfo={displayInfo} />}
-          {(schedules && filteredSchedules) &&
+          {(schedules && filteredSchedules && displayInfo) &&
             <>
               {/* Filtering Select for Number of major courses */}
-              <Box sx={{ width: '100%', mb: 1, display: 'flex', alignItems: 'center' }}>
-                {/* Filter Icon */}
-                <FilterList sx={{ color: blue[500], mr: 1 }} />
+              {displayInfo.quarters === 1 && (
+                <Box sx={{ width: '100%', mb: 1, display: 'flex', alignItems: 'center' }}>
+                  {/* Filter Icon */}
+                  <FilterList sx={{ color: blue[500], mr: 1 }} />
 
-                {/* Typography for filter label */}
-                <Typography variant="body1" sx={{ mr: 2, fontWeight: 'bold', fontSize: 16 }}>
-                  Filter by Number of Major Courses in Schedule:
-                </Typography>
+                  {/* Typography for filter label */}
+                  <Typography variant="body1" sx={{ mr: 2, fontWeight: 'bold', fontSize: 16 }}>
+                    Filter by Number of Major Courses in Schedule:
+                  </Typography>
 
-                {/* Select component for filtering */}
-                <Select
-                  value={numMajorCoursesFilter}
-                  onChange={handleNumMajorFilterChange}
-                  displayEmpty
-                  inputProps={{ 'aria-label': 'Filter by major courses' }}
-                  sx={{ minWidth: 120, backgroundColor: 'background.paper', borderRadius: 1 }}
-                >
-                  {/* Default "No Filter" option */}
-                  <MenuItem value="">
-                    <em>No Filter</em>
-                  </MenuItem>
-
-                  {/* Dynamic options based on filteredSchedules */}
-                  {[...Array(filteredSchedules.length)].map((_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
-                      {`${index + 1}`}
+                  {/* Select component for filtering */}
+                  <Select
+                    value={numMajorCoursesFilter}
+                    onChange={handleNumMajorFilterChange}
+                    displayEmpty
+                    inputProps={{ 'aria-label': 'Filter by major courses' }}
+                    sx={{ minWidth: 120, backgroundColor: 'background.paper', borderRadius: 1 }}
+                  >
+                    {/* Default "No Filter" option */}
+                    <MenuItem value="">
+                      <em>No Filter</em>
                     </MenuItem>
-                  ))}
-                </Select>
-              </Box>
+
+                    {/* Dynamic options based on filteredSchedules */}
+                    {[...Array(filteredSchedules.length)].map((_, index) => (
+                      <MenuItem key={index + 1} value={index + 1}>
+                        {`${index + 1}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              )}
               {/* Filtering Autocomplete for major courses */}
               <Box sx={{ width: '100%', mt: 1, mb: 1 }}>
                 {/* First row: Filter icon and Typography */}
@@ -344,16 +346,33 @@ export default function Planner() {
                 </Box>
               </Box>
               <Box sx={{ width: '100%', mt: 4, mb: 1 }}>
-                <Grid container spacing={1}>
-                  {schedules.map((schedule, scheduleIndex) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
-                      key={scheduleIndex}>
-                      {schedule.map((quarter, index) => (
-                        <Quarter key={index} quarter={quarter.quarter} courses={quarter.courses} />
-                      ))}
-                    </Grid>
-                  ))}
-                </Grid>
+                {displayInfo.quarters === 1 ? (
+                  <Grid container spacing={1}>
+                    {schedules.map((schedule, scheduleIndex) => (
+                      <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+                        key={scheduleIndex}>
+                        {schedule.map((quarter, index) => (
+                          <Quarter key={index} quarter={quarter.quarter} courses={quarter.courses} />
+                        ))}
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  schedules.map((schedule, scheduleIndex) => (
+                    <Box key={scheduleIndex} sx={{ width: '100%', mt: 4, mb: 1 }}>
+                      {/* Each schedule displayed in a grid with 3 Quarter components per row */} 
+                      <Grid container spacing={1}>
+                        {schedule.map((quarter, index) => (
+                          <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+                            key={index}>
+                            <Quarter quarter={quarter.quarter} courses={quarter.courses} />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  ))
+                )}
+
               </Box>
             </>
           }
