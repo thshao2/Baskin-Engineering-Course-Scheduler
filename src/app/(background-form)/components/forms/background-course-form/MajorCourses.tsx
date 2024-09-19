@@ -18,23 +18,23 @@ const codes = [
 
 const majorLabels = [
   'MATH 3: Precalculus',
-  'MATH 19A: Calculus for Science, Engineering, and Mathematics I', 
+  'MATH 19A: Calculus for Science, Engineering, and Mathematics I',
   'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
   'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
-  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming', 
-  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python', 
+  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming',
+  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python',
   'CSE 30: Programming Abstractions: Python', 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods',
-  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers', 
+  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers',
   'ECE 30: Engineering Principles of Electronics', 'STAT 131: Introduction to Probability Theory',
-  'CSE 101: Introduction to Data Structures and Algorithms', 
-  'CSE 101M: Mathematical Thinking for Computer Science', 
-  'CSE 102: Introduction to Analysis of Algorithms', 
-  'CSE 103: Computational Models', 
-  'CSE 107: Probability and Statistics for Engineers', 
-  'CSE 114A: Foundations of Programming Languages', 
-  'CSE 115A: Introduction to Software Engineering (DC Requirement)', 
-  'CSE 120: Computer Architecture', 
-  'CSE 130: Principles of Computer Systems Design', 
+  'CSE 101: Introduction to Data Structures and Algorithms',
+  'CSE 101M: Mathematical Thinking for Computer Science',
+  'CSE 102: Introduction to Analysis of Algorithms',
+  'CSE 103: Computational Models',
+  'CSE 107: Probability and Statistics for Engineers',
+  'CSE 114A: Foundations of Programming Languages',
+  'CSE 115A: Introduction to Software Engineering (DC Requirement)',
+  'CSE 120: Computer Architecture',
+  'CSE 130: Principles of Computer Systems Design',
   'CSE 185S: Technical Writing for Computer Science and Engineering (DC Requirement)',
   'CSE 195: Senior Thesis Research (if used for DC Requirement)'
 ] as const;
@@ -46,13 +46,13 @@ const tcodes = [
 ]
 
 const tmajorLabels = [
-  'MATH 19A: Calculus for Science, Engineering, and Mathematics I', 
+  'MATH 19A: Calculus for Science, Engineering, and Mathematics I',
   'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
   'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
-  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming', 
-  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python', 
+  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming',
+  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python',
   'CSE 30: Programming Abstractions: Python', 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods',
-  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers', 
+  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers',
   'ECE 30: Engineering Principles of Electronics', 'STAT 131: Introduction to Probability Theory',
   'CSE 101: Introduction to Data Structures and Algorithms',
   'CSE 107: Probability and Statistics for Engineers',
@@ -60,7 +60,7 @@ const tmajorLabels = [
 
 const ucodes = [
   'MATH21', 'MATH23A'
-] as const;
+]
 
 
 type AutoObject = {
@@ -78,7 +78,7 @@ const auto2: AutoObject = tcodes.reduce((acc, key) => {
 }, {} as AutoObject);
 
 const RenderMajorCourses: React.FC = () => {
-  const { studentStatus, infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();  
+  const { studentStatus, infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
 
   let options = majorLabels.map((label, index) => ({
     option: label,
@@ -93,20 +93,20 @@ const RenderMajorCourses: React.FC = () => {
     }));
   }
 
-  const [autoProps, setAutoProps] = useState(studentStatus === 'C' ? auto : auto2); 
+  const [autoProps, setAutoProps] = useState(studentStatus === 'C' ? auto : auto2);
 
   useEffect(() => {
     const newAutoProps = studentStatus === 'C' ? auto : auto2;
-    setAutoProps({...newAutoProps})
+    setAutoProps({ ...newAutoProps })
   }, [studentStatus])
 
   useEffect(() => {
     if (studentStatus === 'T') {
       const diffCodes = codes.filter(code => !tcodes.includes(code));
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
-        ({
-          ...backgroundCourseData, completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course))
-        }));    
+      ({
+        ...backgroundCourseData, completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course))
+      }));
     }
   }, [studentStatus, setBackgroundCourseData])
 
@@ -115,7 +115,7 @@ const RenderMajorCourses: React.FC = () => {
       return (
         <>
           <CheckboxResponsive
-            key = {JSON.stringify(autoProps)}
+            key={JSON.stringify(autoProps)}
             auto={autoProps}
             title="Major Courses"
             subtitle={studentStatus !== 'C' ?
@@ -145,30 +145,30 @@ const RenderMajorCourses: React.FC = () => {
 export default function MajorCourses() {
   return (
     <>
-      <RenderMajorCourses/>
+      <RenderMajorCourses />
     </>
   )
 }
 
 export function UndergradMathTransfer() {
-  const {undergradData, backgroundCourseData, setBackgroundCourseData} = useFormContext();
+  const { undergradData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
 
   const auto: AutoObject = ucodes.reduce((acc, key) => {
     acc[key] = false;
     return acc;
   }, {} as AutoObject);
 
-  const options = [{option: 'AM 10 / MATH 21 (Linear Algebra)', value: 'MATH21'}];
+  const options = [{ option: 'AM 10 / MATH 21 (Linear Algebra)', value: 'MATH21' }];
   if (undergradData.math === '20') {
-    options.push({option: 'MATH 23A (Multivariate/Vector Calculus)', value: 'MATH23A'});
+    options.push({ option: 'MATH 23A (Multivariate/Vector Calculus)', value: 'MATH23A' });
   }
 
   return (
-    <CheckboxGroup 
-      auto = {auto}
-      title = "Additional Transfer Credit for Math Courses"
-      subtitle = {`If you have additional math courses that you have already satisified through transfer credit, select them below. Otherwise, you may skip this section.`}
-      options = {options}
+    <CheckboxGroup
+      auto={auto}
+      title="Additional Transfer Credit for Math Courses"
+      subtitle={`If you have additional math courses that you have already satisified through transfer credit, select them below. Otherwise, you may skip this section.`}
+      options={options}
       state={backgroundCourseData.completedMajorCourses}
       mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
     />

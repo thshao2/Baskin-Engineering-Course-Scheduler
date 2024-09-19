@@ -12,15 +12,7 @@ export default function InitForm() {
         <Box
           sx={{
             display: 'flex',
-            // alignContent: 'center',
-            // textAlign: 'center',
             justifyContent: 'center',
-            // height: '100vh',
-            // overflowY: 'scroll',
-            // scrollSnapType: 'y mandatory',
-            // '& > div': {
-            //   scrollSnapAlign: 'start',
-            // },
           }}
         >
           <InfoForm/>

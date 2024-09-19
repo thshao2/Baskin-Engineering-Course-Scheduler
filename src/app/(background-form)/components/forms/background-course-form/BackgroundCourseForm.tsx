@@ -39,7 +39,6 @@ export default function BackGroundCoursesForm() {
   }, [setStepLastCompleted])
 
   useEffect(() => {
-    console.log("USE EFFECT")
     if (studentStatus !== 'C') {
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
@@ -64,7 +63,7 @@ export default function BackGroundCoursesForm() {
       const result = await validateBackgroundCourseForm(formContext.studentStatus, formContext.undergradData, formContext.backgroundCourseData);
       console.log(result);
       if (!result.success) {
-        formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
+        formContext.setStepError(result.errors[0]);
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
         return;
       }
@@ -80,33 +79,17 @@ export default function BackGroundCoursesForm() {
         <Box
           component="form"
           sx={{
-            width: '70%',               // Box width set to 50% of the screen width
-            mx: 'auto',                 // Horizontally centers the Box using margin auto
+            width: '80%',               // Box width set to 50% of the screen width
+            // mx: 'auto',                 // Horizontally centers the Box using margin auto
             display: 'flex',            // Flexbox layout
             flexDirection: 'column',    // Stacks child components vertically
             alignItems: 'center',       // Centers child components horizontally
             // justifyContent: 'center',   // Centers child components vertically
             // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
-            padding: 1,                 // Adds some padding for aesthetic spacing
+            padding: 1,
           }}
           onSubmit={handleBackgroundForm}
         >
-          <Select
-            auto=""
-            title="Student Status"
-            subtitle=""
-            inputLabel="Status"
-            options={
-              [
-                { option: 'Incoming First-Year Student', value: 'U' },
-                { option: 'Incoming Transfer', value: 'T' },
-                { option: 'Continuing Student', value: 'C' }
-              ]
-            }
-            state={formContext.studentStatus}
-            mutator={formContext.setStudentStatus}
-          />
-          {formContext.studentStatus ? (
             <>
               <CourseHistoryForm />
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mt: 3 }}>
@@ -118,15 +101,6 @@ export default function BackGroundCoursesForm() {
                 </Button>
               </Box>
             </>
-          ) : (
-            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
-              {/* <Link href='/info'> */}
-              <Button variant="contained" color='primary' onClick={handleBack}>
-                Back
-              </Button>
-              {/* </Link> */}
-            </Box>
-          )}
         </Box>
       </>
     );

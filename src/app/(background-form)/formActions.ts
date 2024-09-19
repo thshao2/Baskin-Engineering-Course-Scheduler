@@ -22,7 +22,7 @@ async function checkStartEndPlan(start: string, end: string) {
   }
 }
 
-export async function validateInfoForm(infoForm: InfoData) {
+export async function validateInfoForm(infoForm: InfoData, status: string) {
   const date = new Date();
   const curMonth = date.getMonth();
   const curYear = date.getFullYear() % 1000;
@@ -59,22 +59,6 @@ export async function validateInfoForm(infoForm: InfoData) {
 
   startPlannerRegex = new RegExp(`^[${possibleLetters}]\\d{2}$`)
 
-  // if (curMonth > 9) {
-  //   startPlannerRegex = /^[WS]\d{2}$/;
-  //   yearStartPlan = curYear + 1;
-  //   yearEndStartPlan = curYear + 1;
-  // } else if (curMonth > 3) {
-  //   startPlannerRegex = /^[FW]\d{2}$/;
-  //   yearEndStartPlan = curYear + 1;
-  // } else if (curMonth > 1) {
-  //   startPlannerRegex = /^[SF]\d{2}$/;
-  // } else if (curMonth > 0) {
-  //   startPlannerRegex = /^S\d{2}$/;
-  // } else {
-  //   startPlannerRegex = /^[WS]\d{2}$/;
-  // }
-
-
   const schema = z.object({
     CatalogYear: z.string()
       .regex(/^\d{2}$/, 'Invalid Catalog Year')
@@ -84,8 +68,13 @@ export async function validateInfoForm(infoForm: InfoData) {
     Major: z.string()
       .min(2, 'Invalid Input. Error: Major Selection')
       .max(4, 'Invalid Input. Error: Major Selection'),
+    StudentStatus: z.string()
+      .min(1, 'Student Status is Required')
+      .refine(val => val === 'U' || val === 'T' || val === 'C', {
+        message: 'Invalid Input. Error: Student Status',
+      }),
     GradDate: z.string()
-      .min(1, { message: 'Expected Graduation Date is Required' }) // Ensure it isn't empty
+      .min(1, 'Expected Graduation Date is Required') // Ensure it isn't empty
       .refine(val => /^[FWS]\d{2}$/.test(val), { message: 'Invalid Input. Error: Expected Graduation Date' })
       .refine(val => {
         const year = parseInt(val.slice(1), 10); // Extract the two digits after the first letter
@@ -107,6 +96,7 @@ export async function validateInfoForm(infoForm: InfoData) {
   const result = schema.safeParse({
     CatalogYear: infoForm.catalogYear,
     Major: infoForm.major,
+    StudentStatus: status,
     GradDate: infoForm.gradDate,
     Planner: infoForm.planner,
     StartPlanner: infoForm.startPlanner,
@@ -123,14 +113,14 @@ export async function validateInfoForm(infoForm: InfoData) {
     return { success: false, errors: ['Planner Start Date must be on or before Expected Graduation Date'] };
   }
 
-  return { success: true };
+  return { success: true, errors: [] };
 
 }
 
 export async function validateBackgroundCourseForm(studentStatus: string, undergradData: UndergradData, backgroundCourseData: BackgroundCourseData) {
 
   // Validate student status first
-  const StudentStatusSchema = z.enum(['U', 'C', 'T'], { message: 'Invalid Student Status' });
+  const StudentStatusSchema = z.enum(['U', 'C', 'T'], { message: 'Error: Invalid Student Status' });
 
   const statusValidation = StudentStatusSchema.safeParse(studentStatus);
 
@@ -228,14 +218,13 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
     return { success: false, errors: errorMessages };
   }
 
-  return { success: true };
+  return { success: true, errors: [] };
 }
 
-export async function validateStudentPreferencesForm(infoData: InfoData, arrNumCourses: string[]) {
+export async function validateStudentPreferencesForm(infoData: InfoData, arrNumCourses: string[], status: string) {
   let numQuarters = 0;
-  const checkInfoData = await validateInfoForm(infoData);
+  const checkInfoData = await validateInfoForm(infoData, status);
   if (!checkInfoData.success) {
-    // throw new Error(checkInfoData.errors ? checkInfoData.errors[0] : 'Something went wrong. Please restart the form and try again.')
     return { success: false, errors: checkInfoData.errors };
   }
 
@@ -295,15 +284,15 @@ export async function validateStudentPreferencesForm(infoData: InfoData, arrNumC
 async function validateEntireForm(formContext: FormContextType) {
   let errors = [];
   let result;
+  const studentStatus: string = formContext.studentStatus;
   const infoData: InfoData = formContext.infoData;
   const numCoursesPreference: string[] = formContext.numCoursesPreference;
-  result = await validateStudentPreferencesForm(infoData, numCoursesPreference);
+  result = await validateStudentPreferencesForm(infoData, numCoursesPreference, studentStatus);
   if (!result.success) {
     if (result.errors) {
       errors.push(...result.errors)
     }
   }
-  const studentStatus: string = formContext.studentStatus;
   const undergradData: UndergradData = formContext.undergradData;
   const backgroundCourseData: BackgroundCourseData = formContext.backgroundCourseData;
   result = await validateBackgroundCourseForm(studentStatus, undergradData, backgroundCourseData);

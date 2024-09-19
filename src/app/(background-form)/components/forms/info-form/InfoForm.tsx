@@ -1,19 +1,20 @@
 'use client'
 
-import * as React from 'react';
+import React, { useEffect, useTransition } from 'react';
 
 import Select from '../../inputs/Select'
-import Box from '@mui/material/Box';
+import SubtitleLink from '../../inputs/SubtitleLink'
 
-import Button from '@mui/material/Button'
+import { Box, Button, Grid2 as Grid, Typography } from '@mui/material'
 
 import { useFormContext } from '../../../context/FormContext';
 
-import {InfoData} from '../../../context/FormContext';
+import { InfoData } from '../../../context/FormContext';
 import { validateInfoForm } from '../../../formActions';
 import { useRouter } from 'next/navigation';
 import StartPlanner from './StartPlanner';
 
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const getGradOptions = () => {
   const date = new Date();
@@ -49,7 +50,7 @@ const getGradOptions = () => {
 
   const gradOptions = [];
   for (let i = 0; i < possibleGradDates.length; i++) {
-    gradOptions.push({option: possibleGradDates[i], value: valueGradDates[i]});
+    gradOptions.push({ option: possibleGradDates[i], value: valueGradDates[i] });
   }
   return gradOptions;
 }
@@ -59,20 +60,20 @@ export default function InfoForm() {
   const gradOptions = getGradOptions();
   const formContext = useFormContext();
 
-  const {setStepLastCompleted} = useFormContext();
+  const { setStepLastCompleted } = useFormContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setStepLastCompleted(0);
   }, [setStepLastCompleted]);
 
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const handleInfoForm = async (event: React.FormEvent) => {
     event.preventDefault();
     startTransition(async () => {
-      const result = await validateInfoForm(formContext.infoData);
+      const result = await validateInfoForm(formContext.infoData, formContext.studentStatus);
       if (!result.success) {
-        formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
+        formContext.setStepError(result.errors[0]);
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
         return;
       }
@@ -82,87 +83,125 @@ export default function InfoForm() {
     })
   }
 
-  
+
   return (
     <>
       <Box
-        component = "form"
+        component="form"
         sx={{
-          width: '70%',               // Box width set to 50% of the screen width
+          width: '90%',               // Box width set to 50% of the screen width
           mx: 'auto',                 // Horizontally centers the Box using margin auto
           display: 'flex',            // Flexbox layout
           flexDirection: 'column',    // Stacks child components vertically
           alignItems: 'center',       // Centers child components horizontally
-          // justifyContent: 'center',   // Centers child components vertically
-          // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
           padding: 1,
           mt: 1,
         }}
         onSubmit={handleInfoForm}
       >
-        <Select
-          auto="24"
-          title="UCSC General Catalog"
-          subtitle="If unsure, read about which catalog year you fall into here."
-          inputLabel="Year"
-          options={
-            [
-              { option: '2024-2025 (Default)', value: '24' },
-              { option: '2023-2024', value: '23' },
-              { option: '2022-2023', value: '22' }
-            ]
-          }
-          state = {formContext.infoData.catalogYear}
-          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, catalogYear: value }))}
-        />
-        <Select
-          auto="CS"
-          title="Major"
-          subtitle=''
-          inputLabel="Major"
-          options={[{ option: 'Computer Science (B.S.)', value: 'CS' }]}
-          state = {formContext.infoData.major}
-          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, major: value }))}
-        />
-        <Select
-          auto=""
-          title="Expected Graduation Date"
-          subtitle="Your planned last quarter here as an undergraduate at UCSC."
-          inputLabel="Date"
-          options={gradOptions}
-          state = {formContext.infoData.gradDate}
-          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, gradDate: value }))}
-        />
-        <Select
-          auto="3"
-          title="Planner Type"
-          subtitle='I want to generate a planner for...'
-          inputLabel="Planner"
-          options={
-            [
-              { option: 'Next Quarter', value: '3' },
-              { option: 'Upcoming 3 Quarters', value: '1' },
-              { option: 'Full Academic Planner (to graduation date)', value: '2'}
-            ]
-          }
-          state = {formContext.infoData.planner}
-          mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
-        />
-        <StartPlanner />
+
+        <Grid container spacing={2} alignItems="flex-end">
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              auto="24"
+              title="UCSC General Catalog"
+              subtitle={
+                <>
+                  <Typography
+                    sx={{ mt: 1, fontSize: 14, mb: 2 }}>
+                    {`If you are unsure which General Catalog you are following, you can read more about catalog rights `}
+                    <SubtitleLink
+                      href="https://registrar.ucsc.edu/navigator/section1/catalog-rights.html"
+                      icon={<OpenInNewIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />} // Pass the icon here
+                    >
+                      here
+                    </SubtitleLink>.
+                  </Typography>
+                </>
+              }
+              inputLabel="Year"
+              options={
+                [
+                  { option: '2024-2025 (Default)', value: '24' },
+                  { option: '2023-2024', value: '23' },
+                  { option: '2022-2023', value: '22' }
+                ]
+              }
+              state={formContext.infoData.catalogYear}
+              mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, catalogYear: value }))}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              auto="CS"
+              title="Major"
+              subtitle="Proposed or Declared Major. Currently, only Computer Science (B.S.) is supported."
+              inputLabel="Major"
+              options={[{ option: 'Computer Science (B.S.)', value: 'CS' }]}
+              state={formContext.infoData.major}
+              mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, major: value }))}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              auto=""
+              title="Student Status"
+              subtitle="Please indicate whether you are an incoming first-year, transfer, or continuing student."
+              inputLabel="Status"
+              options={
+                [
+                  { option: 'Incoming First-Year Student', value: 'U' },
+                  { option: 'Incoming Transfer', value: 'T' },
+                  { option: 'Continuing Student', value: 'C' }
+                ]
+              }
+              state={formContext.studentStatus}
+              mutator={formContext.setStudentStatus}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              auto="S28"
+              title="Expected Graduation Date"
+              subtitle="Please select your expected last quarter as an undergraduate at UCSC."
+              inputLabel="Date"
+              options={gradOptions}
+              state={formContext.infoData.gradDate}
+              mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, gradDate: value }))}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Select
+              auto="3"
+              title="Planner Type"
+              subtitle="I want to generate a planner for..."
+              inputLabel="Planner"
+              options={
+                [
+                  { option: 'Next Quarter', value: '3' },
+                  { option: 'Upcoming 3 Quarters', value: '1' },
+                  { option: 'Full Academic Planner (to graduation date)', value: '2' }
+                ]
+              }
+              state={formContext.infoData.planner}
+              mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <StartPlanner />
+          </Grid>
+
+        </Grid>
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <Button type= 'submit' disabled = {isPending} variant='contained' color = 'warning'>
+          <Button type='submit' disabled={isPending} variant='contained' color='warning'>
             Next
           </Button>
         </Box>
       </Box>
     </>
   );
+
 }
-
-/*
-https://medium.com/@wdswy/how-to-build-a-multi-step-form-using-nextjs-typescript-react-context-and-shadcn-ui-ef1b7dcceec3
-how to make a multi step form using React and Next.js
-https://www.reddit.com/r/nextjs/search/?q=multi+step+form&type=link&cId=2a640cd3-7dae-4775-80d2-e059335f58eb&iId=e330d05a-2606-41a0-81e5-965b440b6f00
-https://www.reddit.com/r/nextjs/comments/11nq5o4/what_is_the_best_practices_for_creating_multistep/
-
-*/

@@ -17,16 +17,16 @@ interface Option {
 }
 
 interface BasicSelectProps {
-    auto: string;
-    title: string;
-    subtitle: string;
-    inputLabel: string;
-    options: Option[];
-    state: string;
-    mutator: (state: string) => void;
-  }
+  auto: string;
+  title: string;
+  subtitle: string | React.ReactNode;
+  inputLabel: string;
+  options: Option[];
+  state: string;
+  mutator: (state: string) => void;
+}
 
-const BasicSelect: React.FC<BasicSelectProps> = ({auto, title, subtitle, inputLabel, options, state, mutator}: BasicSelectProps) => {
+const BasicSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputLabel, options, state, mutator }: BasicSelectProps) => {
   const [option, setOption] = React.useState(state ? state : auto);
 
   // Sync initial state on first render
@@ -36,52 +36,41 @@ const BasicSelect: React.FC<BasicSelectProps> = ({auto, title, subtitle, inputLa
     }
   }, [state, option, mutator]);
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setOption(event.target.value as string);
-  //   mutator(event.target.value as string);
-  // };
-
   const handleChange = (event: SelectChangeEvent) => {
     setOption(event.target.value as string);
     mutator(event.target.value as string);
   };
 
   console.log(`${title}: ${state}`)
+  console.log(typeof (subtitle))
 
   return (
-    <Box sx={{ width: '100%' }}>
-        <Typography sx={{mt: 2, mb: 1, fontWeight: 'bold', fontSize: 18}}>
+    <Box sx={{ width: '100%'}}>
+      <Typography sx={{ mt: 2, mb: 1, fontWeight: 'bold', fontSize: 18 }}>
         {title}
+      </Typography>
+      {typeof (subtitle) === 'string' ? (
+        <Typography sx={{
+          mb: 2, fontSize: 14}}>
+          {subtitle}
         </Typography>
-        <Typography sx={{mb: 2, fontSize: 14}}>
-        {subtitle}
-        </Typography>
+      ) : (
+        subtitle
+      )}
       <FormControl fullWidth>
         <InputLabel id={`${inputLabel}-select-label`}>{inputLabel}</InputLabel>
         <Select
           labelId={`${inputLabel}-select-label`}
           id={`${inputLabel}-select`}
           value={option}
-          label= {inputLabel}
+          label={inputLabel}
           onChange={handleChange}
-          name = {`${inputLabel}-select`}
+          name={`${inputLabel}-select`}
         >
-            {options.map((opt) => (
-              <MenuItem key = {opt.value} value = {opt.value}>{opt.option}</MenuItem>
-            ))}
+          {options.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>{opt.option}</MenuItem>
+          ))}
         </Select>
-          {/* <TextField
-            id= {`${inputLabel}-select`}
-            select
-            value = {option}
-            label = {inputLabel}
-            name = {inputLabel}
-            onChange={handleChange}
-          >
-            {options.map((opt) => (
-              <MenuItem key = {opt.value} value = {opt.value}>{opt.option}</MenuItem>
-            ))}
-          </TextField> */}
       </FormControl>
     </Box>
   );

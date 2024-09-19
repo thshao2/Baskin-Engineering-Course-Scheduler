@@ -39,7 +39,7 @@ export default function StartPlanner() {
 
   return (
     <Select
-      auto=""
+      auto="F24"
       title="Planner Start Date"
       subtitle={`Select the quarter this generated academic planner will start from (e.g. ${startOptions[0].option}). The available dates are based on today's date.`}
       inputLabel="Planner Start Date"

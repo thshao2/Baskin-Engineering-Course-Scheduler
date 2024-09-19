@@ -42,13 +42,6 @@ export default function StduentPreferencesForm() {
   const handleStudentPreferencesForm = async (event: React.FormEvent) => {
     event.preventDefault();
     startTransition(async () => {
-      // const result = await validateStudentPreferencesForm(formContext.infoData, formContext.numCoursesPreference)
-      // console.log(result);
-      // if (!result.success) {
-      //   formContext.setStepError(result.errors ? result.errors[0] : 'Invalid Input');
-      //   window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top of the page
-      //   return;
-      // }
       formContext.setStepLastCompleted(3);
       router.push('/planners');
     })
