@@ -8,6 +8,8 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Typography } from '@mui/material';
 
+import { useFormContext, UndergradData, BackgroundCourseData } from '@/app/(background-form)/context/FormContext';
+import { codes, tcodes } from '../background-course-form/MajorCourses';
 
 interface Option {
   option: string;
@@ -24,8 +26,10 @@ interface BasicSelectProps {
   mutator: (state: string) => void;
 }
 
-const BasicSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputLabel, options, state, mutator }: BasicSelectProps) => {
+const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputLabel, options, state, mutator }: BasicSelectProps) => {
   const [option, setOption] = React.useState(state ? state : auto);
+
+  const { setBackgroundCourseData, setUndergradData } = useFormContext();
 
   // Sync initial state on first render
   React.useEffect(() => {
@@ -35,20 +39,48 @@ const BasicSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputL
   }, [state, option, mutator]);
 
   const handleChange = (event: SelectChangeEvent) => {
-    setOption(event.target.value as string);
-    mutator(event.target.value as string);
+    const newStatus = event.target.value as string;
+    setOption(newStatus);
+    mutator(newStatus);
+    if (newStatus === 'U') {
+      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
+      ({
+        ...backgroundCourseData, completedMajorCourses: [],
+        completedMajorElectives: [], completedAlternativeElectives: [],
+        completedCapstoneElectives: [],
+      }));
+      setUndergradData((undergradData: UndergradData) => ({
+        ...undergradData, math: ''
+      }));
+    } else if (newStatus === 'T') {
+      const diffCodes = codes.filter(code => !tcodes.includes(code));
+      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
+      ({
+        ...backgroundCourseData, completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course)),
+        completedMajorElectives: [], completedAlternativeElectives: [],
+        completedCapstoneElectives: [],
+      }));
+      setUndergradData((undergradData: UndergradData) => ({
+        ...undergradData, math: ''
+      }));
+    } else {
+      setUndergradData((undergradData: UndergradData) => ({
+        ...undergradData, math: ''
+      }));
+    }
   };
 
   console.log(`${title}: ${state}`)
 
   return (
-    <Box sx={{ width: '100%'}}>
+    <Box sx={{ width: '100%' }}>
       <Typography sx={{ mt: 2, mb: 1, fontWeight: 'bold', fontSize: 18 }}>
         {title}
       </Typography>
       {typeof (subtitle) === 'string' ? (
         <Typography sx={{
-          mb: 2, fontSize: 14}}>
+          mb: 2, fontSize: 14
+        }}>
           {subtitle}
         </Typography>
       ) : (
@@ -73,7 +105,4 @@ const BasicSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputL
   );
 };
 
-const MemoizedBasicSelect = React.memo(BasicSelect);
-
-
-export default MemoizedBasicSelect;
+export default StudentStatusSelect;

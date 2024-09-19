@@ -1,6 +1,5 @@
 'use client'
 
-import Select from '../../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
@@ -9,7 +8,6 @@ import { BackgroundCourseData, useFormContext } from '../../../context/FormConte
 
 import { InfoData } from '../../../context/FormContext';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 import CourseHistoryForm from './CourseHistoryForm';
@@ -37,16 +35,6 @@ export default function BackGroundCoursesForm() {
   useEffect(() => {
     setStepLastCompleted(1);
   }, [setStepLastCompleted])
-
-  useEffect(() => {
-    if (studentStatus !== 'C') {
-      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
-      ({
-        ...backgroundCourseData, completedMajorElectives: [],
-        completedAlternativeElectives: [], completedCapstoneElectives: []
-      }));
-    }
-  }, [studentStatus, setBackgroundCourseData])
 
 
   const handleBack = () => {
@@ -80,12 +68,10 @@ export default function BackGroundCoursesForm() {
           component="form"
           sx={{
             width: '80%',               // Box width set to 50% of the screen width
-            // mx: 'auto',                 // Horizontally centers the Box using margin auto
+            mx: 'auto',                 // Horizontally centers the Box using margin auto
             display: 'flex',            // Flexbox layout
             flexDirection: 'column',    // Stacks child components vertically
             alignItems: 'center',       // Centers child components horizontally
-            // justifyContent: 'center',   // Centers child components vertically
-            // minHeight: '100vh',         // Ensures the Box takes at least the full viewport height
             padding: 1,
           }}
           onSubmit={handleBackgroundForm}

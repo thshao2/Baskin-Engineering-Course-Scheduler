@@ -3,16 +3,19 @@
 import React, { useEffect, useTransition } from 'react';
 
 import Select from '../../inputs/Select'
+import StudentSelect from './StudentSelect';
 import SubtitleLink from '../../inputs/SubtitleLink'
 
 import { Box, Button, Grid2 as Grid, Typography } from '@mui/material'
 
-import { useFormContext } from '../../../context/FormContext';
+import { UndergradData, useFormContext } from '../../../context/FormContext';
 
 import { InfoData } from '../../../context/FormContext';
 import { validateInfoForm } from '../../../formActions';
 import { useRouter } from 'next/navigation';
 import StartPlanner from './StartPlanner';
+
+import { BackgroundCourseData } from '../../../context/FormContext';
 
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
@@ -145,7 +148,7 @@ export default function InfoForm() {
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Select
+            <StudentSelect
               auto=""
               title="Student Status"
               subtitle="Please indicate whether you are an incoming first-year, transfer, or continuing student."

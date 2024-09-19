@@ -1,10 +1,6 @@
-import { Typography } from "@mui/material";
 import { BackgroundCourseData, useFormContext, UndergradData } from "../../../context/FormContext";
 import TwoSelect from "../../inputs/TwoSelect";
 import CheckboxGroup from "../../inputs/Checkbox";
-
-import Select from "../../inputs/Select";
-
 import WritingPlacement from "./WritingPlacement";
 
 const codes = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
@@ -14,7 +10,7 @@ type AutoObject = {
 
 export default function GeneralEd() {
 
-  const { studentStatus, undergradData, setUndergradData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
+  const { studentStatus, backgroundCourseData, setBackgroundCourseData } = useFormContext();
   
   
   const auto: AutoObject = codes.reduce((acc, key) => {
@@ -67,17 +63,3 @@ export default function GeneralEd() {
   );
 
 }
-
-// interface GeneralEdLabelProps {
-//   title: string,
-// }
-
-// const GeneralEdLabel = ({ title }: GeneralEdLabelProps) => {
-//   return (
-//     <>
-//       <Typography sx={{mt: 1}}>
-//         {title}
-//       </Typography>
-//     </>
-//   );
-// };

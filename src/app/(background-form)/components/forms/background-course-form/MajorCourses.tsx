@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 
 import MajorElectives from "./MajorElectives";
 
-const codes = [
+export const codes = [
   'MATH3', 'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
   'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
   'AM10', 'AM30', 'ECE30', 'STAT131',
@@ -39,7 +39,7 @@ const majorLabels = [
   'CSE 195: Senior Thesis Research (if used for DC Requirement)'
 ] as const;
 
-const tcodes = [
+export const tcodes = [
   'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
   'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
   'AM10', 'AM30', 'ECE30', 'STAT131', 'CSE101', 'CSE107'
@@ -100,15 +100,6 @@ const RenderMajorCourses: React.FC = () => {
     setAutoProps({ ...newAutoProps })
   }, [studentStatus])
 
-  useEffect(() => {
-    if (studentStatus === 'T') {
-      const diffCodes = codes.filter(code => !tcodes.includes(code));
-      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
-      ({
-        ...backgroundCourseData, completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course))
-      }));
-    }
-  }, [studentStatus, setBackgroundCourseData])
 
   switch (infoData.major) {
     case 'CS':
