@@ -50,13 +50,23 @@ async function shuffleArray(array: string[]): Promise<string[]> {
 }
 
 export async function getTopPriorityCourses(courses: string[], x: number, priorityObj: Record<string, number>, catalog: number): Promise<string[]> {
-  if (courses.length <= x) {
-    return courses; // If there are fewer courses than x, return them all
-  }
-
   // Get Equivalency Courses for Catalog Year
   const equivalencyObj = catalog > 23 ? newEquivalentCSCourses : EquivalentCSCourses;
   const equivalencySet: Set<string> = new Set();
+  
+  if (courses.length <= x) {
+    // Shuffle array for randomness, then remove equivalent courses from the array
+    const newCourses = await shuffleArray(courses);
+    for (let i = 0; i < newCourses.length; i++) {
+      if (equivalencySet.has(newCourses[i])) {
+        newCourses.splice(i, 1);
+        continue;
+      }
+      const equivalents: string[] = equivalencyObj[newCourses[i]] || []; // Get equivalent courses for the current course
+      equivalents.forEach(course => equivalencySet.add(course));
+    }
+    return newCourses;
+  }
 
   // Group courses by their priority
   const groupedByPriority: Record<number, string[]> = {};

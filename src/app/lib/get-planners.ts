@@ -492,8 +492,8 @@ export default async function getPlanners(formContext: FormContextType) {
               continue;
             }
             if (nextSnapshot.neededMajorCourses.includes(course)) {
-              numMajorCoursesNeeded--;
               for (const equivCourse of equivalencyObj[course]) {
+                numMajorCoursesNeeded--;
                 equivSet.add(equivCourse);
               }
             }
