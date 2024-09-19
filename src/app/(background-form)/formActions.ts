@@ -197,7 +197,7 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
   if (!backgroundCourseData.completedGeneralEdCourses.includes('C')) {
     writingSchema = z.string()
       .min(1, { message: "Writing Placement is Required" })
-      .regex(/^\d{1,2}$/, {
+      .regex(/^(25|26|1|2)$/, {
         message: "Invalid Input. Error: Writing Placement"
       })
   }
@@ -205,7 +205,7 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
   if (studentStatus === 'U') {
     mathSchema = z.string()
       .min(1, { message: 'Math Placement is Required' }) // Ensure it isn't empty
-      .regex(/^\d{1,2}([AB])?$/, {
+      .regex(/^(3|19A|19B|20)$/, {
         message: "Invalid Input. Error: Math Placement"
       })
   }

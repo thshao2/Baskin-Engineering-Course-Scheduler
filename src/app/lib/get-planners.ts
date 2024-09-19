@@ -125,20 +125,21 @@ export default async function getPlanners(formContext: FormContextType) {
 
   const displayWritingCoursesNeeded = [];
 
-  // Update General Education Requirements array to include ALL writing courses needed 
-  /* Example: if placed in Writing 1, include '1' as well as 'C', representing Writing 1 AND Writing 2
-              are both needed to meet General Education requirements */
-  if (neededGeneralEdCourses.includes('C') && writingPlacement !== '2') {
-    const writingLevels = ['25', '26', '1'];
-    const index = writingLevels.indexOf(writingPlacement);
-    for (let i = index; i < writingLevels.length; i++) {
-      neededGeneralEdCourses.push(writingLevels[i]);
-      displayWritingCoursesNeeded.push(`WRIT ${writingLevels[i]}`)
-    }
+  // If C General Education Requirement has already been completed, set writing placement to "C"
+  if (!neededGeneralEdCourses.includes('C')) {
+    writingPlacement = 'C';
   }
 
+  // Update Display Writing Courses Array to include ALL writing courses needed
+  /* Example: if placed in Writing 1, include '1' as well as 'C', representing Writing 1 AND Writing 2
+              are both needed to meet General Education requirements */
   if (neededGeneralEdCourses.includes('C')) {
-    displayWritingCoursesNeeded.push(`WRIT 2`)
+    const writingLevels = ['25', '26', '1', '2'];
+    const index = writingLevels.indexOf(writingPlacement);
+    for (let i = index; i < writingLevels.length; i++) {
+      // neededGeneralEdCourses.push(writingLevels[i]);
+      displayWritingCoursesNeeded.push(`WRIT ${writingLevels[i]}`)
+    }
   }
 
   // For 2023-2024 Catalog set elective 2 to true as default
@@ -181,13 +182,6 @@ export default async function getPlanners(formContext: FormContextType) {
         Example: {quarter: 'Fall 2024', courses: ['CSE 114A', 'CSE 115A', 'CSE 144']}
   */
   // const planners: quarterSchedule[][] = [];
-
-  // Each element will be an array (snapshots for a specific schedule),
-  // where each element in each array will be an object with quarter and snapshot attributes
-  // The snapshot attribute will carry the updated attributes (GE requirements, needed major courses, etc.)
-  // after completion of this quarter
-  // Example: {quarter: 'Fall 2024', snapshot: currentSnapshot}
-  // const snapshots = [];
 
   // Get Priority Object of each Major Course, determined by satisfaction count of course (to be able to take future major courses)
   const priorityObject = await getPriorityList();
@@ -385,10 +379,10 @@ export default async function getPlanners(formContext: FormContextType) {
 
   /*
     Things to consider in algorithm: 
-      GE Courses: 'C' gets duplicated with Writing, should keep it separate
+      GE Courses: 'C' gets duplicated with Writing, should keep it separate => Solved
       Undergraduate (CSE 20 doesn't get priority first quarter b/c first quarter is brute-force)
-      Glitch when going back to transfer after generated schedules (Reset major courses)
-      Writing PLacement glitch in firstQuarter
+        Get Top Priority (and swap it with the first element)
+      Writing Placement glitch => Solved
 
 
 

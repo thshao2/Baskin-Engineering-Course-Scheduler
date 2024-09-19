@@ -39,8 +39,13 @@ export default function BackGroundCoursesForm() {
   }, [setStepLastCompleted])
 
   useEffect(() => {
+    console.log("USE EFFECT")
     if (studentStatus !== 'C') {
-      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) => ({ ...backgroundCourseData, completedMajorCourses: [] }));
+      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
+      ({
+        ...backgroundCourseData, completedMajorElectives: [],
+        completedAlternativeElectives: [], completedCapstoneElectives: []
+      }));
     }
   }, [studentStatus, setBackgroundCourseData])
 

@@ -14,7 +14,7 @@ const codes = [
   'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
   'AM10', 'AM30', 'ECE30', 'STAT131',
   'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S', 'CSE195'
-] as const;
+]
 
 const majorLabels = [
   'MATH 3: Precalculus',
@@ -43,7 +43,7 @@ const tcodes = [
   'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
   'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
   'AM10', 'AM30', 'ECE30', 'STAT131', 'CSE101', 'CSE107'
-] as const;
+]
 
 const tmajorLabels = [
   'MATH 19A: Calculus for Science, Engineering, and Mathematics I', 
@@ -99,6 +99,16 @@ const RenderMajorCourses: React.FC = () => {
     const newAutoProps = studentStatus === 'C' ? auto : auto2;
     setAutoProps({...newAutoProps})
   }, [studentStatus])
+
+  useEffect(() => {
+    if (studentStatus === 'T') {
+      const diffCodes = codes.filter(code => !tcodes.includes(code));
+      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
+        ({
+          ...backgroundCourseData, completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course))
+        }));    
+    }
+  }, [studentStatus, setBackgroundCourseData])
 
   switch (infoData.major) {
     case 'CS':
