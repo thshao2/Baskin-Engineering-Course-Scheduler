@@ -71,7 +71,7 @@ export default function StduentPreferencesForm() {
               Back
             </Button>
             <Button variant='contained' type= "submit" color='warning' disabled = {isPending}>
-              Next
+              Finish
             </Button>
           </Box>
         </Box>
