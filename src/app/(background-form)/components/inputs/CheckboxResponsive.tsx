@@ -7,8 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import Grid  from '@mui/material/Grid2';
-import { useFormContext } from '../../context/FormContext';
+import Grid from '@mui/material/Grid2';
 
 interface Option {
   option: string;
@@ -39,7 +38,7 @@ const CheckboxGroup: React.FC<CheckboxResponsiveProps> = ({ auto, title, subtitl
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = {...values, [event.target.value]: event.target.checked};
     setValues(newValue);
-    mutator(Object.keys(values).filter(key => newValue[key]))
+    mutator(Object.keys(values).filter(key => newValue[key]));
   };
 
   console.log(`${title}: ${state}`)

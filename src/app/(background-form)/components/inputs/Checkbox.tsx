@@ -4,10 +4,9 @@ import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 interface Option {
   option: string;
@@ -36,7 +35,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, op
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = {...values, [event.target.value]: event.target.checked};
     setValues(newValue);
-    mutator(Object.keys(newValue).filter(key => newValue[key]));
+    mutator(Object.keys(values).filter(key => newValue[key]));
   };
 
   console.log(`${title}: ${state}`)
@@ -54,17 +53,16 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, op
           >
             {options.map((opt: Option) => (
               <Grid
-                item
-                xs={12} // Full width on smaller screens
-                lg={6}  // Half width on large screens
+                size={{xs: 12, lg: options.length > 1 ? 6 : 12}}
                 key={opt.value}
-                sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+                // sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
               >
                 <FormControlLabel
                   control={
                     <Checkbox key={opt.value} value={opt.value} checked={values[opt.value]} onChange={handleChange} />
                   }
                   label={opt.option}
+                  sx={{ '& .MuiFormControlLabel-label': { fontSize: {xs: '0.75rem', sm: '0.80rem', md: '0.90rem'} } }} // Adjust the font size here
                 />
               </Grid>
             ))}

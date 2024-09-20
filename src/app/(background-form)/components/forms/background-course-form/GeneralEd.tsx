@@ -24,8 +24,8 @@ export default function GeneralEd() {
         auto= {auto}
         title="General Education Courses"
         subtitle={studentStatus !== 'C' ? 
-          `Select General Education Requirements that you have already satisfied through transfer credit.` :
-          `Select GE Courses that you have already taken, or have already received credit for.`
+          `Select General Education Requirements that you have satisfied through transfer credit.` :
+          `Select General Education Courses that you have already taken, or have received transfer credit for.`
         }
         options={
           [

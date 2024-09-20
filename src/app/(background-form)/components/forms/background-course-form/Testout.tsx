@@ -39,7 +39,7 @@ export default function Testout() {
     switch (infoData.major) {
       case 'CS':
         return (
-          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 2 }}>
             <FormControl>
               <FormLabel id="demo-controlled-radio-buttons-group">Have you taken or do you plan to take the CSE 20 Testout Exam?</FormLabel>
               <RadioGroup
