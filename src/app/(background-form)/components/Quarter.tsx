@@ -62,7 +62,7 @@ const getColor = (course: string) => {
 
 export const QuarterSkeleton = () => {
   return (
-    <Box sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: '100%' }}>
       <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
         <Table>
           <TableHead>
@@ -111,7 +111,7 @@ export const QuarterSkeleton = () => {
 // Pagination, Loading Fallback
 export default function Quarter({ quarter, courses }: { quarter: string, courses: string[] }) {
   return (
-    <Box sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: '100%' }}>
       {/* Table Structure */}
       <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', border: '1px solid #78909c' }}>
         <Table aria-label="quarter schedule">

@@ -379,10 +379,9 @@ export default async function getPlanners(formContext: FormContextType) {
 
   /*
     Things to consider in algorithm: 
-      GE Courses: 'C' gets duplicated with Writing, should keep it separate => Solved
       Undergraduate (CSE 20 doesn't get priority first quarter b/c first quarter is brute-force)
         Get Top Priority (and swap it with the first element)
-      Writing Placement glitch => Solved
+        Get NumMajorCourses Priority and set it has the first results that show up
 
 
 

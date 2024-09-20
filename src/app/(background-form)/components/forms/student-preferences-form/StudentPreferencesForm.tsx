@@ -1,6 +1,5 @@
 'use client'
 
-import Select from '../../inputs/Select'
 import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
@@ -10,7 +9,6 @@ import { useFormContext } from '../../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import { validateStudentPreferencesForm } from '../../../formActions';
 import NumCoursesPreference from './NumCoursesPreference';
 
 

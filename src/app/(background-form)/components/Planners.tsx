@@ -23,11 +23,16 @@ import SearchIcon from '@mui/icons-material/Search';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
+import { getEnrolledQuarters } from "./forms/student-preferences-form/NumCoursesPreference";
+
 
 
 export default function Planner() {
   const router = useRouter();
   const formContext = useFormContext();
+
+  const enrolledQuarters =
+    getEnrolledQuarters(formContext.infoData.gradDate, formContext.infoData.startPlanner, formContext.infoData.planner);
 
   const { stepLastCompleted } = useFormContext();
 
@@ -222,14 +227,28 @@ export default function Planner() {
                 <Skeleton variant="rectangular" sx={{ mb: 4 }} width='100%' height={56} />
               </Box>
             </Box>
-            <Grid container spacing={1}>
-              {/* Create 3 skeleton planners as a placeholder */}
-              {[...Array(24)].map((_, index) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-                  <QuarterSkeleton />
-                </Grid>
-              ))}
-            </Grid>
+            {(formContext.infoData.planner === '3' || enrolledQuarters.length === 1) ? (
+              <Grid container spacing={1}>
+                {/* Create skeleton planners as a placeholder */}
+                {[...Array(48)].map((_, index) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index} sx={{ mb: 2 }}>
+                    <QuarterSkeleton />
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              [...Array(24)].map((_, scheduleIndex) => (
+                <Box key={scheduleIndex} sx={{ width: '100%', mt: 2, mb: 10 }}>
+                  <Grid key={scheduleIndex} container>
+                    {[...Array(enrolledQuarters.length)].map((_, index) => (
+                      <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+                        <QuarterSkeleton />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              ))
+            )}
           </Box>
         </Box>
       </>
@@ -349,7 +368,7 @@ export default function Planner() {
                 {displayInfo.quarters === 1 ? (
                   <Grid container spacing={1}>
                     {schedules.map((schedule, scheduleIndex) => (
-                      <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+                      <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'center', mb: 2 }} // Align items in each grid
                         key={scheduleIndex}>
                         {schedule.map((quarter, index) => (
                           <Quarter key={index} quarter={quarter.quarter} courses={quarter.courses} />
@@ -359,9 +378,9 @@ export default function Planner() {
                   </Grid>
                 ) : (
                   schedules.map((schedule, scheduleIndex) => (
-                    <Box key={scheduleIndex} sx={{ width: '100%', mt: 4, mb: 1 }}>
-                      {/* Each schedule displayed in a grid with 3 Quarter components per row */} 
-                      <Grid container spacing={1}>
+                    <Box key={scheduleIndex} sx={{ width: '100%', mt: 2, mb: 10 }}>
+                      {/* Each schedule displayed in a grid with 3 Quarter components per row */}
+                      <Grid container>
                         {schedule.map((quarter, index) => (
                           <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
                             key={index}>
