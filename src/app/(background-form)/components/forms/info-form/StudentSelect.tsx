@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Typography } from '@mui/material';
 
-import { useFormContext, UndergradData, BackgroundCourseData } from '@/app/(background-form)/context/FormContext';
+import { useFormContext, UndergradData, BackgroundCourseData, InfoData } from '@/app/(background-form)/context/FormContext';
 import { codes, tcodes } from '../background-course-form/MajorCourses';
 
 interface Option {
@@ -29,7 +29,7 @@ interface BasicSelectProps {
 const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputLabel, options, state, mutator }: BasicSelectProps) => {
   const [option, setOption] = React.useState(state ? state : auto);
 
-  const { setBackgroundCourseData, setUndergradData } = useFormContext();
+  const { setInfoData, infoData, backgroundCourseData, setBackgroundCourseData, setUndergradData } = useFormContext();
 
   // Sync initial state on first render
   React.useEffect(() => {
@@ -45,29 +45,32 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
     if (newStatus === 'U') {
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
-        ...backgroundCourseData, completedMajorCourses: [],
+        ...backgroundCourseData, universityReq: { ...backgroundCourseData.universityReq, coreCourse: '' },
+        completedMajorCourses: [],
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
-      }));
-      setUndergradData((undergradData: UndergradData) => ({
-        ...undergradData, math: ''
       }));
     } else if (newStatus === 'T') {
       const diffCodes = codes.filter(code => !tcodes.includes(code));
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
-        ...backgroundCourseData, completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course)),
+        ...backgroundCourseData, universityReq: { ...backgroundCourseData.universityReq, coreCourse: '1' },
+        completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course)),
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
       }));
-      setUndergradData((undergradData: UndergradData) => ({
-        ...undergradData, math: ''
-      }));
     } else {
-      setUndergradData((undergradData: UndergradData) => ({
-        ...undergradData, math: ''
+      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
+      ({
+        ...backgroundCourseData, universityReq: { ...backgroundCourseData.universityReq, coreCourse: '' },
       }));
     }
+    setUndergradData((undergradData: UndergradData) => ({
+      ...undergradData, math: ''
+    }));
+    setInfoData((infoData: InfoData) => ({
+      ...infoData, startDate: '', startPlanner: '',
+    }));
   };
 
   console.log(`${title}: ${state}`)

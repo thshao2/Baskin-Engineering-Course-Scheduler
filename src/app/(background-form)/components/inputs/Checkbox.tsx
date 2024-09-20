@@ -55,7 +55,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, op
               <Grid
                 size={{xs: 12, lg: options.length > 1 ? 6 : 12}}
                 key={opt.value}
-                // sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
+                sx={{ display: 'flex', alignItems: 'center' }} // Align items in each grid
               >
                 <FormControlLabel
                   control={

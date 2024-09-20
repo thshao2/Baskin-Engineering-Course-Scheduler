@@ -1,6 +1,7 @@
 'use server'
 
 import getPlanners from "../lib/get-planners";
+import { getNumQuartersBetweenStartAndEndDate } from "../lib/helper";
 import { FormContextType, InfoData } from "./context/FormContext";
 import { BackgroundCourseData, UndergradData } from "./context/FormContext";
 
@@ -23,6 +24,16 @@ async function checkStartEndPlan(start: string, end: string) {
 }
 
 export async function validateInfoForm(infoForm: InfoData, status: string) {
+  // Validate student status first
+  const StudentStatusSchema = z.enum(['U', 'C', 'T'], { message: 'Error: Invalid Student Status' });
+
+  const statusValidation = StudentStatusSchema.safeParse(status);
+
+  if (!statusValidation.success) {
+    return { success: false, errors: [statusValidation.error.message] };
+  }
+
+  // Logic for Start and End Graduation Dates Schema
   const date = new Date();
   const curMonth = date.getMonth();
   const curYear = date.getFullYear() % 1000;
@@ -42,6 +53,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
   let yearEndStartPlan = curYear;
   let possibleLetters;
 
+  // Logic for Start Planner Date Schema (only for continuing students)
   if (curMonth > 9) {
     possibleLetters = 'WS';
     yearStartPlan = curYear + 1;
@@ -59,6 +71,35 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
 
   startPlannerRegex = new RegExp(`^[${possibleLetters}]\\d{2}$`)
 
+  // Logic for Start Term Schema
+  let startTermRange;
+  let endTermRange = curYear;
+  if (status !== 'C') {
+    startTermRange = curYear;
+    endTermRange++;
+  } else {
+    startTermRange = curYear - 4;
+  }
+
+  const startTermSchema = z.string()
+    .min(1, { message: 'Start Term is Required' }) // Ensure it isn't empty
+    .regex(/^[FW]\d{2}$/, { message: 'Invalid Input. Error: Start Term' })
+    .refine(val => {
+      const year = parseInt(val.slice(1), 10); // Extract the two digits after the first letter
+      return year >= startTermRange && year <= endTermRange;
+    }, { message: 'Invalid Input. Error: Start Term' })
+
+  const startPlannerSchema = (status !== 'C')
+    ? z.string() // Any string is allowed for 'U' or 'T' status
+    : z.string()
+      .min(1, { message: 'Planner Start Date is Required' }) // Ensure it isn't empty
+      .refine(val => startPlannerRegex.test(val), { message: 'Invalid Input. Error: Planner Start Date' })
+      .refine(val => {
+        const year = parseInt(val.slice(1), 10); // Extract the two digits after the first letter
+        return year >= yearStartPlan && year <= yearEndStartPlan;
+      }, { message: 'Invalid Input. Error: Planner Start Date' });
+
+
   const schema = z.object({
     CatalogYear: z.string()
       .regex(/^\d{2}$/, 'Invalid Catalog Year')
@@ -68,11 +109,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
     Major: z.string()
       .min(2, 'Invalid Input. Error: Major Selection')
       .max(4, 'Invalid Input. Error: Major Selection'),
-    StudentStatus: z.string()
-      .min(1, 'Student Status is Required')
-      .refine(val => val === 'U' || val === 'T' || val === 'C', {
-        message: 'Invalid Input. Error: Student Status',
-      }),
+    StartDate: startTermSchema,
     GradDate: z.string()
       .min(1, 'Expected Graduation Date is Required') // Ensure it isn't empty
       .refine(val => /^[FWS]\d{2}$/.test(val), { message: 'Invalid Input. Error: Expected Graduation Date' })
@@ -84,19 +121,13 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
       .refine(val => val === '1' || val === '2' || val === '3', {
         message: 'Invalid Input. Error: Type of Planner',
       }),
-    StartPlanner: z.string()
-      .min(1, { message: 'Planner Start Date is Required' }) // Ensure it isn't empty
-      .refine(val => startPlannerRegex.test(val), { message: 'Invalid Input. Error: Planner Start Date' })
-      .refine(val => {
-        const year = parseInt(val.slice(1), 10); // Extract the two digits after the first letter
-        return year >= yearStartPlan && year <= yearEndStartPlan;
-      }, { message: 'Invalid Input. Error: Planner Start Date' }),
+    StartPlanner: startPlannerSchema,
   });
 
   const result = schema.safeParse({
     CatalogYear: infoForm.catalogYear,
     Major: infoForm.major,
-    StudentStatus: status,
+    StartDate: infoForm.startDate,
     GradDate: infoForm.gradDate,
     Planner: infoForm.planner,
     StartPlanner: infoForm.startPlanner,
@@ -107,10 +138,29 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
     return { success: false, errors: errorMessages };
   }
 
-  const checkValidStart = await checkStartEndPlan(infoForm.startPlanner, infoForm.gradDate);
+  const checkValidStart = await checkStartEndPlan(infoForm.startDate, infoForm.gradDate);
 
   if (!checkValidStart) {
-    return { success: false, errors: ['Planner Start Date must be on or before Expected Graduation Date'] };
+    return { success: false, errors: ['Invalid Input: Start Term is after Expected Graduation Date'] };
+  }
+
+  const checkReasonableGap = await getNumQuartersBetweenStartAndEndDate(infoForm.startDate, infoForm.gradDate);
+
+  if (checkReasonableGap < 3) {
+    return { success: false, errors: ['Invalid Input: Start Term cannot be too close to Expected Graduation Date'] };
+  }
+
+  if (status === 'C') {
+    const checkValidStart2 = await checkStartEndPlan(infoForm.startPlanner, infoForm.gradDate);
+
+    if (!checkValidStart2) {
+      return { success: false, errors: ['Planner Start Date must be on or before Expected Graduation Date'] };
+    }
+
+    const checkValidStart3 = await checkStartEndPlan(infoForm.startDate, infoForm.startPlanner);
+    if (!checkValidStart3) {
+      return { success: false, errors: ['Start Term must be on or before Planner Start Date'] };
+    }
   }
 
   return { success: true, errors: [] };
@@ -305,7 +355,7 @@ async function validateEntireForm(formContext: FormContextType) {
     return { success: false, errors: errors }
   }
 
-  return {success: true, errors: []};
+  return { success: true, errors: [] };
 
 }
 
@@ -326,8 +376,8 @@ export async function validateAndGeneratePlanners(
   if (result.success) {
     // Generate Schedules
     const planners = await getPlanners(formContext)
-    return {...result, data: planners};
+    return { ...result, data: planners };
   } else {
-    return {...result, data: []};
+    return { ...result, data: [] };
   }
 }

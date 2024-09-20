@@ -4,6 +4,7 @@ import { PropsWithChildren, useState, createContext, useContext } from "react";
 export type InfoData = {
   catalogYear: string,
   major: string,
+  startDate: string,
   gradDate: string,
   planner: string,
   startPlanner: string,
@@ -42,6 +43,7 @@ export const FormContext = createContext({
   infoData: {
     catalogYear: '',
     major: '',
+    startDate: '',
     gradDate: '',
     planner: '',
     startPlanner: '',
@@ -79,6 +81,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   const [infoData, setInfoData] = useState({
     catalogYear: '',
     major: '',
+    startDate: '',
     gradDate: '',
     planner: '',
     startPlanner: '',

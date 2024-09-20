@@ -8,16 +8,17 @@ import SubtitleLink from '../../inputs/SubtitleLink'
 
 import { Box, Button, Grid2 as Grid, Typography } from '@mui/material'
 
-import { UndergradData, useFormContext } from '../../../context/FormContext';
+import { BackgroundCourseData, useFormContext } from '../../../context/FormContext';
 
 import { InfoData } from '../../../context/FormContext';
 import { validateInfoForm } from '../../../formActions';
 import { useRouter } from 'next/navigation';
+
+import StartTerm from './StartTerm';
 import StartPlanner from './StartPlanner';
 
-import { BackgroundCourseData } from '../../../context/FormContext';
-
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import CollegeOptions from './CollegeAffiliation';
 
 const getGradOptions = () => {
   const date = new Date();
@@ -63,7 +64,7 @@ export default function InfoForm() {
   const gradOptions = getGradOptions();
   const formContext = useFormContext();
 
-  const { setStepLastCompleted } = useFormContext();
+  const { studentStatus, setStepLastCompleted } = useFormContext();
 
   useEffect(() => {
     setStepLastCompleted(0);
@@ -168,7 +169,7 @@ export default function InfoForm() {
             <Select
               auto="S28"
               title="Expected Graduation Date"
-              subtitle="Please select your expected last quarter as an undergraduate at UCSC."
+              subtitle="Select your expected last quarter as an undergraduate at UCSC."
               inputLabel="Date"
               options={gradOptions}
               state={formContext.infoData.gradDate}
@@ -193,9 +194,24 @@ export default function InfoForm() {
               mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <StartPlanner />
-          </Grid>
+          {['U', 'T', 'C'].includes(studentStatus) && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <StartTerm />
+            </Grid>
+          )}
+          {(studentStatus === 'C' || studentStatus === 'U') && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <CollegeOptions
+                state={formContext.backgroundCourseData.universityReq.coreCourse}
+                mutator={(value) => formContext.setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: { ...prev.universityReq, coreCourse: value } }))}
+              />
+            </Grid>
+          )}
+          {studentStatus === 'C' && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <StartPlanner />
+            </Grid>
+          )}
 
         </Grid>
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 3 }}>

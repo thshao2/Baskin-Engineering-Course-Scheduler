@@ -4,10 +4,9 @@ import { useFormContext } from '../../../context/FormContext'
 
 import { InfoData } from '../../../context/FormContext';
 
-const getStartPlannerOptions = () => {
+export const getStartPlannerOptions = () => {
   const date = new Date();
   const currentMonth = date.getMonth();
-  // const currentMonth = 2;
   const currentYear = date.getFullYear();
   const currentYearShort = currentYear % 2000;
 
@@ -39,7 +38,7 @@ export default function StartPlanner() {
 
   return (
     <Select
-      auto="F24"
+      auto=""
       title="Planner Start Date"
       subtitle={`Select the quarter this generated academic planner will start from (e.g. ${startOptions[0].option}). The available dates are based on today's date.`}
       inputLabel="Planner Start Date"
