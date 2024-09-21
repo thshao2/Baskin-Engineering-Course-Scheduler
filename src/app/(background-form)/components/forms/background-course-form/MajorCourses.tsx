@@ -93,10 +93,10 @@ const RenderMajorCourses: React.FC = () => {
     }));
   }
 
-  const [autoProps, setAutoProps] = useState(studentStatus === 'C' ? auto : auto2);
+  const [autoProps, setAutoProps] = useState(studentStatus.includes('C') ? auto : auto2);
 
   useEffect(() => {
-    const newAutoProps = studentStatus === 'C' ? auto : auto2;
+    const newAutoProps = studentStatus.includes('C') ? auto : auto2;
     setAutoProps({ ...newAutoProps })
   }, [studentStatus])
 
@@ -109,7 +109,7 @@ const RenderMajorCourses: React.FC = () => {
             key={JSON.stringify(autoProps)}
             auto={autoProps}
             title="Major Courses"
-            subtitle={studentStatus !== 'C' ?
+            subtitle={!studentStatus.includes('C') ?
               `Please select all major courses that you have satisfied through transfer credit.` :
               `Please select all major courses that you have completed or have satisfied through transfer credit.
                Important:
@@ -122,7 +122,7 @@ const RenderMajorCourses: React.FC = () => {
             state={backgroundCourseData.completedMajorCourses}
             mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
           />
-          {studentStatus === 'C' && <MajorElectives />}
+          {studentStatus.includes('C') && <MajorElectives />}
         </>
       );
     default:

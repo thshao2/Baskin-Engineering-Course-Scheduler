@@ -42,26 +42,43 @@ export default async function getPlanners(formContext: FormContextType) {
   const catalog = parseInt(formContext.infoData.catalogYear, 10);
   const gradDate = formContext.infoData.gradDate;
   const startDate = formContext.infoData.startPlanner;
+  const startTerm = formContext.infoData.startDate;
   const plannerType = formContext.infoData.planner;
-  let numQuartersToGenerate = await getNumQuartersBetweenStartAndEndDate(formContext.infoData.startPlanner, formContext.infoData.gradDate);
+  let numQuartersToGenerate = await getNumQuartersBetweenStartAndEndDate(startDate, gradDate);
   if (plannerType === '1') {
     numQuartersToGenerate = numQuartersToGenerate < 3 ? numQuartersToGenerate : 3;
   } else if (plannerType === '3') {
     numQuartersToGenerate = 1;
   }
 
-  // Student Status: 'U', 'T', or 'C'
-  const student = formContext.studentStatus;
 
   // Math Placement, Writing Placement:
   const mathPlacement = formContext.undergradData.math;
   let writingPlacement = formContext.undergradData.writing;
 
+  // Core Course: Either C, S, T, M, P, K, O, R, N, or J
+  let coreCourse = formContext.infoData.college;
+
+  // Change Core Course value to '1' (completed) or '2' (2 part core course) if continuing student
+  if (formContext.studentStatus === 'C') {
+    if (coreCourse === 'S') {
+      const numQuartersCompleted = await getNumQuartersBetweenStartAndEndDate(startTerm, startDate) - 1;
+      coreCourse = numQuartersCompleted >= 2 ? '1' : '2';
+    } else {
+      coreCourse = '1';
+    }
+  } else if (formContext.studentStatus === 'T') { // Transfer students are waived from college core course ('1')
+    coreCourse = '1';
+  }
+
+  // Student Status: 'U', 'T', or 'C'
+  const student = formContext.studentStatus.includes('C') ? 'C' : formContext.studentStatus;
+
   // University Requirements: AHR, Entry-Level Writing Requirement, College Core Course
   const universityReq = {
     ahr: formContext.backgroundCourseData.ahr === 'T' ? true : false,
     entry: formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') || writingPlacement === '2',
-    core: formContext.infoData.college
+    core: coreCourse
   }
 
   // Needed General Education Requirements
@@ -616,11 +633,13 @@ export default async function getPlanners(formContext: FormContextType) {
 InfoData:
   General Catalog (22, 23, 24)
   Major (CS)
-  EGT
+  Expected Graduation Date
   Type of Planner (1: 3 quarters, 2: Entire Planner to EGT, 3: Next Quarter)
-  Planner Start Date (in Form) / Start Term (Visual Planner Site)
+  Start Term
+  College Affiliation (C, S, T, M, P, K, O, R, N, or J)
+  Planner Start Date (only for continuing students)
 
-Student Status: Incoming Undergraduate (U), Incoming Transfer (T), Continuing Student (C)
+Student Status: Incoming Undergraduate (U), Incoming Transfer (T), Continuing 4-Year Student (C), Continuing Transfer Student (CT)
 
 UndergradData:
   Math Placement (Required for U Student Status, and for visual planner generation):
@@ -630,22 +649,15 @@ UndergradData:
     Form: 25, 26, 1, 2, or empty (if C GE was checked)
     Visual Planner Site: Either 25, 26, 1, 2, or C (completed)
 
-  BackgroundCourseData:
-    University Requirements (Required):
-      AHR: 'T' (true) or 'F' (false)
-      Core Course / College:
-        Form:
-          C, S, T, M, P, K, O, R, N, or J (if U student Status)
-          1 or 2 (if Continuing Student Status)
-        Visual Planner Site:
-          C, S, T, M, P, K, O, R, N, or J
-    Completed General Education Courses (Required)
-    Completed Major Courses (Required for Form, Required only for Transfer Students in Visual Planner Site)
-    Completed Major Electives (Required only for Form)
-    Completed Capstone Electives (Required only for Form)
-    Completed Alternative Electives (Required only for Form)
+BackgroundCourseData:
+  AHR: 'T' (true) or 'F' (false)
+  Completed General Education Courses (Required)
+  Completed Major Courses (Required for Form, Required only for Transfer Students in Visual Planner Site)
+  Completed Major Electives (Required only for Form)
+  Completed Capstone Electives (Required only for Form)
+  Completed Alternative Electives (Required only for Form)
   
 NumCoursesPreference (Required for Form, in Advanced Settings in Visual Planner Site):
-    Array Length of 1: number applied to all quarters
-    Array Length > 1: specific number of courses/quarter
+  Array Length of 1: number applied to all quarters
+  Array Length > 1: specific number of courses/quarter
 */

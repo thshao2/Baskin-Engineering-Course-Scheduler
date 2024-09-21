@@ -124,7 +124,7 @@ const auto3: AutoObject = alternateElectiveCodes.reduce((acc, key) => {
 
 
 const RenderMajorElectives: React.FC = () => {
-  const { studentStatus, infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
+  const { infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
 
   const options = majorLabels.map((label, index) => ({
     option: label,

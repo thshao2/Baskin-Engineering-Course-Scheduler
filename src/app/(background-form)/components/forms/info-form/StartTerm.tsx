@@ -19,9 +19,12 @@ const getStartTermOptions = (student: string) => {
     return options;
   }
 
+  const startYear = student === 'CT' ? currentYear - 3 : currentYear - 5;
 
-  for (let year = currentYear - 4; year < currentYear; year++) {
-    options.push({ option: `Winter ${year}`, value: `W${year % 2000}` });
+  for (let year = startYear; year < currentYear; year++) {
+    if (year !== startYear) {
+      options.push({ option: `Winter ${year}`, value: `W${year % 2000}` });
+    }
     options.push({ option: `Fall ${year}`, value: `F${year % 2000}` });
   }
 
@@ -51,7 +54,7 @@ export default function StartTerm() {
       key = {infoData.startDate}
       auto=""
       title="Start Term"
-      subtitle={studentStatus === 'C' ? `Select the term you first enrolled at UCSC.` :
+      subtitle={studentStatus.includes('C') ? `Select the term you first enrolled at UCSC.` :
         `Indicate the term you will start your first quarter at UCSC.`
       }
       inputLabel="Start Term"

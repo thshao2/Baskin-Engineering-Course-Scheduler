@@ -25,7 +25,7 @@ async function checkStartEndPlan(start: string, end: string) {
 
 export async function validateInfoForm(infoForm: InfoData, status: string) {
   // Validate student status first
-  const StudentStatusSchema = z.enum(['U', 'C', 'T'], { message: 'Error: Invalid Student Status' });
+  const StudentStatusSchema = z.enum(['U', 'C', 'T', 'CT'], { message: 'Error: Invalid Student Status' });
 
   const statusValidation = StudentStatusSchema.safeParse(status);
 
@@ -74,11 +74,13 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
   // Logic for Start Term Schema
   let startTermRange;
   let endTermRange = curYear;
-  if (status !== 'C') {
+  if (!status.includes('C')) {
     startTermRange = curYear;
     endTermRange++;
+  } else if (status === 'CT') {
+    startTermRange = curYear - 3;
   } else {
-    startTermRange = curYear - 4;
+    startTermRange = curYear - 5;
   }
 
   const startTermSchema = z.string()
@@ -89,7 +91,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
       return year >= startTermRange && year <= endTermRange;
     }, { message: 'Invalid Input. Error: Start Term' })
 
-  const startPlannerSchema = (status !== 'C')
+  const startPlannerSchema = (!status.includes('C'))
     ? z.string() // Any string is allowed for 'U' or 'T' status
     : z.string()
       .min(1, { message: 'Planner Start Date is Required' }) // Ensure it isn't empty
@@ -101,16 +103,10 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
 
   let coreCourseSchema = z.string();
 
-  if (status === 'U') {
+  if (status !== 'T') {
     coreCourseSchema = z.string()
       .min(1, { message: 'College Affiliation is Required' })
       .regex(/^[CSTMPKORNJ]$/, {
-        message: "Invalid Input. Error: College Affiliation is Required",
-      })
-  } else if (status === 'C') {
-    coreCourseSchema = z.string()
-      .min(1, { message: 'Please indicate your college affiliation' })
-      .regex(/^[12]$/, {
         message: "Invalid Input. Error: College Affiliation",
       })
   }
@@ -167,7 +163,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
     return { success: false, errors: ['Invalid Input: Start Term cannot be too close to Expected Graduation Date'] };
   }
 
-  if (status === 'C') {
+  if (status.includes('C')) {
     const checkValidStart2 = await checkStartEndPlan(infoForm.startPlanner, infoForm.gradDate);
 
     if (!checkValidStart2) {
@@ -187,7 +183,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
 export async function validateBackgroundCourseForm(studentStatus: string, undergradData: UndergradData, backgroundCourseData: BackgroundCourseData) {
 
   // Validate student status first
-  const StudentStatusSchema = z.enum(['U', 'C', 'T'], { message: 'Error: Invalid Student Status' });
+  const StudentStatusSchema = z.enum(['U', 'C', 'T', 'CT'], { message: 'Error: Invalid Student Status' });
 
   const statusValidation = StudentStatusSchema.safeParse(studentStatus);
 

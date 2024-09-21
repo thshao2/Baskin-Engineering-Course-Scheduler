@@ -23,9 +23,9 @@ export default function GeneralEd() {
       <CheckboxGroup
         auto= {auto}
         title="General Education Courses"
-        subtitle={studentStatus !== 'C' ? 
+        subtitle={!studentStatus.includes('C') ? 
           `Select General Education Requirements that you have satisfied through transfer credit.` :
-          `Select General Education Courses that you have already taken, or have received transfer credit for.`
+          `Select General Education Requirements that you have satisified through coursework or through transfer credit.`
         }
         options={
           [

@@ -158,7 +158,8 @@ export default function InfoForm() {
                 [
                   { option: 'Incoming First-Year Student', value: 'U' },
                   { option: 'Incoming Transfer', value: 'T' },
-                  { option: 'Continuing Student', value: 'C' }
+                  { option: 'Continuing Four-Year Student', value: 'C' },
+                  { option: 'Continuing Transfer Student', value: 'CT'},
                 ]
               }
               state={formContext.studentStatus}
@@ -194,12 +195,12 @@ export default function InfoForm() {
               mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, planner: value }))}
             />
           </Grid>
-          {['U', 'T', 'C'].includes(studentStatus) && (
+          {['U', 'T', 'C', 'CT'].includes(studentStatus) && (
             <Grid size={{ xs: 12, md: 6 }}>
               <StartTerm />
             </Grid>
           )}
-          {(studentStatus === 'C' || studentStatus === 'U') && (
+          {(studentStatus.includes('C') || studentStatus === 'U') && (
             <Grid size={{ xs: 12, md: 6 }}>
               <CollegeOptions
                 state={formContext.infoData.college}
@@ -207,7 +208,7 @@ export default function InfoForm() {
               />
             </Grid>
           )}
-          {studentStatus === 'C' && (
+          {studentStatus.includes('C') && (
             <Grid size={{ xs: 12, md: 6 }}>
               <StartPlanner />
             </Grid>

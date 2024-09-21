@@ -39,20 +39,7 @@ export default function CollegeOptions({ state, mutator }: CollegeOptionProps) {
     newValue: CollegeOption | null, // newValue can be null if nothing is selected
   ) => {
     if (newValue) {
-      // Update the backgroundCourseData when a college is selected
-
-      // Update core course value in formContext based on whether student is incoming undergraduate/continuing student
-      /*
-        Incoming Undergraduate: value of newValue.value
-        Continuing Student:
-          '1' (completed core course) 
-          '2' (two part core course) 
-      */
-      if (studentStatus === 'U') {
-        mutator(newValue.value);
-      } else {
-        mutator(newValue.value === 'S' ? '2' : '1')
-      }
+      mutator(newValue.value);
       setValue(newValue);
     } else {
       mutator('')
@@ -70,7 +57,7 @@ export default function CollegeOptions({ state, mutator }: CollegeOptionProps) {
       <Typography sx={{
         mb: 2, fontSize: 14
       }}>
-        {studentStatus === 'C' ? 'Select your affiliated college at UCSC.' :
+        {studentStatus.includes('C') ? 'Select your affiliated college at UCSC.' :
           `Select your affiliated college at UCSC. If you are not sure which college
          you will be affiliated with yet, choose the one you are most interested in or plan to select. You can
          read more about the 10 colleges at UCSC `}
