@@ -1,7 +1,11 @@
-import { BackgroundCourseData, useFormContext, UndergradData } from "../../../context/FormContext";
+import { BackgroundCourseData, useFormContext } from "../../../context/FormContext";
 import TwoSelect from "../../inputs/TwoSelect";
 import CheckboxGroup from "../../inputs/Checkbox";
 import WritingPlacement from "./WritingPlacement";
+
+import SubtitleLink from "../../inputs/SubtitleLink";
+import { Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 const codes = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
 type AutoObject = {
@@ -11,8 +15,8 @@ type AutoObject = {
 export default function GeneralEd() {
 
   const { studentStatus, backgroundCourseData, setBackgroundCourseData } = useFormContext();
-  
-  
+
+
   const auto: AutoObject = codes.reduce((acc, key) => {
     acc[key] = false;
     return acc;
@@ -20,10 +24,35 @@ export default function GeneralEd() {
 
   return (
     <>
+      <TwoSelect
+        title="Have you satisfied the AHR (American History and Institutions) University Requirement?"
+        subtitle={
+          <>
+            <Typography variant='subtitle2'
+              sx={{ mt: 0.5 }}>
+              {`Details for whether you have satisfied the AHR University Requirement can be found `}
+              <SubtitleLink
+                href="https://catalog.ucsc.edu/en/current/general-catalog/undergraduate-information/undergraduate-academic-program/university-requirements/"
+                icon={<OpenInNewIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />} // Pass the icon here
+              >
+                here
+              </SubtitleLink>.
+            </Typography>
+          </>
+        }
+        options={
+          [
+            { option: "Yes, I have satisfied the AHR University Requirement.", value: 'T' },
+            { option: "No, I have not satisfied the AHR University Requirement.", value: 'F' },
+          ]
+        }
+        state={backgroundCourseData.ahr}
+        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, ahr: value }))}
+      />
       <CheckboxGroup
-        auto= {auto}
+        auto={auto}
         title="General Education Courses"
-        subtitle={!studentStatus.includes('C') ? 
+        subtitle={!studentStatus.includes('C') ?
           `Select General Education Requirements that you have satisfied through transfer credit.` :
           `Select General Education Requirements that you have satisified through coursework or through transfer credit.`
         }
@@ -44,21 +73,9 @@ export default function GeneralEd() {
         state={backgroundCourseData.completedGeneralEdCourses}
         mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedGeneralEdCourses: arr }))}
       />
-      {!backgroundCourseData.completedGeneralEdCourses.includes('C') && 
-        <WritingPlacement/>
+      {!backgroundCourseData.completedGeneralEdCourses.includes('C') &&
+        <WritingPlacement />
       }
-      <TwoSelect
-        title = "Have you satisfied the AHR (American History and Institutions) University Requirement?"
-        subtitle = "Details for whether you have satisfied the AHR Requirement can be found here."
-        options = {
-          [
-            { option: "Yes, I have satisfied the AHR University Requirement.", value: 'T'},
-            { option: "No, I have not satisfied the AHR University Requirement.", value: 'F'},
-          ]
-        }
-        state = {backgroundCourseData.ahr}
-        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, ahr: value }))}
-      />
     </>
   );
 

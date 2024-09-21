@@ -1,8 +1,6 @@
 import { useFormContext } from "../../../context/FormContext";
 
-
 import MathPlacement from "./MathPlacement";
-import WritingPlacement from "./WritingPlacement";
 import Testout from "./Testout";
 import CoreCourse from "./CoreCourse";
 import GeneralEd from "./GeneralEd";
@@ -22,12 +20,10 @@ export default function CourseHistoryForm() {
           <MathPlacement />
           <UndergradMathTransfer />
           <Testout />
-          <CoreCourse />
           <GeneralEd />
         </>
       ) : (
         <>
-          {studentStatus === 'C' && <ContinuingCoreCourse/>}
           <GeneralEd />
           <MajorCourses />
         </>

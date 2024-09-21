@@ -15,7 +15,7 @@ interface Option {
 
 interface TwoSelectProps {
   title: string;
-  subtitle: string;
+  subtitle: string | React.ReactNode;
   options: Option[];
   state: string;
   mutator: (state: string) => void;
@@ -24,7 +24,7 @@ interface TwoSelectProps {
 const TwoSelect: React.FC<TwoSelectProps> = ({ title, subtitle, options, state, mutator }: TwoSelectProps) => {
   const [value, setValue] = React.useState<string>(state);
 
-  
+
   // Sync initial state on first render
   React.useEffect(() => {
     if (state !== value) {
@@ -44,7 +44,13 @@ const TwoSelect: React.FC<TwoSelectProps> = ({ title, subtitle, options, state, 
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
       <FormControl>
         <FormLabel id="demo-controlled-radio-buttons-group">{title}</FormLabel>
-        <Typography sx={{ mt: 0.5 }} variant='subtitle2'>{subtitle}</Typography>
+        {typeof (subtitle) === 'string' ? (
+          <Typography sx={{ mt: 0.5 }} variant='subtitle2'>
+            {subtitle}
+          </Typography>
+        ) : (
+          subtitle
+        )}
         <RadioGroup
           aria-labelledby="demo-controlled-radio-buttons-group"
           name="controlled-radio-buttons-group"
@@ -56,7 +62,7 @@ const TwoSelect: React.FC<TwoSelectProps> = ({ title, subtitle, options, state, 
         >
           {options.map((opt: Option) => (
             <FormControlLabel
-              key = {opt.value}
+              key={opt.value}
               value={opt.value}
               control={<Radio />}
               label={opt.option}

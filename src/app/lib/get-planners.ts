@@ -59,7 +59,7 @@ export default async function getPlanners(formContext: FormContextType) {
   // Core Course: Either C, S, T, M, P, K, O, R, N, or J
   let coreCourse = formContext.infoData.college;
 
-  // Change Core Course value to '1' (completed) or '2' (2 part core course) if continuing student
+  // Change Core Course value to '1' (completed) or '2' (2 part core course) if continuing 4-year student
   if (formContext.studentStatus === 'C') {
     if (coreCourse === 'S') {
       const numQuartersCompleted = await getNumQuartersBetweenStartAndEndDate(startTerm, startDate) - 1;
@@ -67,7 +67,7 @@ export default async function getPlanners(formContext: FormContextType) {
     } else {
       coreCourse = '1';
     }
-  } else if (formContext.studentStatus === 'T') { // Transfer students are waived from college core course ('1')
+  } else if (formContext.studentStatus.includes('T')) { // Transfer students are waived from college core course ('1')
     coreCourse = '1';
   }
 

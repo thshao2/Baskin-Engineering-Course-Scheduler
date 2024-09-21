@@ -50,9 +50,6 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
       }));
-      setInfoData((infoData: InfoData) => ({
-        ...infoData, startDate: '', college: '', startPlanner: '',
-      }));
     } else if (newStatus === 'T') {
       const diffCodes = codes.filter(code => !tcodes.includes(code));
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
@@ -62,16 +59,12 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
       }));
-      setInfoData((infoData: InfoData) => ({
-        ...infoData, startDate: '', college: '1', startPlanner: '',
-      }));
-    } else {
-      setInfoData((infoData: InfoData) => ({
-        ...infoData, startDate: '', college: '', startPlanner: '',
-      }));
     }
     setUndergradData((undergradData: UndergradData) => ({
       ...undergradData, math: ''
+    }));
+    setInfoData((infoData: InfoData) => ({
+      ...infoData, startDate: '', college: '', startPlanner: '',
     }));
   };
 
