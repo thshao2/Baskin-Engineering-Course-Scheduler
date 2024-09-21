@@ -2,6 +2,9 @@ import { useFormContext } from '@/app/(background-form)/context/FormContext';
 import { Box, Typography, Autocomplete, TextField } from '@mui/material'
 import { useState, useEffect } from 'react';
 
+import SubtitleLink from '../../inputs/SubtitleLink';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
 
 type CollegeOption = {
   label: string;
@@ -70,7 +73,17 @@ export default function CollegeOptions({ state, mutator }: CollegeOptionProps) {
         {studentStatus === 'C' ? 'Select your affiliated college at UCSC.' :
           `Select your affiliated college at UCSC. If you are not sure which college
          you will be affiliated with yet, choose the one you are most interested in or plan to select. You can
-         read more about the 10 colleges at UCSC here.`}
+         read more about the 10 colleges at UCSC `}
+        {studentStatus === 'U' && (
+          <>
+          <SubtitleLink
+            href="https://housing.ucsc.edu/colleges/"
+            icon={<OpenInNewIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />} // Pass the icon here
+          >
+            here
+          </SubtitleLink>.
+          </>
+        )}
       </Typography>
       <Autocomplete
         disablePortal

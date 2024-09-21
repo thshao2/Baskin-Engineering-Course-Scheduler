@@ -4,9 +4,8 @@ import Box from '@mui/material/Box';
 
 import Button from '@mui/material/Button'
 
-import { BackgroundCourseData, useFormContext } from '../../../context/FormContext';
+import { useFormContext } from '../../../context/FormContext';
 
-import { InfoData } from '../../../context/FormContext';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
@@ -19,8 +18,6 @@ export default function BackGroundCoursesForm() {
   const formContext = useFormContext();
 
   const {
-    studentStatus,
-    setBackgroundCourseData,
     stepLastCompleted,
     setStepLastCompleted } = useFormContext();
 
@@ -45,9 +42,6 @@ export default function BackGroundCoursesForm() {
   const handleBackgroundForm = async (event: React.FormEvent) => {
     event.preventDefault();
     startTransition(async () => {
-      if (formContext.studentStatus === 'T') {
-        formContext.setBackgroundCourseData({ ...formContext.backgroundCourseData, universityReq: { ...formContext.backgroundCourseData.universityReq, coreCourse: '1' } })
-      }
       const result = await validateBackgroundCourseForm(formContext.studentStatus, formContext.undergradData, formContext.backgroundCourseData);
       console.log(result);
       if (!result.success) {

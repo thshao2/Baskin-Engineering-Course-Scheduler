@@ -59,9 +59,9 @@ export default async function getPlanners(formContext: FormContextType) {
 
   // University Requirements: AHR, Entry-Level Writing Requirement, College Core Course
   const universityReq = {
-    ahr: formContext.backgroundCourseData.universityReq.ahr === 'T' ? true : false,
+    ahr: formContext.backgroundCourseData.ahr === 'T' ? true : false,
     entry: formContext.backgroundCourseData.completedGeneralEdCourses.includes('C') || writingPlacement === '2',
-    core: formContext.backgroundCourseData.universityReq.coreCourse
+    core: formContext.infoData.college
   }
 
   // Needed General Education Requirements

@@ -56,8 +56,8 @@ export default function GeneralEd() {
             { option: "No, I have not satisfied the AHR University Requirement.", value: 'F'},
           ]
         }
-        state = {backgroundCourseData.universityReq.ahr}
-        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: {...prev.universityReq, ahr: value}}))}
+        state = {backgroundCourseData.ahr}
+        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, ahr: value }))}
       />
     </>
   );

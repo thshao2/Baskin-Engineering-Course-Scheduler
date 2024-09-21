@@ -7,6 +7,7 @@ export type InfoData = {
   startDate: string,
   gradDate: string,
   planner: string,
+  college: string,
   startPlanner: string,
 }
 
@@ -15,13 +16,13 @@ export type UndergradData = {
   writing: string,
 }
 
-export type UniversityReq = {
-  ahr: string,
-  coreCourse: string,
-}
+// export type UniversityReq = {
+//   ahr: string,
+//   coreCourse: string,
+// }
 
 export type BackgroundCourseData = {
-  universityReq: UniversityReq,
+  ahr: string,
   completedGeneralEdCourses: string[],
   completedMajorCourses: string[],
   completedMajorElectives: string[],
@@ -46,6 +47,7 @@ export const FormContext = createContext({
     startDate: '',
     gradDate: '',
     planner: '',
+    college: '',
     startPlanner: '',
   },
   setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => {},
@@ -57,10 +59,7 @@ export const FormContext = createContext({
   },
   setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => {},
   backgroundCourseData: {
-    universityReq: {
-      ahr: '',
-      coreCourse: '',
-    },
+    ahr: '',
     completedGeneralEdCourses: [] as string[],
     completedMajorCourses: [] as string[],
     completedMajorElectives: [] as string[],
@@ -84,6 +83,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     startDate: '',
     gradDate: '',
     planner: '',
+    college: '',
     startPlanner: '',
   });
   const [stepLastCompleted, setStepLastCompleted] = useState(0);
@@ -96,10 +96,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   })
 
   const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({
-    universityReq: {
-      ahr: '',
-      coreCourse: '',
-    },
+    ahr: '',
     completedGeneralEdCourses: [],
     completedMajorCourses: [],
     completedMajorElectives: [],

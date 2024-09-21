@@ -202,8 +202,8 @@ export default function InfoForm() {
           {(studentStatus === 'C' || studentStatus === 'U') && (
             <Grid size={{ xs: 12, md: 6 }}>
               <CollegeOptions
-                state={formContext.backgroundCourseData.universityReq.coreCourse}
-                mutator={(value) => formContext.setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: { ...prev.universityReq, coreCourse: value } }))}
+                state={formContext.infoData.college}
+                mutator={(value) => formContext.setInfoData((prev: InfoData) => ({ ...prev, college: value }))}
               />
             </Grid>
           )}

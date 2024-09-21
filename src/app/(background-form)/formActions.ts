@@ -99,6 +99,21 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
         return year >= yearStartPlan && year <= yearEndStartPlan;
       }, { message: 'Invalid Input. Error: Planner Start Date' });
 
+  let coreCourseSchema = z.string();
+
+  if (status === 'U') {
+    coreCourseSchema = z.string()
+      .min(1, { message: 'College Affiliation is Required' })
+      .regex(/^[CSTMPKORNJ]$/, {
+        message: "Invalid Input. Error: College Affiliation is Required",
+      })
+  } else if (status === 'C') {
+    coreCourseSchema = z.string()
+      .min(1, { message: 'Please indicate your college affiliation' })
+      .regex(/^[12]$/, {
+        message: "Invalid Input. Error: College Affiliation",
+      })
+  }
 
   const schema = z.object({
     CatalogYear: z.string()
@@ -121,6 +136,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
       .refine(val => val === '1' || val === '2' || val === '3', {
         message: 'Invalid Input. Error: Type of Planner',
       }),
+    CollegeAffiliation: coreCourseSchema,
     StartPlanner: startPlannerSchema,
   });
 
@@ -130,6 +146,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
     StartDate: infoForm.startDate,
     GradDate: infoForm.gradDate,
     Planner: infoForm.planner,
+    CollegeAffiliation: infoForm.college,
     StartPlanner: infoForm.startPlanner,
   })
 
@@ -178,29 +195,8 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
     return { success: false, errors: [statusValidation.error.message] };
   }
 
-  let coreCourseSchema = z.string();
-
-  if (studentStatus === 'U') {
-    coreCourseSchema = z.string()
-      .min(1, { message: 'College Core Course is Required' })
-      .regex(/^[CSTMPKORNJ]$/, {
-        message: "Invalid Input. Error: College Core Course is Required",
-      })
-  } else if (studentStatus === 'C') {
-    coreCourseSchema = z.string()
-      .min(1, { message: 'Please indicate whether you have completed your College Core Course' })
-      .regex(/^[12]$/, {
-        message: "Invalid Input. Error: Please indicate whether you have completed your College Core Course",
-      })
-  }
-
-  const UniversityReqSchema = z.object({
-    ahr: z.enum(['T', 'F'], { message: 'Please indicate whether you have completed the AHR Requirement' }),
-    coreCourse: coreCourseSchema,
-  });
-
   const BackgroundCourseDataSchema = z.object({
-    universityReq: UniversityReqSchema,
+    ahr: z.enum(['T', 'F'], { message: 'Please indicate whether you have completed the AHR Requirement' }),
     completedGeneralEdCourses: z.array(z.string().regex(/^(CC|ER|IM|MF|SI|SR|TA|PE|PR|C)$/, {
       message: "Invalid Input. Error: General Education Courses",
     })),

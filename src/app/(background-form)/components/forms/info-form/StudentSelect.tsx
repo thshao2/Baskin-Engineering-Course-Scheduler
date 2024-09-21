@@ -29,7 +29,7 @@ interface BasicSelectProps {
 const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputLabel, options, state, mutator }: BasicSelectProps) => {
   const [option, setOption] = React.useState(state ? state : auto);
 
-  const { setInfoData, infoData, backgroundCourseData, setBackgroundCourseData, setUndergradData } = useFormContext();
+  const { setInfoData, setBackgroundCourseData, setUndergradData } = useFormContext();
 
   // Sync initial state on first render
   React.useEffect(() => {
@@ -45,31 +45,33 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
     if (newStatus === 'U') {
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
-        ...backgroundCourseData, universityReq: { ...backgroundCourseData.universityReq, coreCourse: '' },
+        ...backgroundCourseData,
         completedMajorCourses: [],
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
+      }));
+      setInfoData((infoData: InfoData) => ({
+        ...infoData, startDate: '', college: '', startPlanner: '',
       }));
     } else if (newStatus === 'T') {
       const diffCodes = codes.filter(code => !tcodes.includes(code));
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
-        ...backgroundCourseData, universityReq: { ...backgroundCourseData.universityReq, coreCourse: '1' },
+        ...backgroundCourseData,
         completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course)),
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
       }));
+      setInfoData((infoData: InfoData) => ({
+        ...infoData, startDate: '', college: '1', startPlanner: '',
+      }));
     } else {
-      setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
-      ({
-        ...backgroundCourseData, universityReq: { ...backgroundCourseData.universityReq, coreCourse: '' },
+      setInfoData((infoData: InfoData) => ({
+        ...infoData, startDate: '', college: '', startPlanner: '',
       }));
     }
     setUndergradData((undergradData: UndergradData) => ({
       ...undergradData, math: ''
-    }));
-    setInfoData((infoData: InfoData) => ({
-      ...infoData, startDate: '', startPlanner: '',
     }));
   };
 

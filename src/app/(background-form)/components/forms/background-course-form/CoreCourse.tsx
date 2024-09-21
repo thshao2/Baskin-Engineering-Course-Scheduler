@@ -1,11 +1,11 @@
 import { Typography } from "@mui/material";
-import { BackgroundCourseData, useFormContext } from "../../../context/FormContext";
+import { InfoData, useFormContext } from "../../../context/FormContext";
 import MultipleSelect from "../../inputs/MultipleSelect";
 import TwoSelect from "../../inputs/TwoSelect";
 
 export default function CoreCourse() {
 
-  const {backgroundCourseData, setBackgroundCourseData} = useFormContext();
+  const {infoData, setInfoData} = useFormContext();
 
   return (
     <>
@@ -28,8 +28,8 @@ export default function CoreCourse() {
             { option: <CoreCourseLabel name = 'John R. Lewis College:' title ="Social Justice and Community"/>, value: 'J' },
           ]
         }
-        state={backgroundCourseData.universityReq.coreCourse}
-        mutator={(value) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: {...prev.universityReq, coreCourse: value}}))}
+        state={infoData.college}
+        mutator={(value) => setInfoData((prev: InfoData) => ({ ...prev, college: value}))}
         />
     </>
   );
@@ -37,7 +37,7 @@ export default function CoreCourse() {
 }
 
 export function ContinuingCoreCourse() {
-  const {backgroundCourseData, setBackgroundCourseData} = useFormContext();
+  const {infoData, setInfoData} = useFormContext();
 
   return (
     <TwoSelect
@@ -51,8 +51,8 @@ export function ContinuingCoreCourse() {
             { option: "Yes, I have completed my college core course, or I am a transfer student.", value: '1'},
           ]
         }
-        state = {backgroundCourseData.universityReq.coreCourse}
-        mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, universityReq: {...prev.universityReq, coreCourse: value}}))}
+        state = {infoData.college}
+        mutator={(value: string) => setInfoData((prev: InfoData) => ({ ...prev, college: value}))}
       />
   )
 }
