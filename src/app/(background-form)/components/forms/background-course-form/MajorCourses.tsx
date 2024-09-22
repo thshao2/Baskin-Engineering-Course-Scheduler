@@ -1,6 +1,6 @@
 import { useFormContext } from "../../../context/FormContext";
 
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Grid2 as Grid } from "@mui/material";
 import CheckboxResponsive from "../../inputs/CheckboxResponsive";
 import CheckboxGroup from "../../inputs/Checkbox";
 
@@ -10,7 +10,8 @@ import React, { useEffect, useState } from "react";
 import MajorElectives from "./MajorElectives";
 import MultipleAutocomplete from "../../inputs/MultipleAutocomplete";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SubtitleLink from '../../inputs/SubtitleLink';
 
 
 export const codes = [
@@ -101,13 +102,8 @@ const CSTransferCourses = [
   { option: 'CSE 16: Applied Discrete Mathematics', value: 'CSE16' },
   { option: 'CSE 20: Beginning Programming in Python', value: 'CSE20' },
   { option: 'CSE 30: Programming Abstractions: Python', value: 'CSE30' },
-  { option: 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods', value: 'CSE40' },
   { option: 'AM 10: Mathematical Methods for Engineers I', value: 'AM10' },
   { option: 'AM 30: Multivariate Calculus for Engineers', value: 'AM30' },
-  { option: 'ECE 30: Engineering Principles of Electronics', value: 'ECE30' },
-  { option: 'STAT 131: Introduction to Probability Theory', value: 'STAT131' },
-  { option: 'CSE 101: Introduction to Data Structures and Algorithms', value: 'CSE101' },
-  { option: 'CSE 107: Probability and Statistics for Engineers', value: 'CSE107' },
 ];
 
 const ucodes = [
@@ -181,25 +177,56 @@ const RenderMajorCourses: React.FC = () => {
     setAutoProps({ ...newAutoProps })
   }, [studentStatus])
 
-  // Helper function to render course prerequisites from CSAdjList
-  const renderLinearFlowChart = (courses: string[]) => (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      {courses.length > 0 ? (
-        courses.map((course, index) => (
-          <Box key={course} sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
-              {course}
-            </Typography>
-            {index < courses.length - 1 && (
-              <ArrowForwardIcon sx={{ fontSize: 16, color: 'rgba(255, 255, 255, 0.7)', mx: 1 }} />
-            )}
-          </Box>
-        ))
-      ) : (
-        <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-          No prerequisites
-        </Typography>
-      )}
+  const renderLinearFlowChart = (courses: string[], courseNames: string[]) => (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap', // Allows wrapping on smaller screens
+      }}
+    >
+      {courses.map((course, index) => (
+        <Box
+          key={course}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            minWidth: { xs: '100%', md: 'auto' }, // Forces line break on small screens
+            mb: { xs: 1, md: 0 }, // Adds some spacing on small screens
+          }}
+        >
+          <Typography
+            component="span"
+            variant="subtitle2"
+            sx={{
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontSize: { xs: 12, md: 14 }, // Responsive font size: smaller on xs, normal on md and larger
+            }}
+          >
+            {course}
+          </Typography>
+          <Typography
+            component="span"
+            variant="subtitle2"
+            sx={{
+              ml: 0.5,
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontSize: { xs: 12, md: 14 }, // Responsive font size: smaller on xs, normal on md and larger
+            }}
+          >
+            {courseNames[index] === '' ? '' : `(${courseNames[index]})`}
+          </Typography>
+          {index < courses.length - 1 && (
+            <ArrowForwardIcon
+              sx={{
+                fontSize: 16,
+                color: 'rgba(255, 255, 255, 0.7)',
+                mx: 1,
+              }}
+            />
+          )}
+        </Box>
+      ))}
     </Box>
   );
 
@@ -208,23 +235,6 @@ const RenderMajorCourses: React.FC = () => {
     case 'CS':
       return (
         <>
-          <CheckboxResponsive
-            key={JSON.stringify(autoProps)}
-            auto={autoProps}
-            title="Major Courses"
-            subtitle={!studentStatus.includes('C') ?
-              `Please select all major courses that you have satisfied through transfer credit.` :
-              `Please select all major courses that you have completed or have satisfied through transfer credit.
-               Important:
-                For the first three MATH courses ([MATH 3, MATH 19A, MATH 19B]), you only need to check one of these options.
-                Selecting "MATH 19A" will automatically grant you credit for "MATH 3".
-                Selecting "MATH 19B" will grant you credit for both "MATH 3" and "MATH 19A".
-               `
-            }
-            options={options}
-            state={backgroundCourseData.completedMajorCourses}
-            mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
-          />
           <MultipleAutocomplete
             title="Major Courses"
             description={
@@ -235,42 +245,141 @@ const RenderMajorCourses: React.FC = () => {
                       {`Please select all major courses that you have completed or have satisfied through transfer credit.`}
                     </Typography>
                     <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                      {`As a refresher, here are the required major courses needed for the Computer Science B.S. Major:`}
+                      {`The following list outlines the required courses for the Computer Science B.S. Major. Note that
+                        major requirements may vary depending on the catalog year. You can double check which
+                        major courses are required for the catalog year you are following in the `}
+                      <SubtitleLink
+                        href="https://catalog.ucsc.edu/en/current/general-catalog/"
+                        icon={<OpenInNewIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />} // Pass the icon here
+                      >
+                        General Catalog
+                      </SubtitleLink>.
                     </Typography>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                      <Box sx={{ mb: 1 }}>
-                        <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
-                          {`Entry-Level Calculus Courses`}
-                        </Typography>
-                        {renderLinearFlowChart(['MATH 3 (Precalculus - Not Required)', 'MATH 19A (Calculus I)', 'MATH 19B (Calculus II)'])}
-                      </Box>
+                    <Typography variant="subtitle1" sx={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
+                      {`Lower-Division CSE Courses`}
                     </Typography>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                      <Box sx={{ mb: 1 }}>
+                    <Typography variant="subtitle1" sx={{ mt: 0.5, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                      {`Entry-Level Calculus Courses`}
+                    </Typography>
+                    {renderLinearFlowChart(['MATH 3', 'MATH 19A', 'MATH 19B'], ['Precalculus - Not Required', 'Calculus I', 'Calculus II'])}
+                    <Grid container spacing={1} sx={{ mt: 2 }}>
+                      <Grid size={{ xs: 12, md: 4 }}>
                         <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
                           {`Linear Algebra`}
                         </Typography>
-                        {renderLinearFlowChart(['AM 10 / MATH 21'])}
-                      </Box>
-                    </Typography>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                      <Box sx={{ mb: 1 }}>
+                        {renderLinearFlowChart(['AM 10 / MATH 21'], [''])}
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
                         <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
                           {`Multivariate/Vector Calculus`}
                         </Typography>
-                        {renderLinearFlowChart(['AM 30 / MATH 23A'])}
-                      </Box>
+                        {renderLinearFlowChart(['AM 30 / MATH 23A'], [''])}
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                          {`Applied Discrete Mathematics`}
+                        </Typography>
+                        {renderLinearFlowChart(['CSE 16'], [''])}
+                      </Grid>
+                    </Grid>
+                    <Typography variant="subtitle1" sx={{ mt: 2, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                      {`Computer Systems`}
                     </Typography>
+                    {renderLinearFlowChart(['CSE 12', 'CSE 13S'], ['Computer Systems / Assembly Lang', 'Computer Systems and C Programming'])}
+                    <Typography variant="subtitle1" sx={{ mt: 2, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                      {`Computer Science and Engineering - Programming (Python)`}
+                    </Typography>
+                    {renderLinearFlowChart(['CSE 20', 'CSE 30', 'CSE 40'], ['Beginning Programming in Python', 'Programming Abstractions: Python', 'Machine Learning Basics'])}
+                    <Typography variant="subtitle1" sx={{ mt: 2, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                      {`Engineering Science`}
+                    </Typography>
+                    {renderLinearFlowChart(['ECE 30'], [''])}
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle1" sx={{ mt: 1, fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
+                        {`Upper-Division CSE Courses`}
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ mt: 0.5, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                        {`Computer Science and Engineering`}
+                      </Typography>
+                      {renderLinearFlowChart(['CSE 101', 'CSE 101M, CSE 102, CSE 103, CSE 114A, CSE 130'],
+                        ['Data Structures and Algorithms', ''])}
+                      <Grid container spacing={1} sx={{ mt: 2 }}>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                            {`Computer Architecture`}
+                          </Typography>
+                          {renderLinearFlowChart(['CSE 120'], [''])}
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                            {`Probability and Statistics`}
+                          </Typography>
+                          {renderLinearFlowChart(['CSE 107 / STAT 131'], [''])}
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                            {`Disciplinary Communication (DC) Requirement`}
+                          </Typography>
+                          {renderLinearFlowChart(['CSE 115A, CSE 185S, or CSE 195'], [''])}
+                        </Grid>
+                      </Grid>
+                    </Box>
                   </>
                 ) : (
-                  <Typography>
-                    { }
-                  </Typography>
+                  <>
+                    <Typography variant="subtitle2" sx={{ mb: 2, mt: 0.5 }}>
+                      {`Please select all major courses that you have satisfied through transfer credit.`}
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                      {`The following list outlines some of the transferrable courses that should have been completed prior 
+                      to entering UCSC.`}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ fontSize: 16, fontWeight: 'bold', color: '#fff' }}>
+                      {`Transferrable Lower-Division CSE Courses`}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ mt: 0.5, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                      {`Entry-Level Calculus Courses`}
+                    </Typography>
+                    {renderLinearFlowChart(['MATH 19A', 'MATH 19B'], ['Calculus I', 'Calculus II'])}
+                    <Grid container spacing={1} sx={{ mt: 2 }}>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                          {`Linear Algebra`}
+                        </Typography>
+                        {renderLinearFlowChart(['AM 10 / MATH 21'], [''])}
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                          {`Multivariate/Vector Calculus`}
+                        </Typography>
+                        {renderLinearFlowChart(['AM 30 / MATH 23A'], [''])}
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                          {`Applied Discrete Mathematics`}
+                        </Typography>
+                        {renderLinearFlowChart(['CSE 16'], [''])}
+                      </Grid>
+                    </Grid>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle1" sx={{ mt: 2, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                        {`Computer Systems`}
+                      </Typography>
+                      {renderLinearFlowChart(['CSE 12', 'CSE 13S'], ['Computer Systems / Assembly Lang', 'Computer Systems and C Programming'])}
+                      <Typography variant="subtitle1" sx={{ mt: 2, fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
+                        {`Computer Science and Engineering - Programming (Python)`}
+                      </Typography>
+                      {renderLinearFlowChart(['CSE 20', 'CSE 30'], ['Beginning Programming in Python', 'Programming Abstractions: Python'])}
+                    </Box>
+                  </>
                 )}
               </>
             }
-            options={CSMajorCourses}
+            options={studentStatus.includes('C') ? CSMajorCourses : CSTransferCourses}
             addPrereq={{}}
+            state={backgroundCourseData.completedMajorCourses}
+            mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
           />
           {studentStatus.includes('C') && <MajorElectives />}
         </>

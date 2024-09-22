@@ -55,7 +55,7 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
         ...backgroundCourseData,
-        completedMajorCourses: backgroundCourseData.completedMajorCourses.filter(course => !diffCodes.includes(course)),
+        completedMajorCourses: [],
         completedMajorElectives: [], completedAlternativeElectives: [],
         completedCapstoneElectives: [],
       }));
