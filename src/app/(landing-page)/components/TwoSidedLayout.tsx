@@ -76,7 +76,7 @@ export default function TwoSidedLayout({
         {children}
       </Box>
       <AspectRatio
-        ratio = {600 / 520}
+        ratio={600 / 520}
         flex
         objectFit="fill"
         variant="outlined"
@@ -108,7 +108,7 @@ export default function TwoSidedLayout({
         <Slider {...settings}>
           {images.map((src, index) => (
             <Box
-              key = {index}
+              key={index}
               component="div"
               sx={(theme) => ({
                 [theme.breakpoints.down(900)]: {
@@ -135,7 +135,7 @@ export default function TwoSidedLayout({
                 src={src}
                 alt={`Image ${index + 1}`}
                 fill
-                style={{objectFit: "cover"}}
+                style={{ objectFit: "cover" }}
                 sizes="(max-width: 900px) 100vw, 50vw"
                 priority // Loads the images quickly
               />

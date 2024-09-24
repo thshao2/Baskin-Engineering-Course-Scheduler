@@ -19,12 +19,12 @@ export default function LandingPage() {
   return (
     <TwoSidedLayout>
       <Box
-        component = 'div'
-        sx = {{
+        component='div'
+        sx={{
           maxWidth: '100%',
           width: '300px',
         }}>
-        <BaskinEngineeringLogo/>
+        <BaskinEngineeringLogo />
       </Box>
       <Typography
         level="h1"
@@ -34,7 +34,7 @@ export default function LandingPage() {
         UCSC Academic Course Scheduler
       </Typography>
       <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
-        A scheduler to generate recommended four-year academic planners, or potential courses for next quarter based on your class standing and major. 
+        A scheduler to generate recommended four-year academic planners, or potential courses for next quarter based on your class standing and major.
       </Typography>
       <Box
         sx={{
@@ -45,27 +45,27 @@ export default function LandingPage() {
           '& > *': { flex: 'auto' },
         }}
       >
-        <a 
+        <a
           href='https://catalog.ucsc.edu/en/current/general-catalog/'
-          target="_blank" 
+          target="_blank"
           rel="noopener noreferrer">
-            <Button size="lg" variant="outlined" color="neutral" endDecorator={<ArrowOutwardIcon sx = {{fontSize: "xl"}}/>}>
-              UCSC Catalog
-            </Button>        
+          <Button size="lg" variant="outlined" color="neutral" endDecorator={<ArrowOutwardIcon sx={{ fontSize: "xl" }} />}>
+            UCSC Catalog
+          </Button>
         </a>
-        <Link href = '/info'>
-          <Button size="lg" endDecorator={<ArrowForward sx = {{fontSize: "xl"}}/>}>
+        <Link href='/info'>
+          <Button size="lg" endDecorator={<ArrowForward sx={{ fontSize: "xl" }} />}>
             Get Started
           </Button>
         </Link>
       </Box>
-        <a 
-          href='https://courses.engineering.ucsc.edu/'
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }} // Remove underline by default
-          >
-          <Typography 
+      <a
+        href='https://courses.engineering.ucsc.edu/'
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: 'none' }} // Remove underline by default
+      >
+        <Typography
           textColor="text.secondary"
           startDecorator={<CalendarMonthIcon sx={{ fontSize: 'xl3', color: orange[500] }} />}
           endDecorator={<ArrowOutwardIcon sx={{ fontSize: 'xl' }} />}
@@ -90,8 +90,7 @@ export default function LandingPage() {
         >
           Find out when Baskin Engineering courses are offered
         </Typography>
-        </a>
-      {/* </Box> */}
+      </a>
     </TwoSidedLayout>
   );
 }

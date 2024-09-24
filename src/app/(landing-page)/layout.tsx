@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-// import "./globals.css";
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import InitColorSchemeScript from '@mui/joy/InitColorSchemeScript';
 
 import { CssVarsProvider } from "@mui/joy/styles";
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from "../../theme";
 
@@ -26,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body>
-        <InitColorSchemeScript defaultMode="system"/>
+        <InitColorSchemeScript defaultMode="system" />
         <CssVarsProvider defaultMode="system" disableTransitionOnChange theme={framesxTheme}>
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
