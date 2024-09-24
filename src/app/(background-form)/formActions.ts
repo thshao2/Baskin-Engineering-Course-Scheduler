@@ -264,35 +264,22 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
 }
 
 export async function validateStudentPreferencesForm(infoData: InfoData, arrNumCourses: string[], status: string) {
-  let numQuarters = 0;
   const checkInfoData = await validateInfoForm(infoData, status);
   if (!checkInfoData.success) {
     return { success: false, errors: checkInfoData.errors };
   }
 
-  let exactLength = 3;
+  const startDate = status.includes('C') ? infoData.startPlanner : infoData.startDate;
+  let numQuarters = await getNumQuartersBetweenStartAndEndDate(startDate, infoData.gradDate);
 
-  if (infoData.planner !== '1') {
-    let start = infoData.startPlanner.charAt(0);
-    let startYear = parseInt(infoData.startPlanner.slice(1), 10);
-    const end = infoData.gradDate.charAt(0);
-    const endYear = parseInt(infoData.gradDate.slice(1), 10);
+  let exactLength = 0;
 
-    while (start != end) {
-      numQuarters++;
-      if (q.indexOf(start) === 2) {
-        startYear++;
-      }
-      start = q[(q.indexOf(start) + 1) % 3];
-    }
-
-    if (startYear !== endYear) {
-      numQuarters += (((endYear - startYear) * 3) + 1)
-    } else {
-      numQuarters++;
-    }
-
+  if (infoData.planner === '1') {
+    exactLength = numQuarters < 3 ? numQuarters : 3;
+  } else if (infoData.planner === '2') {
     exactLength = numQuarters;
+  } else {
+    exactLength = 1;
   }
 
   const defaultNumCourseSchema = z.array(z.string()).length(1, { message: 'Invalid Input. Error: Number of Courses Per Quarter' })

@@ -41,9 +41,10 @@ export default async function getPlanners(formContext: FormContextType) {
   // InfoData: Catalog, Graduation Date, Start Term, Planner Type, Number of Quarters to Generate
   const catalog = parseInt(formContext.infoData.catalogYear, 10);
   const gradDate = formContext.infoData.gradDate;
-  const startDate = formContext.infoData.startPlanner;
+  const startPlannerDate = formContext.infoData.startPlanner;
   const startTerm = formContext.infoData.startDate;
   const plannerType = formContext.infoData.planner;
+  const startDate = formContext.studentStatus.includes('C') ? startPlannerDate : startTerm;
   let numQuartersToGenerate = await getNumQuartersBetweenStartAndEndDate(startDate, gradDate);
   if (plannerType === '1') {
     numQuartersToGenerate = numQuartersToGenerate < 3 ? numQuartersToGenerate : 3;

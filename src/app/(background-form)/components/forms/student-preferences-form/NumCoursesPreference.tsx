@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import { SelectChangeEvent } from '@mui/material/Select';
 import { Typography } from '@mui/material';
 
 import TextField from '@mui/material/TextField';
@@ -16,7 +15,8 @@ import Grid from '@mui/material/Grid2'
 
 export const getEnrolledQuarters = (gradDate: string, start: string, plannerType: string) => {
   const quarters = ['Winter', 'Spring', 'Fall'];
-  const gradYear = Number(gradDate.slice(1));
+
+  const gradYear = parseInt(gradDate.slice(1), 10);
   const gradQuarter = gradDate.charAt(0);
   let endQuarter;
 
@@ -29,7 +29,9 @@ export const getEnrolledQuarters = (gradDate: string, start: string, plannerType
   }
 
   const startQuarter = start.charAt(0);
+
   let startQuarterNum;
+
   if (startQuarter === 'F') {
     startQuarterNum = 2;
   } else if (startQuarter === 'S') {
@@ -67,6 +69,11 @@ export const getEnrolledQuarters = (gradDate: string, start: string, plannerType
     }
 
   }
+  
+  if (plannerType === '3') {
+    return [options[0]];
+  }
+
   return options;
 
 }
@@ -75,11 +82,13 @@ export const getEnrolledQuarters = (gradDate: string, start: string, plannerType
 
 export default function NumCoursesPreference() {
 
-  const { infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
+  const { studentStatus, infoData, numCoursesPreference, setNumCoursesPreference } = useFormContext();
 
   const [defaultNumCourses, setDefaultNumCourses] = useState(numCoursesPreference.length === 1 ? numCoursesPreference[0] :  '3');
 
-  let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, infoData.startPlanner, infoData.planner);
+  const startScheduleTerm = studentStatus.includes('C') ? infoData.startPlanner : infoData.startDate;
+
+  let enrolledQuarters = getEnrolledQuarters(infoData.gradDate, startScheduleTerm, infoData.planner);
   
   const [advancedMode, setAdvancedMode] = useState<boolean>(numCoursesPreference.length > 1 && numCoursesPreference.length === enrolledQuarters.length);
   const [advancedNumCourses, setAdvancedNumCourses] = useState(numCoursesPreference.length === enrolledQuarters.length ? numCoursesPreference : Array(enrolledQuarters.length).fill(defaultNumCourses, 0))

@@ -16,11 +16,6 @@ export type UndergradData = {
   writing: string,
 }
 
-// export type UniversityReq = {
-//   ahr: string,
-//   coreCourse: string,
-// }
-
 export type BackgroundCourseData = {
   ahr: string,
   completedGeneralEdCourses: string[],

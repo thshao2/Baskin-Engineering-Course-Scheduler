@@ -31,8 +31,10 @@ export default function Planner() {
   const router = useRouter();
   const formContext = useFormContext();
 
+  const startDate = formContext.studentStatus.includes('C') ? formContext.infoData.startPlanner : formContext.infoData.startDate;
+
   const enrolledQuarters =
-    getEnrolledQuarters(formContext.infoData.gradDate, formContext.infoData.startPlanner, formContext.infoData.planner);
+    getEnrolledQuarters(formContext.infoData.gradDate, startDate, formContext.infoData.planner);
 
   const { stepLastCompleted } = useFormContext();
 

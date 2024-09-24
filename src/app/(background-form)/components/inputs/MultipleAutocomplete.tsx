@@ -23,9 +23,40 @@ interface MultipleAutocompleteProps {
 export default function MultipleAutocomplete({ title, description, options, addPrereq, state, mutator }: MultipleAutocompleteProps) {
 
   const selectedOptions = options.filter((option) => state.includes(option.value));
-  
+
+  // Recursive function to add prerequisites
+  const addPrerequisites = (course: string, selectedCourses: string[]) => {
+    // Check if the course has prerequisites
+    if (course in addPrereq) {
+      for (const prereq of addPrereq[course]) {
+        if (!selectedCourses.includes(prereq)) {
+          selectedCourses.push(prereq); // Add the prerequisite if not already selected
+          console.log(`Automatically added prerequisite: ${prereq}`);
+
+          // Recursively add prerequisites of the prerequisite
+          addPrerequisites(prereq, selectedCourses);
+        }
+      }
+    }
+  };
+
   const handleMajorCoursesChange = (event: React.SyntheticEvent, value: { option: string, value: string }[]) => {
     const selectedMajorCourses = value.map((course) => course.value);
+
+    // Find the option that was just added or removed
+    const previouslySelected = state;
+    const currentlySelected = selectedMajorCourses;
+
+    const addedOption = currentlySelected.find(course => !previouslySelected.includes(course));
+
+    if (addedOption) {
+      console.log(`Added option: ${addedOption}`);
+      if (addedOption in addPrereq) {
+        addPrerequisites(addedOption, selectedMajorCourses);
+      }
+    }
+
+
     mutator(selectedMajorCourses);
   }
 

@@ -9,7 +9,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Typography } from '@mui/material';
 
 import { useFormContext, UndergradData, BackgroundCourseData, InfoData } from '@/app/(background-form)/context/FormContext';
-import { codes, tcodes } from '../background-course-form/MajorCourses';
 
 interface Option {
   option: string;
@@ -51,7 +50,6 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
         completedCapstoneElectives: [],
       }));
     } else if (newStatus === 'T') {
-      const diffCodes = codes.filter(code => !tcodes.includes(code));
       setBackgroundCourseData((backgroundCourseData: BackgroundCourseData) =>
       ({
         ...backgroundCourseData,

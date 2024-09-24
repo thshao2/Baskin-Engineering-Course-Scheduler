@@ -1,48 +1,18 @@
+import React from "react";
+
 import { useFormContext } from "../../../context/FormContext";
 
 import { Typography, Box, Grid2 as Grid } from "@mui/material";
-import CheckboxResponsive from "../../inputs/CheckboxResponsive";
-import CheckboxGroup from "../../inputs/Checkbox";
 
 import { BackgroundCourseData } from "../../../context/FormContext";
-import React, { useEffect, useState } from "react";
 
 import MajorElectives from "./MajorElectives";
 import MultipleAutocomplete from "../../inputs/MultipleAutocomplete";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import CheckboxGroup from "../../inputs/Checkbox";
 import SubtitleLink from '../../inputs/SubtitleLink';
 
-
-export const codes = [
-  'MATH3', 'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
-  'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
-  'AM10', 'AM30', 'ECE30', 'STAT131',
-  'CSE101', 'CSE101M', 'CSE102', 'CSE103', 'CSE107', 'CSE114A', 'CSE115A', 'CSE120', 'CSE130', 'CSE185S', 'CSE195'
-]
-
-const majorLabels = [
-  'MATH 3: Precalculus',
-  'MATH 19A: Calculus for Science, Engineering, and Mathematics I',
-  'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
-  'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
-  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming',
-  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python',
-  'CSE 30: Programming Abstractions: Python', 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods',
-  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers',
-  'ECE 30: Engineering Principles of Electronics', 'STAT 131: Introduction to Probability Theory',
-  'CSE 101: Introduction to Data Structures and Algorithms',
-  'CSE 101M: Mathematical Thinking for Computer Science',
-  'CSE 102: Introduction to Analysis of Algorithms',
-  'CSE 103: Computational Models',
-  'CSE 107: Probability and Statistics for Engineers',
-  'CSE 114A: Foundations of Programming Languages',
-  'CSE 115A: Introduction to Software Engineering (DC Requirement)',
-  'CSE 120: Computer Architecture',
-  'CSE 130: Principles of Computer Systems Design',
-  'CSE 185S: Technical Writing for Computer Science and Engineering (DC Requirement)',
-  'CSE 195: Senior Thesis Research (if used for DC Requirement)'
-] as const;
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 const CSMajorCourses = [
   { option: 'MATH 3: Precalculus', value: 'MATH3' },
@@ -73,25 +43,6 @@ const CSMajorCourses = [
   { option: 'CSE 195: Senior Thesis Research (if used for DC Requirement)', value: 'CSE195' }
 ];
 
-export const tcodes = [
-  'MATH19A', 'MATH19B', 'MATH21', 'MATH23A',
-  'CSE12', 'CSE13S', 'CSE16', 'CSE20', 'CSE30', 'CSE40',
-  'AM10', 'AM30', 'ECE30', 'STAT131', 'CSE101', 'CSE107'
-]
-
-const tmajorLabels = [
-  'MATH 19A: Calculus for Science, Engineering, and Mathematics I',
-  'MATH 19B: Calculus for Science, Engineering, and Mathematics II',
-  'MATH 21: Linear Algebra', 'MATH 23A: Vector Calculus',
-  'CSE 12: Computer Systems and Assembly Language and Lab', 'CSE 13S: Computer Systems and C Programming',
-  'CSE 16: Applied Discrete Mathematics', 'CSE 20: Beginning Programming in Python',
-  'CSE 30: Programming Abstractions: Python', 'CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods',
-  'AM 10: Mathematical Methods for Engineers I', 'AM 30: Multivariate Calculus for Engineers',
-  'ECE 30: Engineering Principles of Electronics', 'STAT 131: Introduction to Probability Theory',
-  'CSE 101: Introduction to Data Structures and Algorithms',
-  'CSE 107: Probability and Statistics for Engineers',
-] as const;
-
 const CSTransferCourses = [
   { option: 'MATH 19A: Calculus for Science, Engineering, and Mathematics I', value: 'MATH19A' },
   { option: 'MATH 19B: Calculus for Science, Engineering, and Mathematics II', value: 'MATH19B' },
@@ -110,72 +61,34 @@ const ucodes = [
   'MATH21', 'MATH23A'
 ]
 
-export const CSAdjList: Record<string, string[]> = {
-  MATH3: ['MATH19A', 'AM10', 'CSE30'],
-  MATH19A: ['MATH19B', 'MATH21', 'CSE16'],
-  MATH19B: ['MATH23A', 'AM30', 'ECE30', 'CSE40', 'STAT131', 'CSE101'],
-  MATH21: ['AM30'],
-  MATH23A: ['CSE107'],
-  CSE12: ['CSE13S'],
-  CSE13S: ['CSE101', 'CSE120'],
-  CSE16: ['CSE101', 'CSE107'],
-  CSE20: ['CSE30', 'CSE12', 'CSE16'],
-  CSE30: ['CSE40', 'CSE101'],
-  CSE40: [],
-  AM10: ['AM30'],
-  AM30: ['CSE107'],
-  ECE30: [],
-  STAT131: [],
-  CSE101: ['CSE101M', 'CSE102', 'CSE103', 'CSE114A', 'CSE130', 'CSE185S', 'CSE195'],
-  CSE101M: [],
-  CSE102: [],
-  CSE103: [],
-  CSE107: [],
-  CSE114A: [],
-  CSE115A: [],
-  CSE120: [],
-  CSE130: ['CSE115A'],
-  CSE185S: [],
-  CSE195: [],
+const CSPrereqAutofill: Record<string, string[]> = {
+  MATH19A: ['MATH3'],
+  MATH19B: ['MATH19A'],
+  MATH21: ['MATH19A'],
+  MATH23A: ['MATH19B'],
+  CSE12: ['CSE20'],
+  CSE13S: ['CSE12'],
+  CSE16: ['CSE12', 'MATH19A'],
+  CSE30: ['MATH3', 'CSE20'],
+  CSE40: ['CSE30', 'MATH19B'],
+  AM10: ['MATH3'],
+  AM30: ['AM10', 'MATH19B', 'MATH21'],
+  ECE30: ['MATH19B'],
+  STAT131: ['MATH19B'],
+  CSE101: ['MATH19B', 'CSE30', 'CSE13S', 'CSE16'],
+  CSE101M: ['CSE101'],
+  CSE102: ['CSE101'],
+  CSE103: ['CSE101'],
+  CSE107: ['CSE16', 'MATH23A', 'AM30'],
+  CSE114A: ['CSE101'],
+  CSE115A: ['CSE130'],
+  CSE120: ['CSE13S'],
+  CSE130: ['CSE101'],
+  CSE185S: ['CSE101'],
 }
-
-
-type AutoObject = {
-  [code in typeof codes[number]]: boolean;
-};
-
-const auto: AutoObject = codes.reduce((acc, key) => {
-  acc[key] = false;
-  return acc;
-}, {} as AutoObject)
-
-const auto2: AutoObject = tcodes.reduce((acc, key) => {
-  acc[key] = false;
-  return acc;
-}, {} as AutoObject);
 
 const RenderMajorCourses: React.FC = () => {
   const { studentStatus, infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
-
-  let options = majorLabels.map((label, index) => ({
-    option: label,
-    value: codes[index]
-  }));
-
-
-  if (studentStatus === 'T') {
-    options = tmajorLabels.map((label, index) => ({
-      option: label,
-      value: tcodes[index]
-    }));
-  }
-
-  const [autoProps, setAutoProps] = useState(studentStatus.includes('C') ? auto : auto2);
-
-  useEffect(() => {
-    const newAutoProps = studentStatus.includes('C') ? auto : auto2;
-    setAutoProps({ ...newAutoProps })
-  }, [studentStatus])
 
   const renderLinearFlowChart = (courses: string[], courseNames: string[]) => (
     <Box
@@ -324,6 +237,9 @@ const RenderMajorCourses: React.FC = () => {
                           {renderLinearFlowChart(['CSE 115A, CSE 185S, or CSE 195'], [''])}
                         </Grid>
                       </Grid>
+                      <Typography variant="subtitle2" color="info" sx={{ mt: 2 }}>
+                        {`Note that selecting a course will automatically select all of its prerequisites.`}
+                      </Typography>
                     </Box>
                   </>
                 ) : (
@@ -371,13 +287,16 @@ const RenderMajorCourses: React.FC = () => {
                         {`Computer Science and Engineering - Programming (Python)`}
                       </Typography>
                       {renderLinearFlowChart(['CSE 20', 'CSE 30'], ['Beginning Programming in Python', 'Programming Abstractions: Python'])}
+                      <Typography variant="subtitle2" color="info" sx={{ mt: 2 }}>
+                        {`Note that selecting a course will automatically select all of its prerequisites.`}
+                      </Typography>
                     </Box>
                   </>
                 )}
               </>
             }
             options={studentStatus.includes('C') ? CSMajorCourses : CSTransferCourses}
-            addPrereq={{}}
+            addPrereq={CSPrereqAutofill}
             state={backgroundCourseData.completedMajorCourses}
             mutator={(arr: string[]) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, completedMajorCourses: arr }))}
           />
@@ -399,6 +318,10 @@ export default function MajorCourses() {
     </>
   )
 }
+
+type AutoObject = {
+  [key: string]: boolean;
+};
 
 export function UndergradMathTransfer() {
   const { undergradData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
