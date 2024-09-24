@@ -34,19 +34,3 @@ export default function FormLayout({
     </html>
   )
 }
-
-/*
-<html lang="en" suppressHydrationWarning={true}>
-      <body>
-        <InitColorSchemeScript defaultMode="system"/>
-        <CssVarsProvider defaultMode="system" disableTransitionOnChange theme={framesxTheme}>
-          <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <main>{children}</main>
-            </ThemeProvider>
-          </AppRouterCacheProvider>
-        </CssVarsProvider>
-      </body>
-    </html>
-*/

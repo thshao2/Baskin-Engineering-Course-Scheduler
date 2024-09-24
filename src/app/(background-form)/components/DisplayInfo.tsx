@@ -1,4 +1,3 @@
-
 import { Box, Typography, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { orange, blue, pink, red, green, purple, cyan, teal } from '@mui/material/colors';

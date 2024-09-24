@@ -5,29 +5,14 @@ import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useFormContext } from '../context/FormContext';
 
-const steps = ['Select Year and Catalog', 'Background Course Information', 'Student Preferences'];
+const steps = ['Student Information', 'Background Course History', 'Schedule Preferences'];
 
 export default function HorizontalLinearStepper() {
 
   const { stepLastCompleted, stepError } = useFormContext();
-
-  // const [activeStep, setActiveStep] = React.useState(0);
-
-  // const handleNext = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  // };
-
-  // const handleBack = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  // };
-
-  // const handleReset = () => {
-  //   setActiveStep(0);
-  // };
 
   const isStepFailed = (step: number) => {
     return step === stepLastCompleted && stepError.length > 0
@@ -60,14 +45,6 @@ export default function HorizontalLinearStepper() {
             );
             labelProps.error = true;
           }
-          // if (isStepOptional(index)) {
-          //   labelProps.optional = (
-          //     <Typography variant="caption">Optional</Typography>
-          //   );
-          // }
-          // if (isStepSkipped(index)) {
-          //   stepProps.completed = false;
-          // }
           return (
             <Step key={label} {...stepProps}>
               <StepLabel {...labelProps}>{label}</StepLabel>

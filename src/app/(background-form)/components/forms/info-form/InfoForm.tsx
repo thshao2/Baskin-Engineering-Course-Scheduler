@@ -8,7 +8,7 @@ import SubtitleLink from '../../inputs/SubtitleLink'
 
 import { Box, Button, Grid2 as Grid, Typography } from '@mui/material'
 
-import { BackgroundCourseData, useFormContext } from '../../../context/FormContext';
+import { useFormContext } from '../../../context/FormContext';
 
 import { InfoData } from '../../../context/FormContext';
 import { validateInfoForm } from '../../../formActions';

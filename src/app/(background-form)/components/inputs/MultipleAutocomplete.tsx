@@ -2,8 +2,6 @@ import { Box, Autocomplete, Checkbox, TextField, Typography } from "@mui/materia
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 
-import { useState } from "react";
-
 interface Option {
   option: string,
   value: string,
