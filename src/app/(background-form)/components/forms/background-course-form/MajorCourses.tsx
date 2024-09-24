@@ -304,20 +304,20 @@ const RenderMajorCourses: React.FC = () => {
                       {renderLinearFlowChart(['CSE 101', 'CSE 101M, CSE 102, CSE 103, CSE 114A, CSE 130'],
                         ['Data Structures and Algorithms', ''])}
                       <Grid container spacing={1} sx={{ mt: 2 }}>
-                        <Grid size={{ xs: 12, md: 4 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                           <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
                             {`Computer Architecture`}
                           </Typography>
                           {renderLinearFlowChart(['CSE 120'], [''])}
                         </Grid>
 
-                        <Grid size={{ xs: 12, md: 4 }}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                           <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
                             {`Probability and Statistics`}
                           </Typography>
                           {renderLinearFlowChart(['CSE 107 / STAT 131'], [''])}
                         </Grid>
-                        <Grid size={{ xs: 12, md: 4 }}>
+                        <Grid size={{ xs: 12 }}>
                           <Typography variant="subtitle1" sx={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>
                             {`Disciplinary Communication (DC) Requirement`}
                           </Typography>

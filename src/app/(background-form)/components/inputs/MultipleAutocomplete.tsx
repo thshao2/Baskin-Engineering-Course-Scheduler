@@ -66,7 +66,7 @@ export default function MultipleAutocomplete({ title, description, options, addP
         }}
         style={{ minWidth: 300, width: '100%' }}
         renderInput={(params) => (
-          <TextField {...params} label="Add Completed Major Courses..." placeholder="Courses" />
+          <TextField {...params} label={`Add Completed ${title}...`} placeholder="Courses" />
         )}
       />
     </Box>

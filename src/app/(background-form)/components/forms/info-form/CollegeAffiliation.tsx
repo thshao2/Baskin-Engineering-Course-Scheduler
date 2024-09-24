@@ -57,7 +57,7 @@ export default function CollegeOptions({ state, mutator }: CollegeOptionProps) {
       <Typography sx={{
         mb: 2, fontSize: 14
       }}>
-        {studentStatus.includes('C') ? 'Select your affiliated college at UCSC.' :
+        {studentStatus === 'C' ? 'Select your affiliated college at UCSC.' :
           `Select your affiliated college at UCSC. If you are not sure which college
          you will be affiliated with yet, choose the one you are most interested in or plan to select. You can
          read more about the 10 colleges at UCSC `}

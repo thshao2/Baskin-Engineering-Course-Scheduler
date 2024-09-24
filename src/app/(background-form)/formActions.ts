@@ -103,7 +103,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
 
   let coreCourseSchema = z.string();
 
-  if (status !== 'T') {
+  if (status === 'U' || status === 'C') {
     coreCourseSchema = z.string()
       .min(1, { message: 'College Affiliation is Required' })
       .regex(/^[CSTMPKORNJ]$/, {

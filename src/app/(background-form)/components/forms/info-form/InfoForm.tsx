@@ -200,7 +200,7 @@ export default function InfoForm() {
               <StartTerm />
             </Grid>
           )}
-          {(studentStatus.includes('C') || studentStatus === 'U') && (
+          {(studentStatus === 'C' || studentStatus === 'U') && (
             <Grid size={{ xs: 12, md: 6 }}>
               <CollegeOptions
                 state={formContext.infoData.college}
