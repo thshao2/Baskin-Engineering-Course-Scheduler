@@ -548,8 +548,6 @@ export default async function getPlanners(formContext: FormContextType) {
           for (const course of getNextPriorityCourses) {
             if (course.includes('Elective')) {
               continue;
-              // const indexToRemove = nextSnapshot.neededElectives.findIndex(e => e === course);
-              // nextSnapshot.neededElectives.splice(indexToRemove, 1);
             } else {
               nextSnapshot.neededMajorCourses = nextSnapshot.neededMajorCourses.filter(c => c !== course)
               if (equivalencyObj[course] !== undefined) {

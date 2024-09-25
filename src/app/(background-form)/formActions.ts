@@ -191,14 +191,25 @@ export async function validateBackgroundCourseForm(studentStatus: string, backgr
     return { success: false, errors: [statusValidation.error.message] };
   }
 
+  const completedMajorCoursesSchema = studentStatus !== 'U'
+    ? z.array(z.string().regex(/^[A-Z]{2,4}\d{1,3}[A-Z]?$/, {
+      message: "Invalid Input. Error: Completed Major Courses",
+    }))
+    :
+    z.array(z.string().regex(/^[A-Z]{2,4}\d{1,3}[A-Z]?$/, {
+      message: "Invalid Input. Error: Completed Major Courses",
+    })).refine(
+      (courses) => ['MATH19B', 'MATH19A', 'MATH3', 'MATH1'].some((mathCourse) => courses.includes(mathCourse)),
+      { message: 'Math Placement is Required' }
+    )
+
+
   const BackgroundCourseDataSchema = z.object({
     ahr: z.enum(['T', 'F'], { message: 'Please indicate whether you have completed the AHR Requirement' }),
     completedGeneralEdCourses: z.array(z.string().regex(/^(CC|ER|IM|MF|SI|SR|TA|PE|PR|C)$/, {
       message: "Invalid Input. Error: General Education Courses",
     })),
-    completedMajorCourses: z.array(z.string().regex(/^[A-Z]{2,4}\d{1,3}[A-Z]?$/, {
-      message: "Invalid Input. Error: Completed Major Courses",
-    })),
+    completedMajorCourses: completedMajorCoursesSchema,
     completedMajorElectives: z.array(z.string().regex(/^[A-Z]{2,4}\d{3}[A-Z]?$/, {
       message: "Invalid Input. Error: Completed Major Elective Courses",
     })),
@@ -318,7 +329,7 @@ async function validateEntireForm(formContext: FormContextType) {
 }
 
 export async function validateAndGeneratePlanners(
-  infoData: InfoData, studentStatus: string, 
+  infoData: InfoData, studentStatus: string,
   backgroundCourseData: BackgroundCourseData,
   numCoursesPreference: string[]
 ) {
