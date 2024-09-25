@@ -150,6 +150,10 @@ export async function getPriorityList() {
   return priority;
 }
 
+export async function sortCoursesByPriority(courses: string[], priorityObj: Record<string, number>) {
+  return courses.sort((a, b) => priorityObj[b] - priorityObj[a]);
+}
+
 export async function getInDegreeList(neededMajorCourses: string[]) {
   const inDegreeObject: Record<string, number> = neededMajorCourses.reduce((acc, curr) => {
     acc[curr] = 0;

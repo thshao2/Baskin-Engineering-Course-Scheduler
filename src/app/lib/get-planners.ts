@@ -5,6 +5,7 @@ import {
   getNumQuartersBetweenStartAndEndDate, getDifference, incrementQuarter, getQuarterName,
   getNeededCSElectives, getPriorityList, getInDegreeList, getCoreUpperCoursesCount, getElectivesToAdd, checkCSElectiveRequirements,
   GE, CS_MajorCourses, EquivalentCSCourses, newEquivalentCSCourses,
+  sortCoursesByPriority,
 } from './helper'
 
 import { generateCoursesForQuarter, getTopPriorityCourses } from './get-planners-algs';
@@ -293,12 +294,17 @@ export default async function getPlanners(formContext: FormContextType) {
       nextSnapshot.writingPlacement = '2T';
     }
 
-    const queue = [];
+    // Get courses that can be taken this quarter
+    const courses = [];
     for (const course in inDegreeObject) {
       if (inDegreeObject[course] === 0) {
-        queue.push(course);
+        courses.push(course);
       }
     }
+
+    // Sort courses array by its priority (descending order so that first element has the highest priority)
+    const queue = await sortCoursesByPriority(courses, priorityObject)
+
     let temp = [];
     const electiveIndex = await getElectivesToAdd(nextSnapshot.neededMajorCourses, nextSnapshot.neededElectives);
     queue.push(...nextSnapshot.neededElectives.slice(0, electiveIndex));
@@ -366,11 +372,6 @@ export default async function getPlanners(formContext: FormContextType) {
     }
   }
 
-  /*
-    Things to consider in algorithm: 
-      Undergraduate (CSE 20 doesn't get priority first quarter b/c first quarter is brute-force)
-        Get Top Priority (and swap it with the first element)
-  */
 
   async function generatePlanners(numQuarters: number) {
     // Iterate through all existing schedules for each quarter
