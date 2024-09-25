@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Typography } from '@mui/material';
 
-import { useFormContext, UndergradData, BackgroundCourseData, InfoData } from '@/app/(background-form)/context/FormContext';
+import { useFormContext, BackgroundCourseData, InfoData } from '@/app/(background-form)/context/FormContext';
 
 interface Option {
   option: string;
@@ -28,7 +28,7 @@ interface BasicSelectProps {
 const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle, inputLabel, options, state, mutator }: BasicSelectProps) => {
   const [option, setOption] = React.useState(state ? state : auto);
 
-  const { setInfoData, setBackgroundCourseData, setUndergradData } = useFormContext();
+  const { setInfoData, setBackgroundCourseData } = useFormContext();
 
   // Sync initial state on first render
   React.useEffect(() => {
@@ -58,9 +58,6 @@ const StudentStatusSelect: React.FC<BasicSelectProps> = ({ auto, title, subtitle
         completedCapstoneElectives: [],
       }));
     }
-    setUndergradData((undergradData: UndergradData) => ({
-      ...undergradData, math: ''
-    }));
     setInfoData((infoData: InfoData) => ({
       ...infoData, startDate: '', college: '', startPlanner: '',
     }));

@@ -42,7 +42,7 @@ export default function BackGroundCoursesForm() {
   const handleBackgroundForm = async (event: React.FormEvent) => {
     event.preventDefault();
     startTransition(async () => {
-      const result = await validateBackgroundCourseForm(formContext.studentStatus, formContext.undergradData, formContext.backgroundCourseData);
+      const result = await validateBackgroundCourseForm(formContext.studentStatus, formContext.backgroundCourseData);
       console.log(result);
       if (!result.success) {
         formContext.setStepError(result.errors[0]);

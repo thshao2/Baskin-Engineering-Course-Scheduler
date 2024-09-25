@@ -14,7 +14,6 @@ interface Option {
 }
 
 interface CheckboxGroupProps {
-  auto: { [key: string]: boolean }; // Object with string keys and boolean values
   title: string;
   subtitle: string;
   options: Option[];
@@ -22,24 +21,21 @@ interface CheckboxGroupProps {
   mutator: (state: string[]) => void;
 }
 
-const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, options, state, mutator }: CheckboxGroupProps) => {
-  const [values, setValues] = React.useState(() => {
-    return state.reduce((acc, key) => {
-      if (key in acc) {
-        acc[key] = true;
-      }
-      return acc;
-    }, { ...auto });
-  });
-
+const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ title, subtitle, options, state, mutator }: CheckboxGroupProps) => {
+ 
+  // Directly compute checked state from `state` prop instead of using internal `values` state
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = {...values, [event.target.value]: event.target.checked};
-    setValues(newValue);
-    mutator(Object.keys(values).filter(key => newValue[key]));
+    const { value, checked } = event.target;
+
+    // Update the state based on the checked/unchecked status
+    const updatedState = checked
+      ? [...state, value] // Add value if checked
+      : state.filter(item => item !== value); // Remove value if unchecked
+
+    mutator(updatedState);
   };
 
   console.log(`${title}: ${state}`)
-  // console.log(`${title}: ${JSON.stringify(values)}`)
 
   return (
     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', mt: 3 }}>
@@ -59,7 +55,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({ auto, title, subtitle, op
               >
                 <FormControlLabel
                   control={
-                    <Checkbox key={opt.value} value={opt.value} checked={values[opt.value]} onChange={handleChange} />
+                    <Checkbox key={opt.value} value={opt.value} checked={state.includes(opt.value)} onChange={handleChange} />
                   }
                   label={opt.option}
                   sx={{ '& .MuiFormControlLabel-label': { fontSize: {xs: '0.75rem', sm: '0.80rem', md: '0.90rem'} } }} // Adjust the font size here

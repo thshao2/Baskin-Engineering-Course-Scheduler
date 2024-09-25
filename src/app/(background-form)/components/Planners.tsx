@@ -26,7 +26,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { getEnrolledQuarters } from "./forms/student-preferences-form/NumCoursesPreference";
 
 
-
+// Other Improvements: Pagination, recommended results on top
 export default function Planner() {
   const router = useRouter();
   const formContext = useFormContext();
@@ -135,7 +135,6 @@ export default function Planner() {
       const result = await validateAndGeneratePlanners(
         formContext.infoData,
         formContext.studentStatus,
-        formContext.undergradData,
         formContext.backgroundCourseData,
         formContext.numCoursesPreference,
       );

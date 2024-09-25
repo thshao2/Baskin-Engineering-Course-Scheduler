@@ -3,7 +3,7 @@
 import getPlanners from "../lib/get-planners";
 import { getNumQuartersBetweenStartAndEndDate } from "../lib/helper";
 import { FormContextType, InfoData } from "./context/FormContext";
-import { BackgroundCourseData, UndergradData } from "./context/FormContext";
+import { BackgroundCourseData } from "./context/FormContext";
 
 import { z } from 'zod';
 
@@ -180,7 +180,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
 
 }
 
-export async function validateBackgroundCourseForm(studentStatus: string, undergradData: UndergradData, backgroundCourseData: BackgroundCourseData) {
+export async function validateBackgroundCourseForm(studentStatus: string, backgroundCourseData: BackgroundCourseData) {
 
   // Validate student status first
   const StudentStatusSchema = z.enum(['U', 'C', 'T', 'CT'], { message: 'Error: Invalid Student Status' });
@@ -223,7 +223,6 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
     return { success: false, errors: errorMessages };
   }
 
-  let mathSchema = z.string();
   let writingSchema = z.string();
 
   if (!backgroundCourseData.completedGeneralEdCourses.includes('C')) {
@@ -234,26 +233,7 @@ export async function validateBackgroundCourseForm(studentStatus: string, underg
       })
   }
 
-  if (studentStatus === 'U') {
-    mathSchema = z.string()
-      .min(1, { message: 'Math Placement is Required' }) // Ensure it isn't empty
-      .regex(/^(3|19A|19B|20)$/, {
-        message: "Invalid Input. Error: Math Placement"
-      })
-  }
-
-  const UndergradDataSchema = z.object({
-    math: mathSchema,
-    writing: writingSchema,
-  });
-
-  const validateBackgroundCourseFormSchema = z.object({
-    undergradData: UndergradDataSchema,
-  });
-
-  const result = validateBackgroundCourseFormSchema.safeParse({
-    undergradData: undergradData,
-  })
+  const result = writingSchema.safeParse(backgroundCourseData.writing);
 
   if (!result.success) {
     const errorMessages = result.error.errors.map(error => error.message);
@@ -322,9 +302,8 @@ async function validateEntireForm(formContext: FormContextType) {
       errors.push(...result.errors)
     }
   }
-  const undergradData: UndergradData = formContext.undergradData;
   const backgroundCourseData: BackgroundCourseData = formContext.backgroundCourseData;
-  result = await validateBackgroundCourseForm(studentStatus, undergradData, backgroundCourseData);
+  result = await validateBackgroundCourseForm(studentStatus, backgroundCourseData);
   if (!result.success) {
     if (result.errors) {
       errors.push(...result.errors)
@@ -339,14 +318,14 @@ async function validateEntireForm(formContext: FormContextType) {
 }
 
 export async function validateAndGeneratePlanners(
-  infoData: InfoData, studentStatus: string,
-  undergradData: UndergradData, backgroundCourseData: BackgroundCourseData,
-  numCoursesPreference: string[]) {
+  infoData: InfoData, studentStatus: string, 
+  backgroundCourseData: BackgroundCourseData,
+  numCoursesPreference: string[]
+) {
 
   const formContext = {
     infoData: infoData,
     studentStatus: studentStatus,
-    undergradData: undergradData,
     backgroundCourseData: backgroundCourseData,
     numCoursesPreference: numCoursesPreference,
   }

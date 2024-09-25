@@ -7,20 +7,9 @@ import SubtitleLink from "../../inputs/SubtitleLink";
 import { Typography } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
-const codes = ['CC', 'ER', 'IM', 'MF', 'SI', 'SR', 'TA', 'PE', 'PR', 'C'] as const;
-type AutoObject = {
-  [code in typeof codes[number]]: boolean;
-};
-
 export default function GeneralEd() {
 
   const { studentStatus, backgroundCourseData, setBackgroundCourseData } = useFormContext();
-
-
-  const auto: AutoObject = codes.reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {} as AutoObject);
 
   return (
     <>
@@ -50,7 +39,6 @@ export default function GeneralEd() {
         mutator={(value: string) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, ahr: value }))}
       />
       <CheckboxGroup
-        auto={auto}
         title="General Education Courses"
         subtitle={!studentStatus.includes('C') ?
           `Select General Education Requirements that you have satisfied through transfer credit.` :
@@ -78,5 +66,4 @@ export default function GeneralEd() {
       }
     </>
   );
-
 }

@@ -1,12 +1,48 @@
 import { Typography } from "@mui/material";
-import { UndergradData, useFormContext } from "../../../context/FormContext";
+import { BackgroundCourseData, useFormContext } from "../../../context/FormContext";
 import Select from "../../inputs/Select";
 
 import SubtitleLink from "../../inputs/SubtitleLink";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 export default function MathPlacement() {
-  const {infoData, undergradData, setUndergradData} = useFormContext();
+  const { infoData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
+
+  // Function to determine the state for the Select component
+  const getMathPlacementState = () => {
+    const mathCourses = ['MATH1', 'MATH3', 'MATH19A', 'MATH19B', 'MATH23A'];
+    
+    // Find the first match in completedMajorCourses
+    let foundCourse = backgroundCourseData.completedMajorCourses.find(course => 
+      mathCourses.includes(course)
+    );
+
+    if (foundCourse && foundCourse === 'MATH23A') {
+      foundCourse = 'MATH19B';
+    }
+
+    // If a match is found, return it; otherwise, return an empty string
+    return foundCourse || '';
+  };
+
+  const handleMathPlacementChange = (value: string) => {
+    setBackgroundCourseData((prev: BackgroundCourseData) => {
+      // Filter out the existing values (MATH3, MATH 19A, MATH 19B, MATH23A)
+      const filteredCourses = prev.completedMajorCourses.filter(
+        course => !['MATH1', 'MATH3', 'MATH19A', 'MATH19B', 'MATH23A'].includes(course)
+      );
+
+      // Add the new value to the filtered list
+      const updatedCourses = [...filteredCourses, value];
+
+
+      // Return the updated backgroundCourseData state
+      return {
+        ...prev,
+        completedMajorCourses: updatedCourses,
+      };
+    });
+  };
 
   const renderMathPlacement = () => {
     switch (infoData.major) {
@@ -16,7 +52,7 @@ export default function MathPlacement() {
             <Select
               auto=""
               title="Math Placement (Calculus)"
-              subtitle = {
+              subtitle={
                 <>
                   <Typography
                     sx={{ mt: 1, fontSize: 14, mb: 2 }}>
@@ -35,20 +71,20 @@ export default function MathPlacement() {
               inputLabel="Course"
               options={
                 [
-                  { option: 'MATH 3 (Precalculus)', value: '3' },
-                  { option: 'MATH 19A (Calculus I)', value: '19A' },
-                  { option: 'MATH 19B (Calculus II)' , value: '19B' },
-                  { option: 'Other', value: '20'}
+                  { option: 'MATH 3 (Precalculus)', value: 'MATH1' },
+                  { option: 'MATH 19A (Calculus I)', value: 'MATH3' },
+                  { option: 'MATH 19B (Calculus II)', value: 'MATH19A' },
+                  { option: 'Other', value: 'MATH19B' }
                 ]
               }
-              state={undergradData.math}
-              mutator={(value) => setUndergradData((prev: UndergradData) => ({ ...prev, math: value }))}
+              state={getMathPlacementState()}
+              mutator={handleMathPlacementChange}
             />
           </>
         );
       default:
         return (
-          <Typography sx={{mt: 4}}>Your major was not found. Please restart the form.</Typography>
+          <Typography sx={{ mt: 4 }}>Your major was not found. Please restart the form.</Typography>
         )
 
     }
@@ -59,5 +95,4 @@ export default function MathPlacement() {
       {renderMathPlacement()}
     </>
   );
-
 }

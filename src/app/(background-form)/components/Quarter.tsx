@@ -108,7 +108,6 @@ export const QuarterSkeleton = () => {
   );
 };
 
-// Pagination, Loading Fallback
 export default function Quarter({ quarter, courses }: { quarter: string, courses: string[] }) {
   return (
     <Box sx={{ width: '100%' }}>

@@ -1,6 +1,5 @@
 import { PropsWithChildren, useState, createContext, useContext } from "react";
 
-
 export type InfoData = {
   catalogYear: string,
   major: string,
@@ -11,13 +10,9 @@ export type InfoData = {
   startPlanner: string,
 }
 
-export type UndergradData = {
-  math: string,
-  writing: string,
-}
-
 export type BackgroundCourseData = {
   ahr: string,
+  writing: string,
   completedGeneralEdCourses: string[],
   completedMajorCourses: string[],
   completedMajorElectives: string[],
@@ -29,7 +24,6 @@ export type BackgroundCourseData = {
 export type FormContextType = {
   infoData: InfoData,
   studentStatus: string,
-  undergradData: UndergradData,
   backgroundCourseData: BackgroundCourseData,
   numCoursesPreference: string[],
 }
@@ -48,13 +42,9 @@ export const FormContext = createContext({
   setInfoData: (data: InfoData | ((prev: InfoData) => InfoData)) => {},
   studentStatus: '',
   setStudentStatus: (student: string) => {},
-  undergradData: {
-    math: '',
-    writing: '',
-  },
-  setUndergradData: (data: UndergradData | ((prev: UndergradData) => UndergradData)) => {},
   backgroundCourseData: {
     ahr: '',
+    writing: '',
     completedGeneralEdCourses: [] as string[],
     completedMajorCourses: [] as string[],
     completedMajorElectives: [] as string[],
@@ -81,17 +71,12 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
     college: '',
     startPlanner: '',
   });
-  const [stepLastCompleted, setStepLastCompleted] = useState(0);
-  const [stepError, setStepError] = useState('');
+  
   const [studentStatus, setStudentStatus] = useState('');
-
-  const [undergradData, setUndergradData] = useState<UndergradData>({
-    math: '',
-    writing: '',
-  })
 
   const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({
     ahr: '',
+    writing: '',
     completedGeneralEdCourses: [],
     completedMajorCourses: [],
     completedMajorElectives: [],
@@ -102,12 +87,13 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
 
   const [numCoursesPreference, setNumCoursesPreference] = useState<string[]>(['3'])
 
+  const [stepLastCompleted, setStepLastCompleted] = useState(0);
+  const [stepError, setStepError] = useState('');
+
   return (
     <FormContext.Provider value = {{
       infoData,
       setInfoData,
-      undergradData,
-      setUndergradData,
       backgroundCourseData,
       setBackgroundCourseData,
       numCoursesPreference,

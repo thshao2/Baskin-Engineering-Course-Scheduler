@@ -1,11 +1,11 @@
 import { Typography } from "@mui/material";
-import { UndergradData, useFormContext } from "../../../context/FormContext";
+import { BackgroundCourseData, useFormContext } from "../../../context/FormContext";
 import Select from "../../inputs/Select";
 import SubtitleLink from "../../inputs/SubtitleLink"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 export default function WritingPlacement() {
-  const { studentStatus, undergradData, setUndergradData } = useFormContext();
+  const { studentStatus, backgroundCourseData, setBackgroundCourseData } = useFormContext();
 
   return (
     <Select
@@ -68,8 +68,8 @@ export default function WritingPlacement() {
           { option: 'Writing 26 (designed for new English-language learners)', value: '26' },
         ]
       }
-      state={undergradData.writing}
-      mutator={(value) => setUndergradData((prev: UndergradData) => ({ ...prev, writing: value }))}
+      state={backgroundCourseData.writing}
+      mutator={(value) => setBackgroundCourseData((prev: BackgroundCourseData) => ({ ...prev, writing: value }))}
     />
   );
 

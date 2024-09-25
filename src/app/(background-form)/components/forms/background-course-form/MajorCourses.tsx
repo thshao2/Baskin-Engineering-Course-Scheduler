@@ -319,26 +319,16 @@ export default function MajorCourses() {
   )
 }
 
-type AutoObject = {
-  [key: string]: boolean;
-};
-
 export function UndergradMathTransfer() {
-  const { undergradData, backgroundCourseData, setBackgroundCourseData } = useFormContext();
-
-  const auto: AutoObject = ucodes.reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {} as AutoObject);
+  const { backgroundCourseData, setBackgroundCourseData } = useFormContext();
 
   const options = [{ option: 'AM 10 / MATH 21 (Linear Algebra)', value: 'MATH21' }];
-  if (undergradData.math === '20') {
+  if (backgroundCourseData.completedMajorCourses.includes('MATH19B')) {
     options.push({ option: 'MATH 23A (Multivariate/Vector Calculus)', value: 'MATH23A' });
   }
 
   return (
     <CheckboxGroup
-      auto={auto}
       title="Additional Transfer Credit for Math Courses"
       subtitle={`If you have additional math courses that you have already satisified through transfer credit, select them below. Otherwise, you may skip this section.`}
       options={options}
