@@ -4,14 +4,14 @@ import { extendTheme } from '@mui/joy/styles';
 import { inputClasses } from '@mui/joy/Input';
 
 
-declare module '@mui/material/styles' {
+declare module '@mui/joy/styles' {
   interface BreakpointOverrides {
     xs: true;
     sm: true;
     md: true;
     lg: true;
     xl: true;
-    mobile: true; // Add your custom breakpoint here
+    mobile: true; // Add custom breakpoint here
   }
 }
 
