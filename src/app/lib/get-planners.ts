@@ -55,12 +55,17 @@ export default async function getPlanners(formContext: FormContextType) {
   // Writing Placement
   let writingPlacement = formContext.backgroundCourseData.writing;
 
+  // If C General Education Requirement has already been completed, set writing placement to "C"
+  if (formContext.backgroundCourseData.completedGeneralEdCourses.includes('C')) {
+    writingPlacement = 'C';
+  }
+
   // Core Course: Either C, S, T, M, P, K, O, R, N, or J
   let coreCourse = formContext.infoData.college;
 
   // Change Core Course value to '1' (completed) or '2' (2 part core course) if continuing 4-year student
   if (formContext.studentStatus === 'C') {
-    if (coreCourse === 'S') {
+    if (coreCourse === 'S' && writingPlacement !== '25' && writingPlacement !== '26') {
       const numQuartersCompleted = await getNumQuartersBetweenStartAndEndDate(startTerm, startDate) - 1;
       coreCourse = numQuartersCompleted >= 2 ? '1' : '2';
     } else {
@@ -68,6 +73,10 @@ export default async function getPlanners(formContext: FormContextType) {
     }
   } else if (formContext.studentStatus.includes('T')) { // Transfer students are waived from college core course ('1')
     coreCourse = '1';
+  } else {
+    if (startTerm.charAt(0) === 'W') {
+      coreCourse = '1'; // Incoming 4-year students entering during the winter term are waived from college core course ('1')
+    }
   }
 
   // Student Status: 'U', 'T', or 'C'
@@ -130,11 +139,6 @@ export default async function getPlanners(formContext: FormContextType) {
   let allCompletedElectives = [...completedCapstoneElectives, ...completedMajorElectives, ...completedAlternativeElectives];
 
   const displayWritingCoursesNeeded = [];
-
-  // If C General Education Requirement has already been completed, set writing placement to "C"
-  if (!neededGeneralEdCourses.includes('C')) {
-    writingPlacement = 'C';
-  }
 
   // Update Display Writing Courses Array to include ALL writing courses needed
   /* Example: if placed in Writing 1, include '1' as well as 'C', representing Writing 1 AND Writing 2
@@ -206,7 +210,7 @@ export default async function getPlanners(formContext: FormContextType) {
       univReq: {
         ahr: universityReq.ahr,
         entry: universityReq.entry,
-        core: (student === 'T' || (student === 'C' && universityReq.core === '1'))
+        core: (student === 'T' || (student === 'C' && universityReq.core === '1') || (student === 'U' && universityReq.core === '1'))
       },
       writing: displayWritingCoursesNeeded,
       electives: { ...electiveReq },
@@ -259,21 +263,22 @@ export default async function getPlanners(formContext: FormContextType) {
     }
     let numCourses = numCoursesPerQuarter[0];
     const addToCourses = [];
-    if (student === 'U') {
+    if (student === 'U' && universityReq.core !== '1' && universityReq.core !== '2') {
       numCourses--;
       addToCourses.push('College Core Course');
-      if (universityReq.core === 'S') {
+      if (universityReq.core === 'S' && writingPlacement !== '25' && writingPlacement !== '26') {
         nextSnapshot.coreCourse = '2';
       } else {
         nextSnapshot.coreCourse = '1';
       }
     }
-    if (student === 'C' && universityReq.core === '2') {
+    const startQuarter = startDate.charAt(0);
+    if (student === 'C' && universityReq.core === '2' && startQuarter === 'W') {
       numCourses--;
       addToCourses.push('College Core Course (Part 2)');
       nextSnapshot.coreCourse = '1';
+      nextSnapshot.neededGeneralEdCourses = nextSnapshot.neededGeneralEdCourses.filter(ge => ge !== 'TA');
     }
-    const startQuarter = startDate.charAt(0);
     if (writingPlacement === '25' && startQuarter === 'F') {
       numCourses--;
       addToCourses.push('Writing 25');
@@ -365,9 +370,6 @@ export default async function getPlanners(formContext: FormContextType) {
     Things to consider in algorithm: 
       Undergraduate (CSE 20 doesn't get priority first quarter b/c first quarter is brute-force)
         Get Top Priority (and swap it with the first element)
-      Winter 4-year student start exempted from core course
-      If taking Writ 25 or 26 and two part core course, exempt from second part
-      TA is satisfied if taking STEV 2
   */
 
   async function generatePlanners(numQuarters: number) {
@@ -421,6 +423,7 @@ export default async function getPlanners(formContext: FormContextType) {
             numCourses--;
             addToCourses.push('College Core Course (Part 2)');
             nextSnapshot.coreCourse = '1';
+            nextSnapshot.neededGeneralEdCourses = nextSnapshot.neededGeneralEdCourses.filter(ge => ge !== 'TA');
           }
           if (nextSnapshot.writingPlacement === '25' && currQuarter === 'F') {
             numCourses--;

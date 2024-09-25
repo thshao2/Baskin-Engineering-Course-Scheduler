@@ -77,7 +77,7 @@ export const FormProvider = ({ children }: PropsWithChildren<{}>) => {
   const [backgroundCourseData, setBackgroundCourseData] = useState<BackgroundCourseData>({
     ahr: '',
     writing: '',
-    completedGeneralEdCourses: [],
+    completedGeneralEdCourses: ['MF', 'SI', 'SR'],
     completedMajorCourses: [],
     completedMajorElectives: [],
     completedCapstoneElectives: [],

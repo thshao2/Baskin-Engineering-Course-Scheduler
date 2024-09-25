@@ -85,17 +85,6 @@ export const newEquivalentCSCourses: Record<string, string[]> = {
   CSE103: ['CSE102'],
 }
 
-// export type elective = {
-//   option: string,
-//   value: string,
-// }
-
-// export type priority = {
-//   outDegree: number,
-//   priority: number,
-//   declare: boolean,
-// }
-
 export async function getQuarterName(key: string) {
   const quarter = key.charAt(0);
   const year = parseInt(key.slice(1), 10) + 2000;
@@ -150,6 +139,12 @@ export async function getPriorityList() {
   // Compute satisfaction counts for all courses
   for (const course in CSAdjList) {
     await dfs(course);
+  }
+
+  // Later on will consider making an "override" priority object that will be used in this function to add
+  // satisfaction counts on courses that have too low of a priority
+  if (priority['CSE40'] !== undefined) {
+    priority['CSE40'] = priority['CSE40'] + 1;
   }
 
   return priority;
