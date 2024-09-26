@@ -177,38 +177,47 @@ export default function LandingPage() {
           </Box>
         </Typography>
         <a
-            href="https://www.linkedin.com/in/timothy-shao"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              color: 'inherit', // Keep the original text color
-              position: 'relative',
-            }}
-          >
-        <Typography
-          fontSize="sm"
-          sx={{
-            mt: 2,
+          href="https://www.linkedin.com/in/timothy-shao"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+            color: 'inherit', // Keep the original text color
             position: 'relative',
-            display: 'inline-block',
-            background: 'linear-gradient(90deg, #2196f3, #29b6f6, #ff4081)', // Gradient colors
-            backgroundSize: '200% auto',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text', // Apply the gradient to the text
-            color: 'transparent', // Transparent color to show the gradient
-            fontWeight: 'bold', // Ensures visibility
-            transition: 'background-position 0.4s ease',
-            backgroundPosition: '100% 0', // Keep the gradient fully visible initially
-            '&:hover': {
-              backgroundPosition: '0 0', // Optional: reverse the animation on hover if you want some effect
-            },
           }}
         >
-          Developed by Timothy Shao
-        </Typography>
+          <Typography
+            fontSize="sm"
+            sx={{
+              mt: 2,
+              position: 'relative',
+              display: 'inline-block',
+              background: 'linear-gradient(90deg, #ff4081, #e040fb, #2196f3, #29b6f6, #e040fb, #ff4081)', // Gradient colors
+              backgroundSize: '200% auto', // Double the background size for smooth wrapping
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text', // Apply the gradient to the text
+              color: 'transparent', // Keep the color transparent to show the gradient
+              fontWeight: 'bold', // Ensure visibility
+              animation: 'gradientScroll 3s linear infinite forwards', // Apply the scrolling animation
+              transition: 'transform 0.3s ease, text-shadow 0.3s ease', // Add transition for smooth scaling and shadow effects
+              '@keyframes gradientScroll': {
+                '0%': {
+                  backgroundPosition: '200% 0%', // Start the background at the left
+                },
+                '100%': {
+                  backgroundPosition: '0% 0%', // Move to the right
+                },
+              },
+              '&:hover': {
+                transform: 'scale(1.15)', // Slightly enlarge the text on hover
+                textShadow: '0 4px 20px rgba(255, 64, 129, 0.7)', // Add a soft glow or shadow around the text
+              },
+            }}
+          >
+            Developed by Timothy Shao
+          </Typography>
         </a>
       </Box>
     </TwoSidedLayout>
