@@ -113,80 +113,80 @@ export default function LandingPage() {
           fontSize="sm"
           textColor="text.secondary"
         >
-          <Box
-              component="span"
-              sx={{
-                '&:hover': {
-                  '& span::after': {
-                    transform: 'scaleX(1)', // Underline appears on hover for the text
-                  },
-                  '& span': {
-                    color: '#29b6f6', // Change text color on hover
-                  },
-                  '& svg': {
-                    transform: 'scale(1.2)', // Zoom icon on hover
-                    color: '#29b6f6', // Change icon color on hover
-                  },
-                },
-              }}
-            >
           Designed using Next.js App Router and{' '}
-          <a
-            href="https://mui.com/material-ui/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              textDecoration: 'none',
-              color: 'inherit', // Keep the original text color
-              position: 'relative',
+          <Box
+            component="span"
+            sx={{
+              '&:hover': {
+                '& span::after': {
+                  transform: 'scaleX(1)', // Underline appears on hover for the text
+                },
+                '& span': {
+                  color: '#29b6f6', // Change text color on hover
+                },
+                '& svg': {
+                  transform: 'scale(1.2)', // Zoom icon on hover
+                  color: '#29b6f6', // Change icon color on hover
+                },
+              },
             }}
           >
-            <Box
-              component="span"
-              sx={{
+            <a
+              href="https://mui.com/material-ui/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+                color: 'inherit', // Keep the original text color
                 position: 'relative',
-                color: '#2196f3',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  left: 0,
-                  bottom: -2,
-                  width: '100%',
-                  height: '2px',
-                  bgcolor: '#29b6f6',
-                  transition: 'transform 0.2s ease-in-out',
-                  transform: 'scaleX(0)',
-                  transformOrigin: 'left',
-                },
-                // '&:hover::after': {
-                //   transform: 'scaleX(1)', // Underline appears on hover
-                // },
-                // '&:hover': {
-                //   color: '#2196f3', // Change text color on hover
-                // },
               }}
             >
-              Material UI
-            </Box>
-            <OpenInNewIcon
-              sx={{
-                ml: 0.5, // Small margin to separate icon from the text
-                fontSize: 'inherit',
-                verticalAlign: 'middle', // Align icon with text
-                transition: 'transform 0.2s ease-in-out',
-                color: "#2196f3"
-                // '&:hover': {
-                //   transform: 'scale(1.2)', // Zoom on hover
-                //   color: '#2196f3', // Change icon color on hover
-                // },
-              }}
-            />
-          </a>
+              <Box
+                component="span"
+                sx={{
+                  position: 'relative',
+                  color: '#2196f3',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    bottom: -2,
+                    width: '100%',
+                    height: '2px',
+                    bgcolor: '#29b6f6',
+                    transition: 'transform 0.2s ease-in-out',
+                    transform: 'scaleX(0)',
+                    transformOrigin: 'left',
+                  },
+                  // '&:hover::after': {
+                  //   transform: 'scaleX(1)', // Underline appears on hover
+                  // },
+                  // '&:hover': {
+                  //   color: '#2196f3', // Change text color on hover
+                  // },
+                }}
+              >
+                Material UI
+              </Box>
+              <OpenInNewIcon
+                sx={{
+                  ml: 0.5, // Small margin to separate icon from the text
+                  fontSize: 'inherit',
+                  verticalAlign: 'middle', // Align icon with text
+                  transition: 'transform 0.2s ease-in-out',
+                  color: "#2196f3"
+                  // '&:hover': {
+                  //   transform: 'scale(1.2)', // Zoom on hover
+                  //   color: '#2196f3', // Change icon color on hover
+                  // },
+                }}
+              />
+            </a>
           </Box>
         </Typography>
-        
+
         <Typography fontSize="sm" textColor="text.secondary" sx={{ mt: 2 }}>
           Developed by Timothy Shao
         </Typography>
