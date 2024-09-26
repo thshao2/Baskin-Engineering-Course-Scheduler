@@ -121,11 +121,11 @@ export default function LandingPage() {
                     transform: 'scaleX(1)', // Underline appears on hover for the text
                   },
                   '& span': {
-                    color: '#2196f3', // Change text color on hover
+                    color: '#29b6f6', // Change text color on hover
                   },
                   '& svg': {
                     transform: 'scale(1.2)', // Zoom icon on hover
-                    color: '#2196f3', // Change icon color on hover
+                    color: '#29b6f6', // Change icon color on hover
                   },
                 },
               }}
@@ -147,6 +147,7 @@ export default function LandingPage() {
               component="span"
               sx={{
                 position: 'relative',
+                color: '#2196f3',
                 '&::after': {
                   content: '""',
                   position: 'absolute',
@@ -154,7 +155,7 @@ export default function LandingPage() {
                   bottom: -2,
                   width: '100%',
                   height: '2px',
-                  bgcolor: '#2196f3',
+                  bgcolor: '#29b6f6',
                   transition: 'transform 0.2s ease-in-out',
                   transform: 'scaleX(0)',
                   transformOrigin: 'left',
@@ -175,6 +176,7 @@ export default function LandingPage() {
                 fontSize: 'inherit',
                 verticalAlign: 'middle', // Align icon with text
                 transition: 'transform 0.2s ease-in-out',
+                color: "#2196f3"
                 // '&:hover': {
                 //   transform: 'scale(1.2)', // Zoom on hover
                 //   color: '#2196f3', // Change icon color on hover
@@ -188,9 +190,9 @@ export default function LandingPage() {
         <Typography fontSize="sm" textColor="text.secondary" sx={{ mt: 2 }}>
           Developed by Timothy Shao
         </Typography>
-        <Typography fontSize="sm" textColor="text.secondary" sx={{ mt: 2 }}>
+        {/* <Typography fontSize="sm" textColor="text.secondary" sx={{ mt: 2 }}>
           Email: thshao@ucsc.edu
-        </Typography>
+        </Typography> */}
       </Box>
     </TwoSidedLayout>
   );
