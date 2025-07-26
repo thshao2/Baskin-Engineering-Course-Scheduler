@@ -37,7 +37,7 @@ export async function validateInfoForm(infoForm: InfoData, status: string) {
   const date = new Date();
   const curMonth = date.getMonth();
   const curYear = date.getFullYear() % 1000;
-  let toCatalog = curMonth > 6 ? date.getFullYear() % 1000 : (date.getFullYear() - 1) % 1000;
+  let toCatalog = curMonth > 5 ? date.getFullYear() % 1000 : (date.getFullYear() - 1) % 1000;
   let startGradDate;
   let endGradDate;
 

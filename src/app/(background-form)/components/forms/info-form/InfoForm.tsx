@@ -107,7 +107,7 @@ export default function InfoForm() {
         <Grid container spacing={2} alignItems="flex-end">
           <Grid size={{ xs: 12, md: 6 }}>
             <Select
-              auto="24"
+              auto="25"
               title="UCSC General Catalog"
               subtitle={
                 <>
@@ -126,7 +126,8 @@ export default function InfoForm() {
               inputLabel="Year"
               options={
                 [
-                  { option: '2024-2025 (Default)', value: '24' },
+                  { option: '2025-2026', value: '25' },
+                  { option: '2024-2025', value: '24' },
                   { option: '2023-2024', value: '23' },
                   { option: '2022-2023', value: '22' }
                 ]
@@ -159,7 +160,7 @@ export default function InfoForm() {
                   { option: 'Incoming First-Year Student', value: 'U' },
                   { option: 'Incoming Transfer', value: 'T' },
                   { option: 'Continuing Four-Year Student', value: 'C' },
-                  { option: 'Continuing Transfer Student', value: 'CT'},
+                  { option: 'Continuing Transfer Student', value: 'CT' },
                 ]
               }
               state={formContext.studentStatus}
