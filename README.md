@@ -4,16 +4,16 @@
 
 [![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-READY-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Live Demo](https://img.shields.io/badge/Demo-Website-green)](https://ucsc-course-scheduler-project.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Demo-Website-green)](https://baskin-engineering-course-scheduler.vercel.app)
 
-> **Live Demo:** **[ucsc-course-scheduler-project.vercel.app](https://ucsc-course-scheduler-project.vercel.app)**  
-> An intelligent academic planner for UCSC students — generate personalized four-year schedules or plan upcoming quarters based on your major, progress, and preferences.
+> **Live Demo:** **[baskin-engineering-course-scheduler.vercel.app](https://baskin-engineering-course-scheduler.vercel.app)**  
+> An intelligent academic planner for UCSC students — generate personalized four-year schedules or plan upcoming quarters based on your major, degree progress, and course preferences.
 
 ---
 
 ## 📌 Overview
 
-The **Baskin Engineering Course Scheduler** is a responsive web application that helps UCSC students **plan their entire academic journey**—from next quarter to graduation.  
+The **Baskin Engineering Course Scheduler** is a responsive web application that helps UCSC students **plan their entire academic journey** — from next quarter to graduation.  
 Just fill out a quick three‑step form with your background, completed courses, and preferences, and the scheduler produces **conflict‑free, requirement‑aware plans** in ~2 seconds.
 
 Key highlights:
@@ -127,8 +127,8 @@ Once submitted, the backend runs a graph-based dependency analysis and returns o
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/thshao2/UCSC-Course-Scheduler-Project.git
-cd UCSC-Course-Scheduler-Project
+git clone https://github.com/thshao2/Baskin-Engineering-Course-Scheduler.git
+cd Baskin-Engineering-Course-Scheduler
 
 # 2. Install dependencies
 npm install
@@ -165,7 +165,7 @@ Whether you're a freshman starting from scratch or a junior catching up, this sc
 2. Commit with Conventional Commits (```feat: add xyz```).
 3. Push and open a Pull Request.
 
-All contributions—bug fixes, docs, feature requests—are welcome!
+All contributions — bug fixes, docs, feature requests — are welcome!
 
 ## 👋 Contact
 
