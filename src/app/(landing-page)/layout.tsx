@@ -25,8 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body>
-        <InitColorSchemeScript defaultMode="system" />
-        <CssVarsProvider defaultMode="system" disableTransitionOnChange theme={framesxTheme}>
+        <InitColorSchemeScript defaultMode="dark" />
+        <CssVarsProvider defaultMode="dark" disableTransitionOnChange theme={framesxTheme}>
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline />

@@ -34,7 +34,7 @@ export default function LandingPage() {
         UCSC Academic Course Scheduler
       </Typography>
       <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
-        A scheduler to generate personalized four-year academic planners or find recommended courses for your upcoming terms, tailored to your course history and major.
+        A scheduler to generate personalized four-year academic planners or find recommended courses for your upcoming terms, tailored to your background, goals, degree progress, and course preferences.
       </Typography>
       <Box
         sx={{

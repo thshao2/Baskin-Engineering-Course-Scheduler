@@ -36,21 +36,23 @@ export default function TwoSidedLayout({
   ]
   return (
     <Container
+      maxWidth={false}
       sx={(theme) => ({
         position: 'relative',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: reversed ? 'column-reverse' : 'column',
+        width: { xs: '100%', md: '50vw' },
+        // Anchor to the left edge of the viewport
+        ml: 0,
+        mr: 'auto',
         alignItems: 'center',
-        py: 10,
         gap: 4,
-        [theme.breakpoints.up(900)]: {
-          flexDirection: 'row',
-          gap: 6,
-        },
-        [theme.breakpoints.up(1199)]: {
-          gap: 12,
-        },
+        // Inner alignment of the left pane
+        justifyContent: 'center',
+        // spacing
+        py: { xs: 6, md: 10 },
+        px: { xs: 2, md: 4 },
       })}
     >
       <Box
